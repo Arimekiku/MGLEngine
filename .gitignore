@@ -31,8 +31,17 @@
 *.out
 *.app
 
-# Folders
-binaries/
-intermediates/
+# Visual Studio
 .vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
+
+# Binaries
+**/binaries/
+intermediates/
+
+# Git
 .git/
