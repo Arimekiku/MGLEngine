@@ -7,7 +7,7 @@ workspace "RenderingEngine"
 		"Release"
 	}
 
-outdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 includes = {}
 includes["GLFW"] = "RenderingEngine/vendor/GLFW/include"
@@ -20,8 +20,8 @@ project "RenderingEngine"
 	kind "SharedLib"
 	language "C++"
 
-	targetdir ("binaries/" .. outdir .. "/%{prj.name}")
-	objdir ("intermediates/" .. outdir .. "/%{prj.name}")
+	targetdir ("binaries/" .. outputdir .. "/%{prj.name}")
+	objdir ("intermediates/" .. outputdir .. "/%{prj.name}")
 
 	files 
 	{
@@ -54,7 +54,7 @@ project "RenderingEngine"
 		
 		postbuildcommands 
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../binaries/" .. outdir .. "/Application")
+			("{COPY} %{cfg.buildtarget.relpath} ../binaries/" .. outputdir .. "/Application")
 		}
 
 	filter "configurations:Debug"
@@ -70,8 +70,8 @@ project "Application"
 	kind "ConsoleApp"
 	language "C++"
 
-	targetdir ("binaries/" .. outdir .. "/%{prj.name}")
-	objdir ("intermediates/" .. outdir .. "/%{prj.name}")
+	targetdir ("binaries/" .. outputdir .. "/%{prj.name}")
+	objdir ("intermediates/" .. outputdir .. "/%{prj.name}")
 
 	files 
 	{
