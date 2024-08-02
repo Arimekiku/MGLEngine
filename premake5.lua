@@ -17,7 +17,7 @@ include "RenderingEngine/vendor/GLFW"
 
 project "RenderingEngine"
 	location "RenderingEngine"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
 
 	targetdir ("binaries/" .. outputdir .. "/%{prj.name}")
@@ -50,11 +50,6 @@ project "RenderingEngine"
 		{
 			"APP_PLATFORM_WINDOWS",
 			"APP_BUILD_SHAREDLIB"
-		}
-		
-		postbuildcommands 
-		{
-			("{COPY} %{cfg.buildtarget.relpath} ../binaries/" .. outputdir .. "/Application")
 		}
 
 	filter "configurations:Debug"
