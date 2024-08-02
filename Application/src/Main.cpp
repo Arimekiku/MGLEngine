@@ -1,17 +1,15 @@
-#include <cstdio>
-
 #include "Core.h"
+
 
 class Application : public RenderingEngine::Bootstrapper
 {
 public:
 	Application()
 	{
-		
 	}
+
 	~Application()
 	{
-		
 	}
 };
 

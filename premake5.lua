@@ -23,6 +23,9 @@ project "RenderingEngine"
 	targetdir ("binaries/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediates/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "mxpch.h"
+	pchsource "%{prj.name}/src/mxpch.cpp"
+
 	files 
 	{
 		"%{prj.name}/src/**.h",

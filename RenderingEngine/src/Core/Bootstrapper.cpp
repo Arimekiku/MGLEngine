@@ -1,3 +1,4 @@
+#include "mxpch.h"
 #include "Bootstrapper.h"
 
 namespace RenderingEngine
