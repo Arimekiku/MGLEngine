@@ -1,4 +1,4 @@
 #pragma once
 
 #include "Core/Bootstrapper.h"
-#include "Core/Logger/Log.h"
+#include "Core/EntryPoint.h"

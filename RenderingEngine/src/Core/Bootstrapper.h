@@ -12,4 +12,6 @@ namespace RenderingEngine
 
 		void Run();
 	};
+
+	Bootstrapper* LoadEngine();
 }
