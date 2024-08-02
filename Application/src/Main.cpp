@@ -15,6 +15,9 @@ public:
 
 int main()
 {
+	RenderingEngine::Log::Initialize();
+	RenderingEngine::Log::GetCoreLogger()->trace("Logger works!");
+
 	Application* app = new Application();
 	app->Run();
 	delete app;
