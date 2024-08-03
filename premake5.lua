@@ -1,5 +1,6 @@
 workspace "RenderingEngine"
-	architecture "x86_64"
+	architecture "x64"
+	startproject "Application"
 
 	configurations 
 	{
@@ -19,12 +20,10 @@ project "RenderingEngine"
 	location "RenderingEngine"
 	kind "StaticLib"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("binaries/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediates/" .. outputdir .. "/%{prj.name}")
-
-	pchheader "mxpch.h"
-	pchsource "%{prj.name}/src/mxpch.cpp"
 
 	files 
 	{
@@ -34,26 +33,21 @@ project "RenderingEngine"
 
 	includedirs 
 	{
+		"%{prj.name}/src",
 		"%{includes.spdlog}",
-		"%{includes.GLFW}",
+		"%{includes.GLFW}"
 	}
 
 	links 
 	{
 		"GLFW",
-		"opengl32.lib"
+		"opengl32.lib",
+		"dwmapi.lib"
 	}
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
-
-		defines 
-		{
-			"APP_PLATFORM_WINDOWS",
-			"APP_BUILD_SHAREDLIB"
-		}
 
 	filter "configurations:Debug"
 		defines "APP_DEBUG"
@@ -67,6 +61,7 @@ project "Application"
 	location "Application"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("binaries/" .. outputdir .. "/%{prj.name}")
 	objdir ("intermediates/" .. outputdir .. "/%{prj.name}")
@@ -80,7 +75,9 @@ project "Application"
 	includedirs 
 	{
 		"RenderingEngine/src",
+		"RenderingEngine/vendor",
 		"%{includes.spdlog}",
+		"%{includes.GLFW}"
 	}
 
 	links 
@@ -90,13 +87,7 @@ project "Application"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
-
-		defines 
-		{
-			"APP_PLATFORM_WINDOWS"
-		}
 
 	filter "configurations:Debug"
 		defines "APP_DEBUG"

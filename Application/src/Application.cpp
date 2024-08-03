@@ -1,5 +1,4 @@
-#include "Core.h"
-
+#include <Core.h>
 
 class Application : public RenderingEngine::Bootstrapper
 {

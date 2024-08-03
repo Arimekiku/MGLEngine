@@ -5,7 +5,7 @@ namespace RenderingEngine
 {
 	Bootstrapper::Bootstrapper()
 	{
-		
+		m_Window = std::make_unique<Window>();
 	}
 
 	Bootstrapper::~Bootstrapper()
@@ -15,9 +15,9 @@ namespace RenderingEngine
 
 	void Bootstrapper::Run()
 	{
-		while (true)
+		while (m_Running)
 		{
-			
+			m_Window->EveryUpdate();
 		}
 	}
 }

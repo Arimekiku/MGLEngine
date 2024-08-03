@@ -1,9 +1,6 @@
 #pragma once
 
-#ifdef APP_WINDOWS_PLATFORM
-	#include <Windows.h>
-#endif
-
+#include <Windows.h>
 
 #include <algorithm>
 #include <cstdio>
@@ -17,3 +14,5 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+
+#include "Core/Logger/Log.h"
