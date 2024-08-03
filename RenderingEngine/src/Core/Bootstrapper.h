@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Window.h"
+
 #include <memory>
 
 namespace RenderingEngine
@@ -12,6 +13,8 @@ namespace RenderingEngine
 		virtual ~Bootstrapper();
 
 		void Run();
+
+		void OnEvent(Event& e);
 
 	private:
 		std::unique_ptr<Window> m_Window;

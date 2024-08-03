@@ -3,17 +3,19 @@
 #include <string>
 #include <GLFW/glfw3.h>
 
+#include "Events/Event.h"
+
 namespace RenderingEngine
 {
-	struct WindowData
+	struct WindowProperties
 	{
 		std::string Name;
 		uint16_t Width, Height;
 		bool VSync;
 
-		explicit WindowData(const std::string& name = "Rendering Engine",
-		                    uint16_t width = 800,
-		                    uint16_t height = 600)
+		explicit WindowProperties(const std::string& name = "Rendering Engine",
+		                          uint16_t width = 800,
+		                          uint16_t height = 600)
 		{
 			Name = name;
 			Width = width;
@@ -25,18 +27,28 @@ namespace RenderingEngine
 	class Window
 	{
 	public:
-		Window(const WindowData& data = WindowData());
+		using EventCallbackFunc = std::function<void(Event&)>;
+
+		Window(const WindowProperties& properties = WindowProperties());
 		~Window();
 
-		auto GetWidth() const { return m_Data.Width; } 
-		auto GetHeight() const { return m_Data.Height; }
-		auto VSyncEnabled() const { return m_Data.VSync; }
+		auto GetWidth() const { return m_Data.Properties.Width; }
+		auto GetHeight() const { return m_Data.Properties.Height; }
+		auto VSyncEnabled() const { return m_Data.Properties.VSync; }
 
 		void EveryUpdate();
+		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.Callback = callback; }
 		void SetVSync(bool isEnabled);
 
 	private:
 		GLFWwindow* m_Window;
+
+		struct WindowData
+		{
+			WindowProperties Properties;
+
+			EventCallbackFunc Callback;
+		};
 
 		WindowData m_Data;
 	};

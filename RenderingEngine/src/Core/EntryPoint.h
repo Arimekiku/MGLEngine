@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Bootstrapper.h"
 #include "Logger/Log.h"
 
 extern RenderingEngine::Bootstrapper* RenderingEngine::LoadEngine();

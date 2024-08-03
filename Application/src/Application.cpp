@@ -1,4 +1,4 @@
-#include <Core.h>
+#include <Core/EntryPoint.h>
 
 class Application : public RenderingEngine::Bootstrapper
 {

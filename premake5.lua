@@ -42,7 +42,6 @@ project "RenderingEngine"
 	{
 		"GLFW",
 		"opengl32.lib",
-		"dwmapi.lib"
 	}
 
 	filter "system:windows"

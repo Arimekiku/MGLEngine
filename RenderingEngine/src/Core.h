@@ -1,4 +1,4 @@
 #pragma once
 
-#include "Core/Bootstrapper.h"
-#include "Core/EntryPoint.h"
+#define BIT(x) (1 << (x))
+#define NAME_OF(x) (#x)
