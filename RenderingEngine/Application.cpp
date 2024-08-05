@@ -1,5 +1,3 @@
-#pragma once
-
 #define GLFW_INCLUDE_NONE
 
 #include "Core/Bootstrapper.h"

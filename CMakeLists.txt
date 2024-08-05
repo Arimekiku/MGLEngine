@@ -14,7 +14,7 @@ set(PROJECT_LIBRARIES_DIR "${CMAKE_SOURCE_DIR}/vendor")
 set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/Resources")
 
 # define headers
-file(GLOB_RECURSE HEADER_FILES  ${PROJECT_SOURCE_DIR}/*.h ${PROJECT_SOURCE_DIR}/*.hpp ${PROJECT_SOURCE_DIR}/*.ini)
+file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/*.h ${PROJECT_SOURCE_DIR}/*.hpp ${PROJECT_SOURCE_DIR}/*.ini)
 
 # define executables
 file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cpp ${PROJECT_SOURCE_DIR}/*.c)
@@ -23,12 +23,12 @@ file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cpp ${PROJECT_SOURCE_DIR}
 set(AllFile ${HEADER_FILES} ${SOURCE_FILES})
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${AllFile})
 
-if(CMAKE_BUILD_TYPE MATCHES Debug)
+if (CMAKE_BUILD_TYPE MATCHES Debug)
     set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
-else()
+else ()
     set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
     add_definitions(-DRELEASE_MODE_ON=0)
-endif()
+endif ()
 
 # GLFW
 set(GLFW_DIR "${PROJECT_LIBRARIES_DIR}/GLFW")
@@ -43,19 +43,17 @@ set(SPDLOG_DIR "${PROJECT_LIBRARIES_DIR}/spdlog")
 add_subdirectory(${SPDLOG_DIR} EXCLUDE_FROM_ALL)
 
 # imgui
-#set(IMGUI_DIR "${PROJECT_LIBRARIES_DIR}/ImGui")
-#file(GLOB IMGUI_SOURCES
-#        ${IMGUI_DIR}/*.cpp
-#        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
-#        ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp)
-#add_library(imgui ${IMGUI_SOURCES})
+set(IMGUI_DIR "${PROJECT_LIBRARIES_DIR}/ImGui")
+file(GLOB IMGUI_SOURCES
+        ${IMGUI_DIR}/*.cpp
+        ${IMGUI_DIR}/*.h
+        ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_opengl3.h
+        ${IMGUI_DIR}/backends/imgui_impl_opengl3_loader.cpp)
+add_library(imgui ${IMGUI_SOURCES})
 
-#target_include_directories(
-#        imgui PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends ${GLFW_INCLUDE_DIRS}
-#)
-
-#target_link_libraries(imgui PUBLIC glfw)
-#set_target_properties(glfw imgui glad spdlog PROPERTIES FOLDER "vendor")
+target_include_directories(imgui PRIVATE ${IMGUI_DIR})
+set_target_properties(glfw imgui glad spdlog PROPERTIES FOLDER "vendor")
 
 #################################Executable####################################
 
@@ -63,13 +61,13 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(
         ${PROJECT_NAME}
-        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}"
+        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}"
         PRIVATE "${PROJECT_SOURCE_DIR}"
 )
 
 target_link_libraries(
         ${PROJECT_NAME}
-        PUBLIC glfw spdlog glad
+        PUBLIC glfw opengl32.lib spdlog glad imgui
         PRIVATE ${CMAKE_DL_LIBS}
 )
 

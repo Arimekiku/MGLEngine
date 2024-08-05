@@ -34,11 +34,11 @@ namespace RenderingEngine
 		const char* GetName() const { return m_Name.c_str(); };
 		virtual std::string ToString() const { return GetName(); }
 
-		inline bool InCategory(EventCategory category) { return GetCategory() & category; }
+		bool InCategory(EventCategory category) { return GetCategory() & category; }
+		bool Active = true;
 
 	protected:
 		std::string m_Name = NAME_OF(this);
-		bool m_Active = true;
 	};
 
 	class EventDispatcher
@@ -47,7 +47,7 @@ namespace RenderingEngine
 		using EventFunc = std::function<bool(TEvent&)>;
 
 	public:
-		EventDispatcher(Event& event): m_Event(event)
+		explicit EventDispatcher(Event& event): m_Event(event)
 		{
 		}
 
@@ -56,7 +56,7 @@ namespace RenderingEngine
 		{
 			if (m_Event.GetEventType() == TEvent::GetStaticType())
 			{
-				m_Event.m_Active = func(*const_cast<TEvent*>(&m_Event));
+				m_Event.Active |= func(static_cast<TEvent&>(m_Event));
 				return true;
 			}
 
