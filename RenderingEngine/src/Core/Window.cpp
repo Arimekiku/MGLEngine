@@ -4,6 +4,7 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "Events/WindowEvent.h"
+#include "glad/glad.h"
 
 namespace RenderingEngine
 {
@@ -32,6 +33,9 @@ namespace RenderingEngine
 		m_Window = glfwCreateWindow(properties.Width, properties.Height, properties.Name.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
+
+		int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		LOG_CORE_ASSERT(status, "GLAD initialize failed")
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* w, int width, int height)
 		{
@@ -110,9 +114,6 @@ namespace RenderingEngine
 
 	void Window::EveryUpdate()
 	{
-		if (glfwWindowShouldClose(m_Window) == true)
-			return;
-
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	}
