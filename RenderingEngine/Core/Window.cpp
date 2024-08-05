@@ -1,10 +1,10 @@
 #include "mxpch.h"
+#include "glad/glad.h"
 #include "Window.h"
 
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "Events/WindowEvent.h"
-#include "glad/glad.h"
 
 namespace RenderingEngine
 {

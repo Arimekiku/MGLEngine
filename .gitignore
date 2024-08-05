@@ -6,9 +6,13 @@
 **.vcxproj.user
 **.csproj
 
+# JetBrains
+.idea/
+
 # Binaries
-binaries/
-intermediates/
+cmake-build-debug/
+bin/
+int/
 
 # Git
 .git/
