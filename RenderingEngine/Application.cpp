@@ -1,18 +1,15 @@
-#include <Core/EntryPoint.h>
+#pragma once
 
-class Application : public RenderingEngine::Bootstrapper
+#define GLFW_INCLUDE_NONE
+
+#include "Core/Bootstrapper.h"
+#include "Core/Logger/Log.h"
+
+int main(int argc, char** argv)
 {
-public:
-	Application()
-	{
-	}
+	RenderingEngine::Log::Initialize();
 
-	~Application()
-	{
-	}
-};
-
-RenderingEngine::Bootstrapper* RenderingEngine::LoadEngine()
-{
-	return new Application();
+	const auto app = new RenderingEngine::Bootstrapper;
+	app->Run();
+	delete app;
 }
