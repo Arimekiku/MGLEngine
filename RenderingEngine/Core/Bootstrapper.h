@@ -29,6 +29,8 @@ namespace RenderingEngine
 		std::unique_ptr<Window> m_Window;
 		LayerStack m_LayerStack;
 		bool m_Running = true;
+
+		uint32_t m_VertexArray, m_VertexBuffer, m_IndexBuffer;
 	};
 
 	Bootstrapper* LoadEngine();

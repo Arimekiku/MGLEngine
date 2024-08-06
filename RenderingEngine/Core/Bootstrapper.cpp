@@ -1,7 +1,10 @@
 #include "mxpch.h"
+#include "glad/glad.h"
+
 #include "Bootstrapper.h"
 
-#include "Input.h"
+#include <backends/imgui_impl_opengl3_loader.h>
+
 #include "Events/WindowEvent.h"
 #include "Layer/ImGui/GuiLayer.h"
 
@@ -19,18 +22,43 @@ namespace RenderingEngine
 		m_Window->SetEventCallback(BIND_FUN(OnEvent));
 
 		AddLayer(new GuiLayer());
+
+		glGenVertexArrays(1, &m_VertexArray);
+		glBindVertexArray(m_VertexArray);
+
+		glGenBuffers(1, &m_VertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VertexBuffer);
+
+		float ver[3 * 3] = {
+			-0.5f, -0.5f, 0.0f,
+			0.5f, -0.5f, 0.0f,
+			0.0f, 0.5f, 0.0f
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(ver), ver, GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+		glGenBuffers(1, &m_IndexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IndexBuffer);
+
+		uint16_t indices[3] =
+		{
+			0, 1, 2
+		};
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	}
 
 	void Bootstrapper::Run()
 	{
 		while (m_Running)
 		{
-			glClearColor(1, 0, 1, 1);
+			glClearColor(.25f, .25f, .25f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			float x = Input::GetMouseX();
-			float y = Input::GetMouseY();
-			LOG_CORE_INFO("{0}, {1}", x, y);
+			glBindVertexArray(m_VertexArray);
+			glDrawArrays(GL_TRIANGLES, 0, 3);
 
 			for (const auto layer : m_LayerStack)
 				layer->EveryUpdate();
