@@ -35,6 +35,7 @@ namespace RenderingEngine
 		auto GetWidth() const { return m_Data.Properties.Width; }
 		auto GetHeight() const { return m_Data.Properties.Height; }
 		auto VSyncEnabled() const { return m_Data.Properties.VSync; }
+		auto& GetNativeWindow() const { return m_Window; }
 
 		void EveryUpdate() const;
 		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.Callback = callback; }

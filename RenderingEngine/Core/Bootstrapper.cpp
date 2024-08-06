@@ -1,8 +1,8 @@
 #include "mxpch.h"
 #include "Bootstrapper.h"
 
+#include "Input.h"
 #include "Events/WindowEvent.h"
-#include "Layer/ImGui/GuiLayer.h"
 
 namespace RenderingEngine
 {
@@ -26,6 +26,10 @@ namespace RenderingEngine
 		{
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			float x = Input::GetMouseX();
+			float y = Input::GetMouseY();
+			LOG_CORE_INFO("{0}, {1}", x, y);
 
 			for (const auto layer : m_LayerStack)
 				layer->EveryUpdate();
