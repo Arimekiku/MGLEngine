@@ -13,10 +13,11 @@ namespace RenderingEngine
         m_Layers.emplace_back(layer);
     }
 
-    void LayerStack::Pop(Layer* layer)
+    void LayerStack::Pop(const Layer* layer)
     {
-        const auto it = std::find(m_Layers.begin(), m_Layers.end(), layer);
-        if (it != m_Layers.end())
-            m_Layers.erase(it);
+        const auto iterator = std::find(m_Layers.begin(), m_Layers.end(), layer);
+
+        if (iterator != m_Layers.end())
+            m_Layers.erase(iterator);
     }
 }

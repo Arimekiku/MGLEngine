@@ -36,7 +36,7 @@ namespace RenderingEngine
 		auto GetHeight() const { return m_Data.Properties.Height; }
 		auto VSyncEnabled() const { return m_Data.Properties.VSync; }
 
-		void EveryUpdate();
+		void EveryUpdate() const;
 		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.Callback = callback; }
 		void SetVSync(bool isEnabled);
 

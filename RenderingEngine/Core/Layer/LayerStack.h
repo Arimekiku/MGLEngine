@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Layer.h"
+#include "Core/Layer.h"
 
 namespace RenderingEngine
 {
@@ -11,7 +11,7 @@ namespace RenderingEngine
         ~LayerStack();
 
         void Push(Layer* layer);
-        void Pop(Layer* layer);
+        void Pop(const Layer* layer);
 
         std::vector<Layer*>::iterator begin() { return m_Layers.begin(); }
         std::vector<Layer*>::iterator end() { return m_Layers.end(); }

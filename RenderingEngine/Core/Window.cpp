@@ -1,4 +1,5 @@
 #include "mxpch.h"
+
 #include "glad/glad.h"
 #include "Window.h"
 
@@ -19,13 +20,8 @@ namespace RenderingEngine
 
 		if (s_GLFWInit == false)
 		{
-			int isInitialized = glfwInit();
+			const int isInitialized = glfwInit();
 			LOG_CORE_ASSERT(isInitialized, "GLFW initialize failed")
-
-			glfwSetErrorCallback([](int error, const char* description)
-			{
-				LOG_CORE_ERROR("GLFW ({0}, {1})", error, description);
-			});
 
 			s_GLFWInit = true;
 		}
@@ -34,76 +30,81 @@ namespace RenderingEngine
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
-		int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 		LOG_CORE_ASSERT(status, "GLAD initialize failed")
 
-		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* w, int width, int height)
+		glfwSetErrorCallback([](int error, const char* description)
 		{
-			WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
-			data.Properties.Width = width;
-			data.Properties.Height = height;
+			LOG_CORE_ERROR("GLFW ({0}, {1})", error, description);
+		});
+
+		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* w, const int width, const int height)
+		{
+			auto& [properties, fun] = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
+			properties.Width = width;
+			properties.Height = height;
 
 			WindowResizeEvent e(width, height);
-			data.Callback(e);
+			fun(e);
 		});
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* w)
 		{
-			WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
+			auto& [_, fun] = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
 
 			WindowCloseEvent e;
-			data.Callback(e);
+			fun(e);
 		});
 
-		glfwSetKeyCallback(m_Window, [](GLFWwindow* w, int key, int code, int action, int modes)
+		glfwSetKeyCallback(m_Window, [](GLFWwindow* w, const int key, int code, const int action, int modes)
 		{
-			WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
+			auto& [_, fun] = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
 
 			if (action == GLFW_PRESS)
 			{
 				KeyPressedEvent e(key, 0);
-				data.Callback(e);
+				fun(e);
 				return;
 			}
 
 			if (action == GLFW_RELEASE)
 			{
 				KeyReleasedEvent e(key);
-				data.Callback(e);
+				fun(e);
 				return;
 			}
 
 			if (action == GLFW_REPEAT)
 			{
 				KeyPressedEvent e(key, 1);
-				data.Callback(e);
+				fun(e);
 			}
 		});
 
-		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* w, int button, int action, int modes)
+		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* w, const int button, const int action, int modes)
 		{
-			WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
+			auto& [_, fun] = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
 
 			if (action == GLFW_PRESS)
 			{
 				MousePressedEvent e(button);
-				data.Callback(e);
+				fun(e);
 				return;
 			}
 
 			if (action == GLFW_RELEASE)
 			{
 				MouseReleasedEvent e(button);
-				data.Callback(e);
+				fun(e);
 			}
 		});
 
-		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* w, double xPos, double yPos)
+		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* w, const double xPos, const double yPos)
 		{
-			WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
+			auto& [_, fun] = *static_cast<WindowData*>(glfwGetWindowUserPointer(w));
 
 			MouseMovedEvent e(static_cast<float>(xPos), static_cast<float>(yPos));
-			data.Callback(e);
+			fun(e);
 		});
 	}
 
@@ -112,13 +113,13 @@ namespace RenderingEngine
 		glfwDestroyWindow(m_Window);
 	}
 
-	void Window::EveryUpdate()
+	void Window::EveryUpdate() const
 	{
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
 	}
 
-	void Window::SetVSync(bool isEnabled)
+	void Window::SetVSync(const bool isEnabled)
 	{
 		m_Data.Properties.VSync = isEnabled;
 

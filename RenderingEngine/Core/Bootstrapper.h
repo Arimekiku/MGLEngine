@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Window.h"
-#include "LayerStack.h"
+#include "Layer/LayerStack.h"
+#include "Events/WindowEvent.h"
 
 #include <memory>
 
@@ -22,6 +23,8 @@ namespace RenderingEngine
 		Window& GetWindow() const { return *m_Window; }
 
 	private:
+		bool OnWindowClose(WindowCloseEvent& e);
+
 		static Bootstrapper* s_Instance;
 		std::unique_ptr<Window> m_Window;
 		LayerStack m_LayerStack;

@@ -10,20 +10,10 @@ namespace RenderingEngine
         Layer() = default;
         virtual ~Layer() = default;
 
-        virtual void Attach()
-        {
-        }
+        virtual void Attach() = 0;
+        virtual void Detach() = 0;
 
-        virtual void Detach()
-        {
-        }
-
-        virtual void EveryUpdate()
-        {
-        }
-
-        virtual void OnEvent(Event& e)
-        {
-        }
+        virtual void EveryUpdate() = 0;
+        virtual void OnEvent(Event& e) = 0;
     };
 }

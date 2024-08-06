@@ -9,25 +9,27 @@ namespace RenderingEngine
 	class KeyEvent : public Event
 	{
 	public:
-		inline int GetKeyCode() const { return m_KeyCode; }
-
+		int GetKeyCode() const { return m_KeyCode; }
 		int GetCategory() const override { return EventKeyboard | EventInput; }
 
 	protected:
-		KeyEvent(int keyCode) { m_KeyCode = keyCode; }
+		explicit KeyEvent(const int keyCode) { m_KeyCode = keyCode; }
 
 		int m_KeyCode;
 	};
 
-	class KeyPressedEvent : public KeyEvent
+	class KeyPressedEvent final : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(int keyCode, int repeatCount) : KeyEvent(keyCode) { m_RepeatCount = repeatCount; }
+		KeyPressedEvent(const int keyCode, const int repeatCount) : KeyEvent(keyCode)
+		{
+			m_RepeatCount = repeatCount;
+		}
 
 		static EventType GetStaticType() { return EventType::KeyPressed; }
 		EventType GetEventType() const override { return GetStaticType(); }
 
-		inline int GetRepeatCount() { return m_RepeatCount; }
+		int GetRepeatCount() const { return m_RepeatCount; }
 
 		std::string ToString() const override
 		{
@@ -40,10 +42,10 @@ namespace RenderingEngine
 		int m_RepeatCount;
 	};
 
-	class KeyReleasedEvent : public KeyEvent
+	class KeyReleasedEvent final : public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(int keyCode) : KeyEvent(keyCode)
+		explicit KeyReleasedEvent(const int keyCode) : KeyEvent(keyCode)
 		{
 		}
 

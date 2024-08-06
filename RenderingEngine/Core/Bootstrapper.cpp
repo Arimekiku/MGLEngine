@@ -2,7 +2,7 @@
 #include "Bootstrapper.h"
 
 #include "Events/WindowEvent.h"
-#include "ImGui/GuiLayer.h"
+#include "Layer/ImGui/GuiLayer.h"
 
 namespace RenderingEngine
 {
@@ -12,11 +12,10 @@ namespace RenderingEngine
 	{
 		s_Instance = this;
 
+		m_LayerStack = LayerStack();
+
 		m_Window = std::make_unique<Window>();
-		m_Window->SetEventCallback([this](auto&& e)
-		{
-			OnEvent(std::forward<decltype(e)>(e));
-		});
+		m_Window->SetEventCallback(BIND_FUN(OnEvent));
 
 		AddLayer(new GuiLayer());
 	}
@@ -40,20 +39,14 @@ namespace RenderingEngine
 		LOG_CORE_INFO("{0}", e.ToString());
 
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>([this](auto&& _)
-		{
-			m_Running = false;
-			return true;
-		});
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUN(OnWindowClose));
 
-		if (e.GetEventType() == EventType::WindowClose)
-			m_Running = false;
-
-		for (auto it = m_LayerStack.begin(); it != m_LayerStack.end();)
+		for (const auto& layer : m_LayerStack)
 		{
-			(*--it)->OnEvent(e);
 			if (e.Active)
 				break;
+
+			layer->OnEvent(e);
 		}
 	}
 
@@ -61,5 +54,11 @@ namespace RenderingEngine
 	{
 		m_LayerStack.Push(layer);
 		layer->Attach();
+	}
+
+	bool Bootstrapper::OnWindowClose(WindowCloseEvent& e)
+	{
+		m_Running = false;
+		return true;
 	}
 }

@@ -1,16 +1,15 @@
 #pragma once
 
-#include <sstream>
-
 #include "Event.h"
+
+#include <sstream>
 
 namespace RenderingEngine
 {
 	class MouseButtonEvent : public Event
 	{
 	public:
-		inline int GetMouseButton() const { return m_MouseButton; }
-
+		int GetMouseButton() const { return m_MouseButton; }
 		int GetCategory() const override { return EventMouseButton | EventInput; }
 
 		std::string ToString() const override
@@ -21,15 +20,15 @@ namespace RenderingEngine
 		}
 
 	protected:
-		MouseButtonEvent(int mouseButton) { m_MouseButton = mouseButton; }
+		explicit MouseButtonEvent(const int mouseButton) { m_MouseButton = mouseButton; }
 
 		int m_MouseButton;
 	};
 
-	class MousePressedEvent : public MouseButtonEvent
+	class MousePressedEvent final : public MouseButtonEvent
 	{
 	public:
-		MousePressedEvent(int button) : MouseButtonEvent(button)
+		explicit MousePressedEvent(const int button) : MouseButtonEvent(button)
 		{
 		}
 
@@ -37,10 +36,10 @@ namespace RenderingEngine
 		EventType GetEventType() const override { return GetStaticType(); }
 	};
 
-	class MouseReleasedEvent : public MouseButtonEvent
+	class MouseReleasedEvent final : public MouseButtonEvent
 	{
 	public:
-		MouseReleasedEvent(int button) : MouseButtonEvent(button)
+		explicit MouseReleasedEvent(const int button) : MouseButtonEvent(button)
 		{
 		}
 
@@ -48,17 +47,17 @@ namespace RenderingEngine
 		EventType GetEventType() const override { return GetStaticType(); }
 	};
 
-	class MouseMovedEvent : public Event
+	class MouseMovedEvent final : public Event
 	{
 	public:
-		MouseMovedEvent(float mouseX, float mouseY)
+		MouseMovedEvent(const float mouseX, const float mouseY)
 		{
 			m_MouseX = mouseX;
 			m_MouseY = mouseY;
 		}
 
-		inline float GetX() const { return m_MouseX; }
-		inline float GetY() const { return m_MouseY; }
+		float GetX() const { return m_MouseX; }
+		float GetY() const { return m_MouseY; }
 
 		int GetCategory() const override { return EventMouse | EventInput; }
 		static EventType GetStaticType() { return EventType::MouseMoved; }
