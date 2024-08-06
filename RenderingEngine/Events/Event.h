@@ -11,8 +11,8 @@ namespace RenderingEngine
 	{
 		Null = 0,
 		WindowClose, WindowResize, WindowFocus, WindowRender,
-		KeyPressed, KeyReleased,
-		MousePressed, MouseReleased, MouseMoved
+		KeyPressed, KeyReleased, KeyTyped,
+		MousePressed, MouseReleased, MouseMoved, MouseScrolled
 	};
 
 	enum EventCategory

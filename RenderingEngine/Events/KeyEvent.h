@@ -59,4 +59,22 @@ namespace RenderingEngine
 			return ss.str();
 		}
 	};
+
+	class KeyTypedEvent final : public KeyEvent
+	{
+	public:
+		KeyTypedEvent(const int keyCode) : KeyEvent(keyCode)
+		{
+		}
+
+		static EventType GetStaticType() { return EventType::KeyTyped; }
+		EventType GetEventType() const override { return GetStaticType(); }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << GetName() << ": " << m_KeyCode;
+			return ss.str();
+		}
+	};
 }

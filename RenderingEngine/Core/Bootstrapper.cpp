@@ -3,6 +3,7 @@
 
 #include "Input.h"
 #include "Events/WindowEvent.h"
+#include "Layer/ImGui/GuiLayer.h"
 
 namespace RenderingEngine
 {
@@ -47,7 +48,7 @@ namespace RenderingEngine
 
 		for (const auto& layer : m_LayerStack)
 		{
-			if (e.Active)
+			if (e.Active == false)
 				break;
 
 			layer->OnEvent(e);
@@ -63,6 +64,6 @@ namespace RenderingEngine
 	bool Bootstrapper::OnWindowClose(WindowCloseEvent& e)
 	{
 		m_Running = false;
-		return true;
+		return false;
 	}
 }

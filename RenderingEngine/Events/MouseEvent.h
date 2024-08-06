@@ -73,4 +73,31 @@ namespace RenderingEngine
 	private:
 		float m_MouseX, m_MouseY;
 	};
+
+	class MouseScrolledEvent final : public Event
+	{
+	public:
+		MouseScrolledEvent(const float xOffset, const float yOffset)
+		{
+			m_XOffset = xOffset;
+			m_YOffset = yOffset;
+		}
+
+		float GetXOffset() const { return m_XOffset; }
+		float GetYOffset() const { return m_YOffset; }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "MouseScrolledEvent: " << GetXOffset() << ", " << GetYOffset();
+			return ss.str();
+		}
+
+		int GetCategory() const override { return EventMouse | EventInput; }
+		static EventType GetStaticType() { return EventType::MouseScrolled; }
+		EventType GetEventType() const override { return GetStaticType(); }
+
+	private:
+		float m_XOffset, m_YOffset;
+	};
 }
