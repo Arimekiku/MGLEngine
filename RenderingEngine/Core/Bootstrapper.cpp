@@ -1,6 +1,7 @@
 #include "mxpch.h"
 #include "Bootstrapper.h"
 
+#include "Input.h"
 #include "Events/WindowEvent.h"
 #include "ImGui/GuiLayer.h"
 
@@ -11,6 +12,8 @@ namespace RenderingEngine
 	Bootstrapper::Bootstrapper()
 	{
 		s_Instance = this;
+
+		m_LayerStack = LayerStack();
 
 		m_Window = std::make_unique<Window>();
 		m_Window->SetEventCallback([this](auto&& e)
@@ -27,6 +30,10 @@ namespace RenderingEngine
 		{
 			glClearColor(1, 0, 1, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			float x = Input::GetMouseX();
+			float y = Input::GetMouseY();
+			LOG_CORE_INFO("{0}, {1}", x, y);
 
 			for (const auto layer : m_LayerStack)
 				layer->EveryUpdate();
@@ -49,11 +56,12 @@ namespace RenderingEngine
 		if (e.GetEventType() == EventType::WindowClose)
 			m_Running = false;
 
-		for (auto it = m_LayerStack.begin(); it != m_LayerStack.end();)
+		for (const auto& layer : m_LayerStack)
 		{
-			(*--it)->OnEvent(e);
 			if (e.Active)
 				break;
+
+			layer->OnEvent(e);
 		}
 	}
 
