@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "Renderer/Shader.h"
+
 namespace RenderingEngine
 {
 	class Bootstrapper
@@ -31,6 +33,7 @@ namespace RenderingEngine
 		bool m_Running = true;
 
 		uint32_t m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		std::unique_ptr<RendereringEngine::Shader> m_TestShader;
 	};
 
 	Bootstrapper* LoadEngine();

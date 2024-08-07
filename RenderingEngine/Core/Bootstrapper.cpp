@@ -48,6 +48,29 @@ namespace RenderingEngine
 			0, 1, 2
 		};
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		std::string vertexSrc = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+
+			void main()
+			{
+				gl_Position = vec4(a_Position, 1.0);
+			}
+		)";
+		std::string fragmentSrc = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+
+			void main()
+			{
+				color = vec4(0.8, 0.1, 0.2, 1.0);
+			}
+		)";
+
+		m_TestShader.reset(new RendereringEngine::Shader(vertexSrc, fragmentSrc));
 	}
 
 	void Bootstrapper::Run()
@@ -57,6 +80,7 @@ namespace RenderingEngine
 			glClearColor(.25f, .25f, .25f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			m_TestShader->Bind();
 			glBindVertexArray(m_VertexArray);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 
