@@ -132,7 +132,7 @@ namespace RenderingEngine
     class IndexBuffer
     {
     public:
-        IndexBuffer(const uint32_t* vertices, int32_t count);
+        IndexBuffer(const uint32_t* indices, int32_t count);
         ~IndexBuffer();
 
         void Bind() const;

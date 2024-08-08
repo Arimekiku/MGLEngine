@@ -14,6 +14,6 @@ namespace RenderingEngine
     void Renderer::RenderIndexed(const std::shared_ptr<VertexArray>& vertices)
     {
         vertices->Bind();
-        glDrawArrays(GL_TRIANGLES, 0, vertices->GetIndexBuffer()->GetIndexCount());
+        glDrawElements(GL_TRIANGLES, vertices->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
     }
 }

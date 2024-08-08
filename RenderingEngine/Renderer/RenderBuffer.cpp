@@ -26,11 +26,11 @@ namespace RenderingEngine
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    IndexBuffer::IndexBuffer(const uint32_t* vertices, const int32_t count)
+    IndexBuffer::IndexBuffer(const uint32_t* indices, const int32_t count)
     {
         glCreateBuffers(1, &m_RendererID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(int64_t), vertices, GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(int), indices, GL_STATIC_DRAW);
 
         m_IndexCount = count;
     }

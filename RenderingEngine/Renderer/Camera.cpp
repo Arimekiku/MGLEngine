@@ -3,6 +3,7 @@
 #include <backends/imgui_impl_opengl3_loader.h>
 
 #include "Shader.h"
+#include "Core/Bootstrapper.h"
 #include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -18,11 +19,16 @@ namespace RenderingEngine
                                float maxRendering,
                                const char* uniform)
     {
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 proj = glm::mat4(1.0f);
+        auto view = glm::mat4(1.0f);
+        auto proj = glm::mat4(1.0f);
 
         view = glm::lookAt(m_Position, m_Position + m_Orientation, m_Up);
-        proj = glm::perspective(glm::radians(FOV), 16.0f / 9.0f, minRendering, maxRendering);
+        proj = glm::perspective(glm::radians(45.0f),
+                                static_cast<float>(Bootstrapper::GetInstance().GetWindow().GetWidth() /
+                                    Bootstrapper::GetInstance()
+                                    .GetWindow().GetHeight()),
+                                minRendering,
+                                maxRendering);
 
         glUniformMatrix4fv(glGetUniformLocation(shader->GetRendererID(), uniform), 1, GL_FALSE,
                            glm::value_ptr(proj * view));

@@ -33,6 +33,8 @@ namespace RenderingEngine
 		const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 		LOG_CORE_ASSERT(status, "GLAD initialize failed")
 
+		glViewport(0, 0, m_Data.Properties.Width, m_Data.Properties.Height);
+
 		glfwSetErrorCallback([](int error, const char* description)
 		{
 			LOG_CORE_ERROR("GLFW ({0}, {1})", error, description);

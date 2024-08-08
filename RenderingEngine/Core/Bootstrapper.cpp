@@ -1,8 +1,12 @@
 #include "mxpch.h"
+#include "glad/glad.h"
 
 #include "Bootstrapper.h"
 
 #include "Events/WindowEvent.h"
+#include "glm/ext/matrix_clip_space.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.inl"
 #include "Layer/ImGui/GuiLayer.h"
 #include "Renderer/RenderBuffer.h"
 #include "Renderer/Renderer.h"
@@ -24,29 +28,36 @@ namespace RenderingEngine
 
 		m_VertexArray.reset(new VertexArray());
 
-		float ver[3 * 7] = {
-			-0.5f, -0.5f, 5.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			0.5f, -0.5f, 5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 0.5f, 5.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		float ver[5 * 7] = {
+			-0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f,
+			-0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f,
+			0.5f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
+			0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
+			0.0f, 0.8f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
 		};
 		m_VertexBuffer.reset(new VertexBuffer(ver, sizeof(ver)));
 
 		RenderBufferLayout layout = {
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float4, "a_Color" }
+			{ShaderDataType::Float3, "a_Position"},
+			{ShaderDataType::Float4, "a_Color"}
 		};
 		m_VertexBuffer->SetLayout(layout);
 		m_VertexArray->SetVertexBuffer(m_VertexBuffer);
 
-		int count = 3;
+		int count = 18;
 		uint32_t indices[count] =
 		{
-			0, 1, 2
+			0, 1, 2,
+			0, 2, 3,
+			0, 1, 4,
+			1, 2, 4,
+			2, 3, 4,
+			3, 0, 4
 		};
 		m_IndexBuffer.reset(new IndexBuffer(indices, count));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		m_Camera.reset(new Camera({ 0.0f, 0.0f, 1.0f }));
+		m_Camera.reset(new Camera({0.0f, 0.0f, -2.0f}));
 
 		std::string vertexSrc = R"(
 			#version 410 core
@@ -86,15 +97,18 @@ namespace RenderingEngine
 
 	void Bootstrapper::Run()
 	{
+		glEnable(GL_DEPTH_TEST);
+
 		while (m_Running)
 		{
-			Renderer::Clear({ .25f, .25f, .25f, 1 });
+			Renderer::Clear({.25f, .25f, .25f, 1});
 
 			m_TestShader->Bind();
+
 			m_Camera->SetProjection(45.0f, 0.1f, m_TestShader, 100.0f, "camMatrix");
 			Renderer::RenderIndexed(m_VertexArray);
 
-			for (const auto layer: m_LayerStack)
+			for (const auto layer : m_LayerStack)
 				layer->EveryUpdate();
 
 			m_Window->EveryUpdate();
@@ -108,7 +122,7 @@ namespace RenderingEngine
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUN(OnWindowClose));
 
-		for (const auto& layer: m_LayerStack)
+		for (const auto& layer : m_LayerStack)
 		{
 			if (e.Active == false)
 				break;
