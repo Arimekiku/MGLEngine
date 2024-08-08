@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "Renderer/RenderBuffer.h"
 #include "Renderer/Shader.h"
 
 namespace RenderingEngine
@@ -32,8 +33,10 @@ namespace RenderingEngine
 		LayerStack m_LayerStack;
 		bool m_Running = true;
 
-		uint32_t m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		uint32_t m_VertexArray;
 		std::unique_ptr<RendereringEngine::Shader> m_TestShader;
+		std::unique_ptr<VertexBuffer> m_VertexBuffer;
+		std::unique_ptr<IndexBuffer> m_IndexBuffer;
 	};
 
 	Bootstrapper* LoadEngine();
