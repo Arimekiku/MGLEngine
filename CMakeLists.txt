@@ -38,6 +38,10 @@ add_subdirectory(${GLFW_DIR} EXCLUDE_FROM_ALL)
 set(GLAD_DIR "${PROJECT_LIBRARIES_DIR}/GLAD")
 add_subdirectory(${GLAD_DIR} EXCLUDE_FROM_ALL)
 
+# glm
+set(GLM_DIR "${PROJECT_LIBRARIES_DIR}/glm")
+add_subdirectory(${GLM_DIR} EXCLUDE_FROM_ALL)
+
 # spdlog
 set(SPDLOG_DIR "${PROJECT_LIBRARIES_DIR}/spdlog")
 add_subdirectory(${SPDLOG_DIR} EXCLUDE_FROM_ALL)
@@ -61,13 +65,13 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(
         ${PROJECT_NAME}
-        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}"
+        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}"
         PRIVATE "${PROJECT_SOURCE_DIR}"
 )
 
 target_link_libraries(
         ${PROJECT_NAME}
-        PUBLIC glfw opengl32.lib spdlog glad imgui
+        PUBLIC glfw opengl32.lib spdlog glad imgui glm
         PRIVATE ${CMAKE_DL_LIBS}
 )
 

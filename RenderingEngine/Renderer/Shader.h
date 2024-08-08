@@ -11,6 +11,8 @@ namespace RendereringEngine
         void Bind() const;
         void Unbind() const;
 
+        const uint32_t& GetRendererID() const { return m_RendererID; }
+
     private:
         uint32_t m_RendererID;
     };

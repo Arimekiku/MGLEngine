@@ -1,39 +1,15 @@
 #include "mxpch.h"
-#include "glad/glad.h"
 
 #include "Bootstrapper.h"
-
-#include <backends/imgui_impl_opengl3_loader.h>
 
 #include "Events/WindowEvent.h"
 #include "Layer/ImGui/GuiLayer.h"
 #include "Renderer/RenderBuffer.h"
+#include "Renderer/Renderer.h"
 
 namespace RenderingEngine
 {
 	Bootstrapper* Bootstrapper::s_Instance = nullptr;
-
-	static GLenum ShaderDataTypeToGLenum(ShaderDataType type)
-	{
-		switch (type)
-		{
-			case ShaderDataType::Bool: return GL_BOOL;
-			case ShaderDataType::Int: return GL_INT;
-			case ShaderDataType::Int2: return GL_INT;
-			case ShaderDataType::Int3: return GL_INT;
-			case ShaderDataType::Int4: return GL_INT;
-			case ShaderDataType::Float: return GL_FLOAT;
-			case ShaderDataType::Float2: return GL_FLOAT;
-			case ShaderDataType::Float3: return GL_FLOAT;
-			case ShaderDataType::Float4: return GL_FLOAT;
-			case ShaderDataType::Mat3x3: return GL_FLOAT;
-			case ShaderDataType::Mat4x4: return GL_FLOAT;
-			default: ;
-		}
-
-		LOG_CORE_ASSERT(false, "Can't get shader data type")
-		return 0;
-	}
 
 	Bootstrapper::Bootstrapper()
 	{
@@ -46,37 +22,21 @@ namespace RenderingEngine
 
 		AddLayer(new GuiLayer());
 
-		glGenVertexArrays(1, &m_VertexArray);
-		glBindVertexArray(m_VertexArray);
+		m_VertexArray.reset(new VertexArray());
 
 		float ver[3 * 7] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+			-0.5f, -0.5f, 5.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			0.5f, -0.5f, 5.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			0.0f, 0.5f, 5.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 		};
 		m_VertexBuffer.reset(new VertexBuffer(ver, sizeof(ver)));
 
-		{
-			RenderBufferLayout layout = {
-				{ShaderDataType::Float3, "a_Position"},
-				{ShaderDataType::Float4, "a_Color"}
-			};
-
-			m_VertexBuffer->SetLayout(layout);
-		}
-
-		uint32_t index = 0;
-		for (const auto& attr : m_VertexBuffer->GetLayout())
-		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
-			                      attr.GetElementCount(),
-			                      ShaderDataTypeToGLenum(attr.Type),
-			                      attr.Normalized ? GL_TRUE : GL_FALSE,
-			                      m_VertexBuffer->GetLayout().GetStride(),
-			                      reinterpret_cast<const void*>(attr.Offset));
-			index++;
-		}
+		RenderBufferLayout layout = {
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float4, "a_Color" }
+		};
+		m_VertexBuffer->SetLayout(layout);
+		m_VertexArray->SetVertexBuffer(m_VertexBuffer);
 
 		int count = 3;
 		uint32_t indices[count] =
@@ -84,6 +44,9 @@ namespace RenderingEngine
 			0, 1, 2
 		};
 		m_IndexBuffer.reset(new IndexBuffer(indices, count));
+		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
+
+		m_Camera.reset(new Camera({ 0.0f, 0.0f, 1.0f }));
 
 		std::string vertexSrc = R"(
 			#version 410 core
@@ -94,11 +57,13 @@ namespace RenderingEngine
 			out vec3 v_Position;
 			out vec4 v_Color;
 
+			uniform mat4 camMatrix;
+
 			void main()
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = camMatrix * vec4(a_Position, 1.0);
 			}
 		)";
 		std::string fragmentSrc = R"(
@@ -123,14 +88,13 @@ namespace RenderingEngine
 	{
 		while (m_Running)
 		{
-			glClearColor(.25f, .25f, .25f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			Renderer::Clear({ .25f, .25f, .25f, 1 });
 
 			m_TestShader->Bind();
-			glBindVertexArray(m_VertexArray);
-			glDrawArrays(GL_TRIANGLES, 0, m_IndexBuffer->GetIndexCount());
+			m_Camera->SetProjection(45.0f, 0.1f, m_TestShader, 100.0f, "camMatrix");
+			Renderer::RenderIndexed(m_VertexArray);
 
-			for (const auto layer : m_LayerStack)
+			for (const auto layer: m_LayerStack)
 				layer->EveryUpdate();
 
 			m_Window->EveryUpdate();
@@ -144,7 +108,7 @@ namespace RenderingEngine
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUN(OnWindowClose));
 
-		for (const auto& layer : m_LayerStack)
+		for (const auto& layer: m_LayerStack)
 		{
 			if (e.Active == false)
 				break;
