@@ -18,10 +18,13 @@ namespace RenderingEngine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void Renderer::RenderIndexed(const std::shared_ptr<VertexArray>& vertices, const std::shared_ptr<Shader>& shader)
+    void Renderer::RenderIndexed(const std::shared_ptr<VertexArray>& vertices,
+                                 const std::shared_ptr<Shader>& shader,
+                                 const glm::mat4& trsMatrix)
     {
         shader->Bind();
         shader->BindUniformMat4("u_camMatrix", s_RenderData.ProjViewMat);
+        shader->BindUniformMat4("u_trsMatrix", trsMatrix);
 
         vertices->Bind();
         glDrawElements(GL_TRIANGLES, vertices->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);

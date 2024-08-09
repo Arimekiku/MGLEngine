@@ -23,7 +23,7 @@ namespace RenderingEngine
 		m_Window = std::make_unique<Window>();
 		m_Window->SetEventCallback(BIND_FUN(OnEvent));
 
-		m_Camera.reset(new Camera({0, 0, -2}));
+		m_Camera.reset(new Camera({ 0, 0, -2 }));
 
 		AddLayer(new GuiLayer());
 
@@ -39,8 +39,8 @@ namespace RenderingEngine
 		m_VertexBuffer.reset(new VertexBuffer(ver, sizeof(ver)));
 
 		RenderBufferLayout layout = {
-			{ShaderDataType::Float3, "a_Position"},
-			{ShaderDataType::Float4, "a_Color"}
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float4, "a_Color" }
 		};
 		m_VertexBuffer->SetLayout(layout);
 		m_VertexArray->SetVertexBuffer(m_VertexBuffer);
@@ -68,12 +68,13 @@ namespace RenderingEngine
 			out vec4 v_Color;
 
 			uniform mat4 u_camMatrix;
+			uniform mat4 u_trsMatrix;
 
 			void main()
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_camMatrix * vec4(a_Position, 1.0);
+				gl_Position = u_camMatrix * u_trsMatrix * vec4(a_Position, 1.0);
 			}
 		)";
 		std::string fragmentSrc = R"(
@@ -102,14 +103,15 @@ namespace RenderingEngine
 
 		while (m_Running)
 		{
-			Renderer::Clear({.25f, .25f, .25f, 1});
-
-			Renderer::RenderIndexed(m_VertexArray, m_TestShader);
-
-			for (const auto layer : m_LayerStack)
-				layer->EveryUpdate();
-
 			m_Window->EveryUpdate();
+
+			GuiLayer::Begin();
+			for (const auto layer: m_LayerStack)
+				layer->EveryUpdate();
+			GuiLayer::End();
+
+			Renderer::Clear({ .25f, .25f, .25f, 1 });
+			Renderer::RenderIndexed(m_VertexArray, m_TestShader);
 		}
 	}
 
@@ -119,14 +121,6 @@ namespace RenderingEngine
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUN(OnWindowClose));
-
-		for (const auto& layer : m_LayerStack)
-		{
-			if (e.Active == false)
-				break;
-
-			layer->OnEvent(e);
-		}
 	}
 
 	void Bootstrapper::AddLayer(Layer* layer)

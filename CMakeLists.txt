@@ -49,11 +49,8 @@ add_subdirectory(${SPDLOG_DIR} EXCLUDE_FROM_ALL)
 # imgui
 set(IMGUI_DIR "${PROJECT_LIBRARIES_DIR}/ImGui")
 file(GLOB IMGUI_SOURCES
-        ${IMGUI_DIR}/*.cpp
-        ${IMGUI_DIR}/*.h
-        ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
-        ${IMGUI_DIR}/backends/imgui_impl_opengl3.h
-        ${IMGUI_DIR}/backends/imgui_impl_opengl3_loader.cpp)
+        ${IMGUI_DIR}/**.cpp
+        ${IMGUI_DIR}/**.h)
 add_library(imgui ${IMGUI_SOURCES})
 
 target_include_directories(imgui PRIVATE ${IMGUI_DIR})

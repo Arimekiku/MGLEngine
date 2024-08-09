@@ -14,6 +14,5 @@ namespace RenderingEngine
         virtual void Detach() = 0;
 
         virtual void EveryUpdate() = 0;
-        virtual void OnEvent(Event& e) = 0;
     };
 }
