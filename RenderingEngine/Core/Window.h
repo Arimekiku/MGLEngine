@@ -29,7 +29,7 @@ namespace RenderingEngine
 	public:
 		using EventCallbackFunc = std::function<void(Event&)>;
 
-		Window(const WindowProperties& properties = WindowProperties());
+		explicit Window(const WindowProperties& properties = WindowProperties());
 		~Window();
 
 		auto GetWidth() const { return m_Data.Properties.Width; }

@@ -2,8 +2,9 @@
 #include "Shader.h"
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
-namespace RendereringEngine
+namespace RenderingEngine
 {
     Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
     {
@@ -85,8 +86,14 @@ namespace RendereringEngine
         glUseProgram(m_RendererID);
     }
 
-    void Shader::Unbind() const
+    void Shader::Unbind()
     {
         glUseProgram(0);
+    }
+
+    void Shader::BindUniformMat4(const std::string& name, const glm::mat4& mat) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
     }
 }

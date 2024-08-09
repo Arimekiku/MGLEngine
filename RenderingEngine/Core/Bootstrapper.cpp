@@ -4,7 +4,6 @@
 #include "Bootstrapper.h"
 
 #include "Events/WindowEvent.h"
-#include "glm/ext/matrix_clip_space.hpp"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.inl"
 #include "Layer/ImGui/GuiLayer.h"
@@ -23,6 +22,8 @@ namespace RenderingEngine
 
 		m_Window = std::make_unique<Window>();
 		m_Window->SetEventCallback(BIND_FUN(OnEvent));
+
+		m_Camera.reset(new Camera({0, 0, -2}));
 
 		AddLayer(new GuiLayer());
 
@@ -57,8 +58,6 @@ namespace RenderingEngine
 		m_IndexBuffer.reset(new IndexBuffer(indices, count));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		m_Camera.reset(new Camera({0.0f, 0.0f, -2.0f}));
-
 		std::string vertexSrc = R"(
 			#version 410 core
 
@@ -68,13 +67,13 @@ namespace RenderingEngine
 			out vec3 v_Position;
 			out vec4 v_Color;
 
-			uniform mat4 camMatrix;
+			uniform mat4 u_camMatrix;
 
 			void main()
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = camMatrix * vec4(a_Position, 1.0);
+				gl_Position = u_camMatrix * vec4(a_Position, 1.0);
 			}
 		)";
 		std::string fragmentSrc = R"(
@@ -92,21 +91,20 @@ namespace RenderingEngine
 			}
 		)";
 
-		m_TestShader.reset(new RendereringEngine::Shader(vertexSrc, fragmentSrc));
+		m_TestShader.reset(new Shader(vertexSrc, fragmentSrc));
 	}
 
 	void Bootstrapper::Run()
 	{
 		glEnable(GL_DEPTH_TEST);
 
+		Renderer::CreateWorld(m_Camera);
+
 		while (m_Running)
 		{
 			Renderer::Clear({.25f, .25f, .25f, 1});
 
-			m_TestShader->Bind();
-
-			m_Camera->SetProjection(45.0f, 0.1f, m_TestShader, 100.0f, "camMatrix");
-			Renderer::RenderIndexed(m_VertexArray);
+			Renderer::RenderIndexed(m_VertexArray, m_TestShader);
 
 			for (const auto layer : m_LayerStack)
 				layer->EveryUpdate();

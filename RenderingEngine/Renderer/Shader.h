@@ -1,6 +1,8 @@
 #pragma once
 
-namespace RendereringEngine
+#include "glm/fwd.hpp"
+
+namespace RenderingEngine
 {
     class Shader
     {
@@ -9,7 +11,8 @@ namespace RendereringEngine
         ~Shader();
 
         void Bind() const;
-        void Unbind() const;
+        static void Unbind();
+        void BindUniformMat4(const std::string& name, const glm::mat4& mat) const;
 
         const uint32_t& GetRendererID() const { return m_RendererID; }
 
