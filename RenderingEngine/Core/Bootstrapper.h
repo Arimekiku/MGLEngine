@@ -6,10 +6,7 @@
 
 #include <memory>
 
-#include "Renderer/Camera.h"
-#include "Renderer/RenderBuffer.h"
 #include "Renderer/Shader.h"
-#include "Renderer/VertexArray.h"
 
 namespace RenderingEngine
 {
@@ -35,11 +32,7 @@ namespace RenderingEngine
 		LayerStack m_LayerStack;
 		bool m_Running = true;
 
-		std::shared_ptr<Shader> m_TestShader;
-		std::shared_ptr<VertexBuffer> m_VertexBuffer;
-		std::shared_ptr<IndexBuffer> m_IndexBuffer;
-		std::shared_ptr<VertexArray> m_VertexArray;
-		std::shared_ptr<Camera> m_Camera;
+		Ref<Shader> m_Test;
 	};
 
 	Bootstrapper* LoadEngine();

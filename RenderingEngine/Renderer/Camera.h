@@ -28,15 +28,16 @@ namespace RenderingEngine
         explicit Camera(const glm::vec3& position, const CameraAttributes& attributes = CameraAttributes());
         ~Camera() = default;
 
-        const glm::mat4& GetProjViewMat() const { return m_ProjViewMat; }
+        void SetOrientation(float rotX, float rotY);
+
+        const glm::mat4& GetProjViewMat();
+        glm::vec3 m_Position{};
+        glm::vec3 m_Orientation = glm::vec3(0.25f, 0.25f, 1.0f);
 
     private:
         CameraAttributes m_Attributes;
 
-        glm::mat4 m_ProjViewMat{};
-
-        glm::vec3 m_Position{};
-        glm::vec3 m_Orientation = glm::vec3(0.25f, 0.25f, 1.0f);
+        glm::mat4 m_ProjView{1.0f};
         glm::vec3 m_Up = glm::vec3(0, 1.0f, 0.0f);
     };
 }

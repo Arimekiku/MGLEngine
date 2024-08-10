@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Core/Layer.h"
+#include "../Layer.h"
 
 namespace RenderingEngine
 {
-    class GuiLayer: public Layer
+    class GuiLayer : public Layer
     {
     public:
         GuiLayer() = default;

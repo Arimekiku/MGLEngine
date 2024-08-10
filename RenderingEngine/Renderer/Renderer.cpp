@@ -7,9 +7,9 @@ namespace RenderingEngine
 {
     RenderData Renderer::s_RenderData = RenderData();
 
-    void Renderer::CreateWorld(const std::shared_ptr<Camera>& camera)
+    void Renderer::CreateWorld(Camera& camera)
     {
-        s_RenderData.ProjViewMat = camera->GetProjViewMat();
+        s_RenderData.ProjViewMat = camera.GetProjViewMat();
     }
 
     void Renderer::Clear(const glm::vec4 color)

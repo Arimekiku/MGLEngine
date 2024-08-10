@@ -18,7 +18,7 @@ namespace RenderingEngine
     class Renderer
     {
     public:
-        static void CreateWorld(const std::shared_ptr<Camera>& camera);
+        static void CreateWorld(Camera& camera);
 
         static void Clear(glm::vec4 color);
         static void RenderIndexed(const std::shared_ptr<VertexArray>& vertices, const std::shared_ptr<Shader>& shader,

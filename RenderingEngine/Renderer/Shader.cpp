@@ -19,7 +19,7 @@ namespace RenderingEngine
             in.seekg(0, std::ios::beg);
             in.read(&content[0], static_cast<std::streamsize>(content.size()));
             in.close();
-            return (content);
+            return content;
         }
 
         LOG_CORE_ERROR("Can't read shader with path {0}", path);

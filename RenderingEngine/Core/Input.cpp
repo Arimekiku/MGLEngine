@@ -39,6 +39,45 @@ namespace RenderingEngine
                 return pressed == GLFW_RELEASE;
         }
 
+        void Input::SetInputMode(int mode, int value)
+        {
+                auto& window = Bootstrapper::GetInstance().GetWindow().GetNativeWindow();
+
+                glfwSetInputMode(window, mode, value);
+        }
+
+        glm::vec2 Input::GetCursorPosition()
+        {
+                auto& window = Bootstrapper::GetInstance().GetWindow().GetNativeWindow();
+
+                double mouseX;
+                double mouseY;
+                glfwGetCursorPos(window, &mouseX, &mouseY);
+
+                return {mouseX, mouseY};
+        }
+
+        glm::vec2 Input::GetNormalizedCursor()
+        {
+                auto& window = Bootstrapper::GetInstance().GetWindow();
+                glm::vec2 mousePos = GetCursorPosition();
+
+                float width = window.GetWidth();
+                float height = window.GetHeight();
+
+                return {
+                        10.0f * (mousePos.y - height / 2) / width,
+                        10.0f * (mousePos.x - width / 2) / width
+                };
+        }
+
+        void Input::SetCursorPosition(const int x, const int y)
+        {
+                auto& window = Bootstrapper::GetInstance().GetWindow().GetNativeWindow();
+
+                glfwSetCursorPos(window, x, y);
+        }
+
         float Input::GetMouseX()
         {
                 auto& window = Bootstrapper::GetInstance().GetWindow().GetNativeWindow();
@@ -55,5 +94,12 @@ namespace RenderingEngine
                 double xPos, yPos;
                 glfwGetCursorPos(window, &xPos, &yPos);
                 return static_cast<float>(yPos);
+        }
+
+        void Input::SetCursorInCenterOfWindow()
+        {
+                const auto& window = Bootstrapper::GetInstance().GetWindow();
+
+                SetCursorPosition((window.GetWidth() / 2), (window.GetHeight() / 2));
         }
 }

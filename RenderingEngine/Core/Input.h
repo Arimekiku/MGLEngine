@@ -1,6 +1,8 @@
 #pragma once
+#include "glm/vec2.hpp"
 
-namespace RenderingEngine {
+namespace RenderingEngine
+{
     class Input
     {
     public:
@@ -11,7 +13,16 @@ namespace RenderingEngine {
         static bool MouseButtonPressed(int code);
         static bool MouseButtonReleased(int code);
 
+        static void SetInputMode(int mode, int value);
+
+        static glm::vec2 GetCursorPosition();
+        static glm::vec2 GetNormalizedCursor();
+
+        static void SetCursorPosition(int x, int y);
+
         static float GetMouseX();
         static float GetMouseY();
+
+        static void SetCursorInCenterOfWindow();
     };
 }
