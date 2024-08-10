@@ -6,11 +6,27 @@
 
 namespace RenderingEngine
 {
-    Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
+    std::string Shader::GetContent(const std::string& path)
+    {
+        if (auto in = std::ifstream(path, std::ios::binary))
+        {
+            std::string content;
+            in.seekg(0, std::ios::end);
+            content.resize(in.tellg());
+            in.seekg(0, std::ios::beg);
+            in.read(&content[0], static_cast<std::streamsize>(content.size()));
+            in.close();
+            return (content);
+        }
+
+        LOG_CORE_ASSERT(false, "Shader read error with path {0}", path)
+    }
+
+    Shader::Shader(const std::string& vertPath, const std::string& fragPath)
     {
         const uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-        const char* source = vertexSrc.c_str();
+        const char* source = GetContent(vertPath).c_str();
         glShaderSource(vertexShader, 1, &source, nullptr);
         glCompileShader(vertexShader);
 
@@ -31,7 +47,7 @@ namespace RenderingEngine
 
         const uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-        source = fragmentSrc.c_str();
+        source = GetContent(fragPath).c_str();
         glShaderSource(fragmentShader, 1, &source, nullptr);
         glCompileShader(fragmentShader);
 
@@ -95,5 +111,59 @@ namespace RenderingEngine
     {
         const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
         glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+    }
+
+    void Shader::BindUniformMat3(const std::string& name, const glm::mat3& mat) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+    }
+
+    void Shader::BindUniformFloat4(const std::string& name, const glm::f32vec4& vec) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniform4f(location, vec.x, vec.y, vec.z, vec.w);
+    }
+
+    void Shader::BindUniformFloat3(const std::string& name, const glm::f32vec3& vec) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniform3f(location, vec.x, vec.y, vec.z);
+    }
+
+    void Shader::BindUniformFloat2(const std::string& name, const glm::f32vec2& vec) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniform2f(location, vec.x, vec.y);
+    }
+
+    void Shader::BindUniformFloat1(const std::string& name, const float& val) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniform1f(location, val);
+    }
+
+    void Shader::BindUniformInt4(const std::string& name, const glm::i32vec4& vec) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniform4i(location, vec.x, vec.y, vec.z, vec.w);
+    }
+
+    void Shader::BindUniformInt3(const std::string& name, const glm::i32vec3& vec) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniform3i(location, vec.x, vec.y, vec.z);
+    }
+
+    void Shader::BindUniformInt2(const std::string& name, const glm::i32vec2& vec) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniform2i(location, vec.x, vec.y);
+    }
+
+    void Shader::BindUniformInt1(const std::string& name, const int& val) const
+    {
+        const GLint location = glGetUniformLocation(m_RendererID, name.c_str());
+        glUniform1i(location, val);
     }
 }
