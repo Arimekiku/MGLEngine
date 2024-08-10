@@ -22,7 +22,7 @@ namespace RenderingEngine
 		m_Window = std::make_unique<Window>();
 		m_Window->SetEventCallback(BIND_FUN(OnEvent));
 
-		m_Camera.reset(new Camera({ 0, 0, -2 }));
+		m_Camera.reset(new Camera({0, 0, -2}));
 
 		AddLayer(new GuiLayer());
 
@@ -38,8 +38,8 @@ namespace RenderingEngine
 		m_VertexBuffer.reset(new VertexBuffer(ver, sizeof(ver)));
 
 		RenderBufferLayout layout = {
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float4, "a_Color" }
+			{ShaderDataType::Float3, "a_Position"},
+			{ShaderDataType::Float4, "a_Color"}
 		};
 		m_VertexBuffer->SetLayout(layout);
 		m_VertexArray->SetVertexBuffer(m_VertexBuffer);
@@ -57,8 +57,9 @@ namespace RenderingEngine
 		m_IndexBuffer.reset(new IndexBuffer(indices, count));
 		m_VertexArray->SetIndexBuffer(m_IndexBuffer);
 
-		m_TestShader.reset(new Shader("Resources/Shaders/standart.vert",
-		                              "Resources/Shaders/standart.frag"));
+		m_TestShader.reset(new Shader(
+			"Resources/Shaders/standart.vert",
+			"Resources/Shaders/standart.frag"));
 	}
 
 	void Bootstrapper::Run()
@@ -72,11 +73,11 @@ namespace RenderingEngine
 			m_Window->EveryUpdate();
 
 			GuiLayer::Begin();
-			for (const auto layer: m_LayerStack)
+			for (const auto layer : m_LayerStack)
 				layer->EveryUpdate();
 			GuiLayer::End();
 
-			Renderer::Clear({ .25f, .25f, .25f, 1 });
+			Renderer::Clear({.25f, .25f, .25f, 1});
 			Renderer::RenderIndexed(m_VertexArray, m_TestShader);
 		}
 	}

@@ -14,6 +14,11 @@ namespace RenderingEngine
 		int GetCategory() const override { return EventApplication; }
 		static EventType GetStaticType() { return EventType::WindowClose; }
 		EventType GetEventType() const override { return GetStaticType(); }
+
+		std::string ToString() const override
+		{
+			return "WindowCloseEvent";
+		}
 	};
 
 	class WindowResizeEvent final : public Event
@@ -28,16 +33,16 @@ namespace RenderingEngine
 		uint16_t GetWidth() const { return m_Width; }
 		uint16_t GetHeight() const { return m_Height; }
 
-		std::string ToString() const override
-		{
-			std::stringstream ss;
-			ss << GetName() << ": (" << m_Width << ", " << m_Height << ")";
-			return ss.str();
-		}
-
 		int GetCategory() const override { return EventApplication; }
 		static EventType GetStaticType() { return EventType::WindowResize; }
 		EventType GetEventType() const override { return GetStaticType(); }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "WindowResizeEvent: (" << m_Width << ", " << m_Height << ")";
+			return ss.str();
+		}
 
 	private:
 		uint16_t m_Width, m_Height;
@@ -51,6 +56,11 @@ namespace RenderingEngine
 		int GetCategory() const override { return EventApplication; }
 		static EventType GetStaticType() { return EventType::WindowFocus; }
 		EventType GetEventType() const override { return GetStaticType(); }
+
+		std::string ToString() const override
+		{
+			return "WindowFocusEvent";
+		}
 	};
 
 	class WindowRenderEvent final : public Event
@@ -61,5 +71,10 @@ namespace RenderingEngine
 		int GetCategory() const override { return EventApplication; }
 		static EventType GetStaticType() { return EventType::WindowRender; }
 		EventType GetEventType() const override { return GetStaticType(); }
+
+		std::string ToString() const override
+		{
+			return "WindowRenderEvent";
+		}
 	};
 }

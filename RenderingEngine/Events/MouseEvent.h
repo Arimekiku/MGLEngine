@@ -12,13 +12,6 @@ namespace RenderingEngine
 		int GetMouseButton() const { return m_MouseButton; }
 		int GetCategory() const override { return EventMouseButton | EventInput; }
 
-		std::string ToString() const override
-		{
-			std::stringstream ss;
-			ss << GetName() << ": " << m_MouseButton;
-			return ss.str();
-		}
-
 	protected:
 		explicit MouseButtonEvent(const int mouseButton) { m_MouseButton = mouseButton; }
 
@@ -34,6 +27,13 @@ namespace RenderingEngine
 
 		static EventType GetStaticType() { return EventType::MousePressed; }
 		EventType GetEventType() const override { return GetStaticType(); }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "MousePressedEvent: " << m_MouseButton;
+			return ss.str();
+		}
 	};
 
 	class MouseReleasedEvent final : public MouseButtonEvent
@@ -45,6 +45,13 @@ namespace RenderingEngine
 
 		static EventType GetStaticType() { return EventType::MouseReleased; }
 		EventType GetEventType() const override { return GetStaticType(); }
+
+		std::string ToString() const override
+		{
+			std::stringstream ss;
+			ss << "MouseReleasedEvent: " << m_MouseButton;
+			return ss.str();
+		}
 	};
 
 	class MouseMovedEvent final : public Event
@@ -66,7 +73,7 @@ namespace RenderingEngine
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << GetName() << ": (" << m_MouseX << ", " << m_MouseY << ")";
+			ss << "MouseMovedEvent: (" << m_MouseX << ", " << m_MouseY << ")";
 			return ss.str();
 		}
 

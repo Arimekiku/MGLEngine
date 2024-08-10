@@ -33,14 +33,10 @@ namespace RenderingEngine
 		virtual EventType GetEventType() const = 0;
 		virtual int GetCategory() const = 0;
 
-		const char* GetName() const { return m_Name.c_str(); };
-		virtual std::string ToString() const { return GetName(); }
+		virtual std::string ToString() const { return "Event"; }
 
 		bool InCategory(const EventCategory category) const { return GetCategory() & category; }
 		bool Active = true;
-
-	protected:
-		std::string m_Name = NAME_OF(this);
 	};
 
 	class EventDispatcher

@@ -1,6 +1,9 @@
 #include "mxpch.h"
 #include "Shader.h"
 
+#include <filesystem>
+#include <fstream>
+#include <bits/fs_fwd.h>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -19,7 +22,8 @@ namespace RenderingEngine
             return (content);
         }
 
-        LOG_CORE_ASSERT(false, "Shader read error with path {0}", path)
+        LOG_CORE_ERROR("Can't read shader with path {0}", path);
+        LOG_CORE_ASSERT(false, "Shader compile reading error")
     }
 
     Shader::Shader(const std::string& vertPath, const std::string& fragPath)

@@ -34,7 +34,7 @@ namespace RenderingEngine
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << GetName() << ": " << m_KeyCode << " (" << m_RepeatCount << ")";
+			ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << ")";
 			return ss.str();
 		}
 
@@ -55,7 +55,7 @@ namespace RenderingEngine
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << GetName() << ": " << m_KeyCode;
+			ss << "KeyReleasedEvent: " << m_KeyCode;
 			return ss.str();
 		}
 	};
@@ -73,7 +73,7 @@ namespace RenderingEngine
 		std::string ToString() const override
 		{
 			std::stringstream ss;
-			ss << GetName() << ": " << m_KeyCode;
+			ss << "KeyTypedEvent: " << m_KeyCode;
 			return ss.str();
 		}
 	};
