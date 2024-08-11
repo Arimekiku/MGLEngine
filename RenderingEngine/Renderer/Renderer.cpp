@@ -18,8 +18,8 @@ namespace RenderingEngine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void Renderer::RenderIndexed(const std::shared_ptr<VertexArray>& vertices,
-                                 const std::shared_ptr<Shader>& shader,
+    void Renderer::RenderIndexed(const Ref<VertexArray>& vertices,
+                                 const Ref<Shader>& shader,
                                  const glm::mat4& trsMatrix)
     {
         shader->Bind();

@@ -21,7 +21,7 @@ namespace RenderingEngine
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
     }
 
-    void VertexBuffer::Unbind() const
+    void VertexBuffer::Unbind()
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
@@ -45,7 +45,7 @@ namespace RenderingEngine
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
     }
 
-    void IndexBuffer::Unbind() const
+    void IndexBuffer::Unbind()
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }

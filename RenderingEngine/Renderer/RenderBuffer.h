@@ -122,7 +122,7 @@ namespace RenderingEngine
         void SetLayout(const RenderBufferLayout& layout) { m_Layout = layout; }
 
         void Bind() const;
-        void Unbind() const;
+        static void Unbind();
 
     private:
         uint32_t m_RendererID = 0;
@@ -136,7 +136,7 @@ namespace RenderingEngine
         ~IndexBuffer();
 
         void Bind() const;
-        void Unbind() const;
+        static void Unbind();
 
         int32_t GetIndexCount() const { return m_IndexCount; }
 

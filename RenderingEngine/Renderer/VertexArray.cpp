@@ -37,7 +37,7 @@ namespace RenderingEngine
         glDeleteVertexArrays(1, &m_RendererID);
     }
 
-    void VertexArray::Bind()
+    void VertexArray::Bind() const
     {
         glBindVertexArray(m_RendererID);
     }
@@ -56,7 +56,7 @@ namespace RenderingEngine
 
         uint32_t index = 0;
         const auto& layout = buffer->GetLayout();
-        for (const auto& attr: layout)
+        for (const auto& attr : layout)
         {
             glEnableVertexAttribArray(index);
             glVertexAttribPointer(index,

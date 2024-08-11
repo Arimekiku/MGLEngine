@@ -45,10 +45,17 @@ namespace RenderingEngine
 
 	void Bootstrapper::OnEvent(Event& e)
 	{
-		LOG_CORE_INFO("{0}", e.ToString());
-
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUN(OnWindowClose));
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUN(OnWindowCloseEvent));
+		dispatcher.Dispatch<KeyPressedEvent>(BIND_FUN(OnKeyPressedEvent));
+
+		for (const auto layer : m_LayerStack)
+		{
+			if (e.Active == false)
+				return;
+
+			layer->OnEvent(e);
+		}
 	}
 
 	void Bootstrapper::AddLayer(Layer* layer)
@@ -57,9 +64,25 @@ namespace RenderingEngine
 		layer->Attach();
 	}
 
-	bool Bootstrapper::OnWindowClose(WindowCloseEvent& e)
+	bool Bootstrapper::OnWindowCloseEvent(const WindowCloseEvent& e)
 	{
+		LOG_CORE_INFO("Shutdown");
+		LOG_CORE_INFO("{0}", e.ToString());
+
 		m_Running = false;
+		return false;
+	}
+
+	bool Bootstrapper::OnKeyPressedEvent(const KeyPressedEvent& e)
+	{
+		if (e.GetKeyCode() == GLFW_KEY_ESCAPE)
+		{
+			LOG_CORE_INFO("Shutdown");
+
+			m_Running = false;
+			return true;
+		}
+
 		return false;
 	}
 }

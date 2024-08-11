@@ -1,7 +1,9 @@
 #pragma once
 
-#include "Camera.h"
+#include "Core.h"
+#include "Shader.h"
 #include "VertexArray.h"
+#include "Camera.h"
 
 namespace RenderingEngine
 {
@@ -21,7 +23,9 @@ namespace RenderingEngine
         static void CreateWorld(Camera& camera);
 
         static void Clear(glm::vec4 color);
-        static void RenderIndexed(const std::shared_ptr<VertexArray>& vertices, const std::shared_ptr<Shader>& shader,
+
+        static void RenderIndexed(const Ref<VertexArray>& vertices,
+                                  const Ref<Shader>& shader,
                                   const glm::mat4& trsMatrix = glm::mat4(1.0f));
 
     private:

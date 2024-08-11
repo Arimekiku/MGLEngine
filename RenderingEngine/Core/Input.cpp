@@ -39,7 +39,7 @@ namespace RenderingEngine
                 return pressed == GLFW_RELEASE;
         }
 
-        void Input::SetInputMode(int mode, int value)
+        void Input::SetInputMode(const int mode, const int value)
         {
                 auto& window = Bootstrapper::GetInstance().GetWindow().GetNativeWindow();
 
@@ -59,11 +59,11 @@ namespace RenderingEngine
 
         glm::vec2 Input::GetNormalizedCursor()
         {
-                auto& window = Bootstrapper::GetInstance().GetWindow();
-                glm::vec2 mousePos = GetCursorPosition();
+                const auto& window = Bootstrapper::GetInstance().GetWindow();
+                const glm::vec2 mousePos = GetCursorPosition();
 
-                float width = window.GetWidth();
-                float height = window.GetHeight();
+                const float width = window.GetWidth();
+                const float height = window.GetHeight();
 
                 return {
                         10.0f * (mousePos.y - height / 2) / width,

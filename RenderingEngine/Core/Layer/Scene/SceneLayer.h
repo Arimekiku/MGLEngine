@@ -2,24 +2,26 @@
 
 #include "Core/Layer/Layer.h"
 #include "Renderer/Camera.h"
+#include "Renderer/Shader.h"
 #include "Renderer/Transform.h"
 #include "Renderer/VertexArray.h"
 
 namespace RenderingEngine
 {
-    class SceneLayer : public Layer
+    class SceneLayer final : public Layer
     {
     public:
         SceneLayer();
 
         void EveryUpdate() override;
+        void OnEvent(Event& event) override;
 
     private:
-        std::shared_ptr<Shader> m_TestShader;
+        Ref<Shader> m_TestShader;
         Ref<Transform> m_TestTransform;
-        std::shared_ptr<VertexBuffer> m_VertexBuffer;
-        std::shared_ptr<IndexBuffer> m_IndexBuffer;
-        std::shared_ptr<VertexArray> m_VertexArray;
+        Ref<VertexBuffer> vertexBuffer;
+        Ref<IndexBuffer> indexBuffer;
+        Ref<VertexArray> m_VertexArray;
 
         Camera m_Camera;
         bool m_FirstClick = true;

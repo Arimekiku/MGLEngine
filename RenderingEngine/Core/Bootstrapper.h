@@ -3,10 +3,9 @@
 #include "Window.h"
 #include "Layer/LayerStack.h"
 #include "Events/WindowEvent.h"
+#include "Events/KeyEvent.h"
 
 #include <memory>
-
-#include "Renderer/Shader.h"
 
 namespace RenderingEngine
 {
@@ -25,14 +24,13 @@ namespace RenderingEngine
 		Window& GetWindow() const { return *m_Window; }
 
 	private:
-		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowCloseEvent(const WindowCloseEvent& e);
+		bool OnKeyPressedEvent(const KeyPressedEvent& e);
 
 		static Bootstrapper* s_Instance;
-		std::unique_ptr<Window> m_Window;
+		Scope<Window> m_Window;
 		LayerStack m_LayerStack;
 		bool m_Running = true;
-
-		Ref<Shader> m_Test;
 	};
 
 	Bootstrapper* LoadEngine();
