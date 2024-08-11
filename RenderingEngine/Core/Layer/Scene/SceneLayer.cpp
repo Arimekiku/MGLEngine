@@ -44,6 +44,8 @@ namespace RenderingEngine
         m_TestShader.reset(new Shader(
             "Resources/Shaders/standart.vert",
             "Resources/Shaders/standart.frag"));
+
+        m_TestTransform.reset(new Transform());
     }
 
     void SceneLayer::EveryUpdate()
@@ -80,11 +82,17 @@ namespace RenderingEngine
         }
 
         ImGui::Begin("Camera");
-        ImGui::InputFloat3("Camera position", glm::value_ptr(m_Camera.m_Position));
-        ImGui::InputFloat3("Camera orientation", glm::value_ptr(m_Camera.m_Orientation));
+        ImGui::InputFloat3("Position", glm::value_ptr(m_Camera.m_Position));
+        ImGui::InputFloat3("Orientation", glm::value_ptr(m_Camera.m_Orientation));
+        ImGui::End();
+
+        ImGui::Begin("Temple");
+        ImGui::InputFloat3("Position", glm::value_ptr(m_TestTransform->Position));
+        ImGui::InputFloat3("Rotation", glm::value_ptr(m_TestTransform->Rotation));
+        ImGui::InputFloat3("Scale", glm::value_ptr(m_TestTransform->Scale));
         ImGui::End();
 
         Renderer::Clear({0, 0, 0, 1});
-        Renderer::RenderIndexed(m_VertexArray, m_TestShader);
+        Renderer::RenderIndexed(m_VertexArray, m_TestShader, m_TestTransform->GetTRSMatrix());
     }
 }

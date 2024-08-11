@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include "Core/Bootstrapper.h"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include<glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
@@ -17,6 +18,7 @@ namespace RenderingEngine
 
     void Camera::SetOrientation(float rotX, float rotY)
     {
+        glm::mat4 test(1.0f);
         // Calculates upcoming vertical change in the Orientation
         glm::vec3 newOrientation = glm::rotate(m_Orientation, glm::radians(-rotX),
                                                glm::normalize(glm::cross(m_Orientation, m_Up)));
