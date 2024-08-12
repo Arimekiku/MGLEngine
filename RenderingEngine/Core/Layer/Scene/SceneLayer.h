@@ -17,6 +17,7 @@ namespace RenderingEngine
         void OnEvent(Event& event) override;
 
     private:
+        Ref<Shader> m_QuadShader;
         Ref<Shader> m_TestShader;
         Ref<Transform> m_TestTransform;
         Ref<VertexBuffer> vertexBuffer;

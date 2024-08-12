@@ -7,6 +7,35 @@ namespace RenderingEngine
 {
     RenderData Renderer::s_RenderData = RenderData();
 
+    void Renderer::Initialize()
+    {
+        s_RenderData.QuadVertexArray.reset(new VertexArray());
+
+        constexpr float ver[4 * 7] = {
+            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        };
+        s_RenderData.QuadVertexBuffer.reset(new VertexBuffer(ver, sizeof(ver)));
+
+        RenderBufferLayout layout = {
+            {ShaderDataType::Float3, "a_Position"},
+            {ShaderDataType::Float4, "a_Color"},
+        };
+        s_RenderData.QuadVertexBuffer->SetLayout(layout);
+        s_RenderData.QuadVertexArray->SetVertexBuffer(s_RenderData.QuadVertexBuffer);
+
+        constexpr int count = 6;
+        const uint32_t indices[count] =
+        {
+            0, 1, 2,
+            0, 2, 3,
+        };
+        s_RenderData.QuadIndexBuffer.reset(new IndexBuffer(indices, count));
+        s_RenderData.QuadVertexArray->SetIndexBuffer(s_RenderData.QuadIndexBuffer);
+    }
+
     void Renderer::CreateWorld(Camera& camera)
     {
         s_RenderData.ProjViewMat = camera.GetProjViewMat();
@@ -16,6 +45,11 @@ namespace RenderingEngine
     {
         glClearColor(color.r, color.g, color.b, color.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    void Renderer::RenderQuad(const Ref<Shader>& shader, const glm::mat4& trsMatrix)
+    {
+        RenderIndexed(s_RenderData.QuadVertexArray, shader, trsMatrix);
     }
 
     void Renderer::RenderIndexed(const Ref<VertexArray>& vertices,

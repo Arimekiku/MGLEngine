@@ -1,7 +1,6 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/ext/scalar_constants.hpp>
 
 namespace RenderingEngine
 {
@@ -17,8 +16,5 @@ namespace RenderingEngine
         glm::vec3 Scale{};
 
         glm::mat4 GetTRSMatrix() const;
-
-    private:
-        static float DegToRad(const float& deg) { return glm::pi<float>() * deg / 180.0f; }
     };
 }

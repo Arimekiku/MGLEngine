@@ -11,18 +11,20 @@ namespace RenderingEngine
     {
         glm::mat4 ProjViewMat;
 
-        explicit RenderData(const glm::mat4& projViewMat = glm::mat4(1.0f))
-        {
-            ProjViewMat = projViewMat;
-        }
+        Ref<IndexBuffer> QuadIndexBuffer;
+        Ref<VertexBuffer> QuadVertexBuffer;
+        Ref<VertexArray> QuadVertexArray;
     };
 
     class Renderer
     {
     public:
+        static void Initialize();
         static void CreateWorld(Camera& camera);
 
         static void Clear(glm::vec4 color);
+
+        static void RenderQuad(const Ref<Shader>& shader, const glm::mat4& trsMatrix = glm::mat4(1.0f));
 
         static void RenderIndexed(const Ref<VertexArray>& vertices,
                                   const Ref<Shader>& shader,
