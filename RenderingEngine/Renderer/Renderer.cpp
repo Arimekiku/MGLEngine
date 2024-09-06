@@ -9,7 +9,7 @@ namespace RenderingEngine
 
     void Renderer::Initialize()
     {
-        s_RenderData.QuadVertexArray.reset(new VertexArray());
+        s_RenderData.QuadVertexArray = std::make_shared<VertexArray>();
 
         constexpr float ver[4 * 7] = {
             -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
@@ -17,9 +17,9 @@ namespace RenderingEngine
             0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
             0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
         };
-        s_RenderData.QuadVertexBuffer.reset(new VertexBuffer(ver, sizeof(ver)));
+        s_RenderData.QuadVertexBuffer = std::make_shared<VertexBuffer>(ver, sizeof(ver));
 
-        RenderBufferLayout layout = {
+        const RenderBufferLayout layout = {
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float4, "a_Color"},
         };
@@ -27,12 +27,12 @@ namespace RenderingEngine
         s_RenderData.QuadVertexArray->SetVertexBuffer(s_RenderData.QuadVertexBuffer);
 
         constexpr int count = 6;
-        const uint32_t indices[count] =
+        constexpr uint32_t indices[count] =
         {
             0, 1, 2,
             0, 2, 3,
         };
-        s_RenderData.QuadIndexBuffer.reset(new IndexBuffer(indices, count));
+        s_RenderData.QuadIndexBuffer = std::make_shared<IndexBuffer>(indices, count);
         s_RenderData.QuadVertexArray->SetIndexBuffer(s_RenderData.QuadIndexBuffer);
     }
 

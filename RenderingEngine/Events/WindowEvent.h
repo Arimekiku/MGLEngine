@@ -11,11 +11,11 @@ namespace RenderingEngine
 	public:
 		WindowCloseEvent() = default;
 
-		int GetCategory() const override { return EventApplication; }
+		[[nodiscard]] int GetCategory() const override { return EventApplication; }
 		static EventType GetStaticType() { return EventType::WindowClose; }
-		EventType GetEventType() const override { return GetStaticType(); }
+		[[nodiscard]] EventType GetEventType() const override { return GetStaticType(); }
 
-		std::string ToString() const override
+		[[nodiscard]] std::string ToString() const override
 		{
 			return "WindowCloseEvent";
 		}
@@ -30,14 +30,14 @@ namespace RenderingEngine
 			m_Height = height;
 		}
 
-		uint16_t GetWidth() const { return m_Width; }
-		uint16_t GetHeight() const { return m_Height; }
+		[[nodiscard]] uint16_t GetWidth() const { return m_Width; }
+		[[nodiscard]] uint16_t GetHeight() const { return m_Height; }
 
-		int GetCategory() const override { return EventApplication; }
+		[[nodiscard]] int GetCategory() const override { return EventApplication; }
 		static EventType GetStaticType() { return EventType::WindowResize; }
-		EventType GetEventType() const override { return GetStaticType(); }
+		[[nodiscard]] EventType GetEventType() const override { return GetStaticType(); }
 
-		std::string ToString() const override
+		[[nodiscard]] std::string ToString() const override
 		{
 			std::stringstream ss;
 			ss << "WindowResizeEvent: (" << m_Width << ", " << m_Height << ")";
@@ -53,11 +53,11 @@ namespace RenderingEngine
 	public:
 		WindowFocusEvent() = default;
 
-		int GetCategory() const override { return EventApplication; }
+		[[nodiscard]] int GetCategory() const override { return EventApplication; }
 		static EventType GetStaticType() { return EventType::WindowFocus; }
-		EventType GetEventType() const override { return GetStaticType(); }
+		[[nodiscard]] EventType GetEventType() const override { return GetStaticType(); }
 
-		std::string ToString() const override
+		[[nodiscard]] std::string ToString() const override
 		{
 			return "WindowFocusEvent";
 		}
@@ -68,11 +68,11 @@ namespace RenderingEngine
 	public:
 		WindowRenderEvent() = default;
 
-		int GetCategory() const override { return EventApplication; }
+		[[nodiscard]] int GetCategory() const override { return EventApplication; }
 		static EventType GetStaticType() { return EventType::WindowRender; }
-		EventType GetEventType() const override { return GetStaticType(); }
+		[[nodiscard]] EventType GetEventType() const override { return GetStaticType(); }
 
-		std::string ToString() const override
+		[[nodiscard]] std::string ToString() const override
 		{
 			return "WindowRenderEvent";
 		}

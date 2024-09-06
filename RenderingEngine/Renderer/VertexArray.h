@@ -17,11 +17,11 @@ namespace RenderingEngine
         void SetVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer);
         void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer);
 
-        const std::shared_ptr<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
-        const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
+        [[nodiscard]] const std::shared_ptr<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
+        [[nodiscard]] const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 
     private:
-        uint32_t m_RendererID;
+        uint32_t m_RendererID = 0;
 
         Ref<VertexBuffer> m_VertexBuffer;
         Ref<IndexBuffer> m_IndexBuffer;

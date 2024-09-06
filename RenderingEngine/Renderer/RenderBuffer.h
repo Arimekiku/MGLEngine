@@ -26,33 +26,33 @@ namespace RenderingEngine
             case ShaderDataType::Float4: return sizeof(float) * 4;
             case ShaderDataType::Mat3x3: return sizeof(float) * 3 * 3;
             case ShaderDataType::Mat4x4: return sizeof(float) * 4 * 4;
-            default: ;
+            default: LOG_CORE_ASSERT(false, "None buffer type requested")
         }
 
         LOG_CORE_ASSERT(false, "Can't get shader data type")
-        return 0;
     }
 
     struct BufferAttribute
     {
         std::string Name;
-        ShaderDataType Type;
-        bool Normalized;
-        int32_t Offset;
-        int32_t Size;
+        ShaderDataType Type = ShaderDataType::None;
+        bool Normalized = false;
+        int32_t Offset = 0;
+        int32_t Size = 0;
 
         BufferAttribute() = default;
 
-        BufferAttribute(const ShaderDataType type, const std::string& name, bool normalized = false)
+        BufferAttribute(const ShaderDataType type,
+                        const std::string& name,
+                        const bool normalized = false)
         {
             Name = name;
             Type = type;
             Normalized = normalized;
             Size = GetShaderDataTypeSize(type);
-            Offset = 0;
         }
 
-        int32_t GetElementCount() const
+        [[nodiscard]] int32_t GetElementCount() const
         {
             switch (Type)
             {
@@ -67,11 +67,10 @@ namespace RenderingEngine
                 case ShaderDataType::Float4: return 4;
                 case ShaderDataType::Mat3x3: return 3 * 3;
                 case ShaderDataType::Mat4x4: return 4 * 4;
-                default: ;
+                default: LOG_CORE_ASSERT(false, "None buffer type requested")
             }
 
             LOG_CORE_ASSERT(false, "Can't get shader data type")
-            return 0;
         }
     };
 
@@ -82,24 +81,22 @@ namespace RenderingEngine
 
         RenderBufferLayout(const std::initializer_list<BufferAttribute>& attributes)
         {
-            m_Stride = 0;
             m_Elements = attributes;
             CalculateShaderDataOffset();
         }
 
-        const std::vector<BufferAttribute>& GetElements() const { return m_Elements; }
-        const int32_t& GetStride() const { return m_Stride; }
+        [[nodiscard]] const std::vector<BufferAttribute>& GetElements() const { return m_Elements; }
+        [[nodiscard]] const int32_t& GetStride() const { return m_Stride; }
 
         std::vector<BufferAttribute>::iterator begin() { return m_Elements.begin(); }
         std::vector<BufferAttribute>::iterator end() { return m_Elements.end(); }
-        std::vector<BufferAttribute>::const_iterator begin() const { return m_Elements.begin(); }
-        std::vector<BufferAttribute>::const_iterator end() const { return m_Elements.end(); }
+        [[nodiscard]] std::vector<BufferAttribute>::const_iterator begin() const { return m_Elements.begin(); }
+        [[nodiscard]] std::vector<BufferAttribute>::const_iterator end() const { return m_Elements.end(); }
 
     private:
         void CalculateShaderDataOffset()
         {
             int32_t offset = 0;
-            m_Stride = 0;
             for (auto& attr : m_Elements)
             {
                 attr.Offset = offset;
@@ -109,7 +106,7 @@ namespace RenderingEngine
         }
 
         std::vector<BufferAttribute> m_Elements;
-        int32_t m_Stride;
+        int32_t m_Stride = 0;
     };
 
     class VertexBuffer
@@ -138,7 +135,7 @@ namespace RenderingEngine
         void Bind() const;
         static void Unbind();
 
-        int32_t GetIndexCount() const { return m_IndexCount; }
+        [[nodiscard]] int32_t GetIndexCount() const { return m_IndexCount; }
 
     private:
         uint32_t m_RendererID = 0;

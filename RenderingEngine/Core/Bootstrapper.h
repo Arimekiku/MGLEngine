@@ -21,7 +21,7 @@ namespace RenderingEngine
 		void AddLayer(Layer* layer);
 
 		static const Bootstrapper& GetInstance() { return *s_Instance; }
-		Window& GetWindow() const { return *m_Window; }
+		[[nodiscard]] Window& GetWindow() const { return *m_Window; }
 
 	private:
 		bool OnWindowCloseEvent(const WindowCloseEvent& e);

@@ -1,7 +1,7 @@
+#include "mxpch.h"
 #include "SceneLayer.h"
 
 #include <imgui.h>
-#include "Core/Input.h"
 #include <GLFW/glfw3.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "Renderer/Renderer.h"
@@ -10,7 +10,7 @@ namespace RenderingEngine
 {
     SceneLayer::SceneLayer() : m_Camera({0, 0, -2})
     {
-        m_VertexArray.reset(new VertexArray());
+        m_VertexArray = std::make_shared<VertexArray>();
 
         constexpr float ver[5 * 7] = {
             -0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -19,17 +19,17 @@ namespace RenderingEngine
             0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
             0.0f, 0.8f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
         };
-        vertexBuffer.reset(new VertexBuffer(ver, sizeof(ver)));
+        vertexBuffer = std::make_shared<VertexBuffer>(ver, sizeof(ver));
 
-        RenderBufferLayout layout = {
+        const RenderBufferLayout layout = {
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float4, "a_Color"}
         };
         vertexBuffer->SetLayout(layout);
         m_VertexArray->SetVertexBuffer(vertexBuffer);
 
-        int count = 18;
-        uint32_t indices[count] =
+        constexpr int count = 18;
+        constexpr uint32_t indices[count] =
         {
             0, 1, 2,
             0, 2, 3,
@@ -38,18 +38,18 @@ namespace RenderingEngine
             2, 3, 4,
             3, 0, 4
         };
-        indexBuffer.reset(new IndexBuffer(indices, count));
+        indexBuffer = std::make_shared<IndexBuffer>(indices, count);
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
-        m_TestShader.reset(new Shader(
+        m_TestShader = std::make_shared<Shader>(
             "Resources/Shaders/standart.vert",
-            "Resources/Shaders/standart.frag"));
+            "Resources/Shaders/standart.frag");
 
-        m_QuadShader.reset(new Shader(
+        m_QuadShader = std::make_shared<Shader>(
             "Resources/Shaders/quad.vert",
-            "Resources/Shaders/quad.frag"));
+            "Resources/Shaders/quad.frag");
 
-        m_TestTransform.reset(new Transform());
+        m_TestTransform = std::make_shared<Transform>();
 
         Renderer::Initialize();
     }
@@ -69,7 +69,7 @@ namespace RenderingEngine
         Renderer::Clear({0, 0, 0, 1});
         Renderer::RenderIndexed(m_VertexArray, m_TestShader, m_TestTransform->GetTRSMatrix());
 
-        Transform quadTransform = Transform();
+        auto quadTransform = Transform();
         //Forward
         quadTransform.Position = {0.0f, 0.0f, 5.0f - 0.5f};
         quadTransform.Rotation = {0.0f, 0.0f, 0.0f};

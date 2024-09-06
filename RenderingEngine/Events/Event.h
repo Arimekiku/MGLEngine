@@ -30,12 +30,12 @@ namespace RenderingEngine
 	public:
 		virtual ~Event() = default;
 
-		virtual EventType GetEventType() const = 0;
-		virtual int GetCategory() const = 0;
+		[[nodiscard]] virtual EventType GetEventType() const = 0;
+		[[nodiscard]] virtual int GetCategory() const = 0;
 
-		virtual std::string ToString() const { return "Event"; }
+		[[nodiscard]] virtual std::string ToString() const { return "Event"; }
 
-		bool InCategory(const EventCategory category) const { return GetCategory() & category; }
+		[[nodiscard]] bool InCategory(const EventCategory category) const { return GetCategory() & category; }
 		bool Active = true;
 	};
 

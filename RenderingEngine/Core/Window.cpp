@@ -1,6 +1,6 @@
 #include "mxpch.h"
 
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include "Window.h"
 
 #include "Events/KeyEvent.h"
@@ -85,10 +85,10 @@ namespace RenderingEngine
 
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, const uint32_t keycode)
 		{
-			WindowData& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+			auto& [_, fun] = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
 			KeyTypedEvent event(keycode);
-			data.Callback(event);
+			fun(event);
 		});
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* w, const int button, const int action, int modes)

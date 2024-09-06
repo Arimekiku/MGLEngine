@@ -1,9 +1,9 @@
 #include "mxpch.h"
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 #include "Bootstrapper.h"
 
-#include "imgui.h"
+#include <imgui.h>
 #include "Events/WindowEvent.h"
 #include "Layer/ImGui/GuiLayer.h"
 #include "Layer/Scene/SceneLayer.h"
