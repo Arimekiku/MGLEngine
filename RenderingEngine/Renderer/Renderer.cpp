@@ -12,17 +12,18 @@ namespace RenderingEngine
         //-------------------- QUAD --------------------
         s_RenderData.QuadVertexArray = std::make_shared<VertexArray>();
 
-        constexpr float quadVertex[4 * 7] = {
-            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        constexpr float quadVertex[4 * 9] = {
+            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+            0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
         };
         s_RenderData.QuadVertexBuffer = std::make_shared<VertexBuffer>(quadVertex, sizeof(quadVertex));
 
         const RenderBufferLayout quadLayout = {
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float4, "a_Color"},
+            {ShaderDataType::Float2, "a_TexCoord"}
         };
         s_RenderData.QuadVertexBuffer->SetLayout(quadLayout);
         s_RenderData.QuadVertexArray->SetVertexBuffer(s_RenderData.QuadVertexBuffer);
@@ -39,21 +40,22 @@ namespace RenderingEngine
         //-------------------- CUBE --------------------
         s_RenderData.CubeVertexArray = std::make_shared<VertexArray>();
 
-        constexpr float cubeVertex[8 * 7] = {
-            -0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,
-            -0.5f, 0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f
+        constexpr float cubeVertex[8 * 9] = {
+            -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 1.0f
         };
         s_RenderData.CubeVertexBuffer = std::make_shared<VertexBuffer>(cubeVertex, sizeof(cubeVertex));
 
         const RenderBufferLayout cubeLayout = {
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float4, "a_Color"},
+            {ShaderDataType::Float2, "a_TexCoord"}
         };
         s_RenderData.CubeVertexBuffer->SetLayout(cubeLayout);
         s_RenderData.CubeVertexArray->SetVertexBuffer(s_RenderData.CubeVertexBuffer);

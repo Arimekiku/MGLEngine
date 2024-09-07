@@ -3,6 +3,7 @@
 #include "Core/Layer/Layer.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Shader.h"
+#include "Renderer/Texture.h"
 #include "Renderer/Transform.h"
 #include "Renderer/VertexArray.h"
 
@@ -19,6 +20,7 @@ namespace RenderingEngine
     private:
         Ref<Shader> m_QuadShader;
         Ref<Shader> m_TestShader;
+        Ref<Texture> m_TestTexture;
         Ref<Transform> m_TestTransform;
         Ref<VertexBuffer> vertexBuffer;
         Ref<IndexBuffer> indexBuffer;

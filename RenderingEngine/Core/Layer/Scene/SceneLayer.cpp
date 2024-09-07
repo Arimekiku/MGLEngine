@@ -12,18 +12,19 @@ namespace RenderingEngine
     {
         m_VertexArray = std::make_shared<VertexArray>();
 
-        constexpr float ver[5 * 7] = {
-            -0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f,
-            -0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f,
-            0.5f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
-            0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f,
-            0.0f, 0.8f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        constexpr float ver[5 * 9] = {
+            -0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+            -0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 5.0f, 0.0f,
+            0.5f, 0.0f, -0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+            0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 5.0f, 0.0f,
+            0.0f, 0.8f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 2.5f, 5.0f
         };
         vertexBuffer = std::make_shared<VertexBuffer>(ver, sizeof(ver));
 
         const RenderBufferLayout layout = {
             {ShaderDataType::Float3, "a_Position"},
-            {ShaderDataType::Float4, "a_Color"}
+            {ShaderDataType::Float4, "a_Color"},
+            {ShaderDataType::Float2, "a_TexCoord"}
         };
         vertexBuffer->SetLayout(layout);
         m_VertexArray->SetVertexBuffer(vertexBuffer);
@@ -49,6 +50,10 @@ namespace RenderingEngine
             "Resources/Shaders/quad.vert",
             "Resources/Shaders/quad.frag");
 
+        m_TestTexture = std::make_shared<Texture>("Resources/Images/face.png");
+        m_QuadShader->Bind();
+        m_QuadShader->BindUniformInt1("u_Texture", 0);
+
         m_TestTransform = std::make_shared<Transform>();
 
         Renderer::Initialize();
@@ -67,10 +72,14 @@ namespace RenderingEngine
         ImGui::End();
 
         Renderer::Clear({0, 0, 0, 1});
-        Renderer::RenderIndexed(m_VertexArray, m_TestShader, m_TestTransform->GetTRSMatrix());
+        m_TestTexture->Bind();
+        Renderer::RenderIndexed(m_VertexArray, m_QuadShader, m_TestTransform->GetTRSMatrix());
 
-        auto cubeTransform = Transform(glm::vec3(0, 0, 5));
+        const auto cubeTransform = Transform(glm::vec3(0, 0, 5));
+        const auto quadTransform = Transform(glm::vec3(3, 3, 2));
+
         Renderer::RenderCube(m_QuadShader, cubeTransform.GetTRSMatrix());
+        Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
     }
 
     void SceneLayer::OnEvent(Event& event)

@@ -56,22 +56,29 @@ file(GLOB IMGUI_SOURCES
         ${IMGUI_DIR}/**.h)
 add_library(imgui ${IMGUI_SOURCES})
 
-target_include_directories(imgui PRIVATE ${IMGUI_DIR})
-set_target_properties(glfw imgui glad spdlog PROPERTIES FOLDER "vendor")
+#stb
+set(STB_DIR "${PROJECT_LIBRARIES_DIR}/stb")
+file(GLOB STB_SOURCES
+        ${STB_DIR}/**.cpp
+        ${STB_DIR}/**.h)
+add_library(stb ${IMGUI_SOURCES})
 
-#################################Executable####################################
+target_include_directories(imgui PRIVATE ${IMGUI_DIR})
+set_target_properties(glfw imgui glad spdlog stb PROPERTIES FOLDER "vendor")
+
+################################# Executable ####################################
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 
 target_include_directories(
         ${PROJECT_NAME}
-        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}"
+        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}"
         PRIVATE "${PROJECT_SOURCE_DIR}"
 )
 
 target_link_libraries(
         ${PROJECT_NAME}
-        PUBLIC glfw opengl32.lib spdlog glad imgui glm
+        PUBLIC glfw opengl32.lib spdlog glad imgui glm stb
         PRIVATE ${CMAKE_DL_LIBS}
 )
 
