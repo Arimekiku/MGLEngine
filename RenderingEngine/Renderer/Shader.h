@@ -24,7 +24,7 @@ namespace RenderingEngine
         void BindUniformInt2(const std::string& name, const glm::i32vec2& vec) const;
         void BindUniformInt1(const std::string& name, const int& val) const;
 
-        const uint32_t& GetRendererID() const { return m_RendererID; }
+        [[nodiscard]] const uint32_t& GetRendererID() const { return m_RendererID; }
 
     private:
         std::string GetContent(const std::string& path);

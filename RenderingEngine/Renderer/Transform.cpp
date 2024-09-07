@@ -14,9 +14,9 @@ namespace RenderingEngine
 
     glm::mat4 Transform::GetTRSMatrix() const
     {
-        const glm::mat4 translation = glm::translate({1.0f}, Position);
+        const glm::mat4 translation = glm::translate(glm::mat4(1.0f), Position);
 
-        const glm::mat4 scaling = glm::scale({1.0f}, Scale);
+        const glm::mat4 scaling = glm::scale(glm::mat4(1.0f), Scale);
 
         float rad = glm::radians(Rotation.x);
         const glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), rad, {1, 0, 0});

@@ -69,31 +69,8 @@ namespace RenderingEngine
         Renderer::Clear({0, 0, 0, 1});
         Renderer::RenderIndexed(m_VertexArray, m_TestShader, m_TestTransform->GetTRSMatrix());
 
-        auto quadTransform = Transform();
-        //Forward
-        quadTransform.Position = {0.0f, 0.0f, 5.0f - 0.5f};
-        quadTransform.Rotation = {0.0f, 0.0f, 0.0f};
-        Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
-        //Back
-        quadTransform.Position = {0.0f, 0.0f, 5.0f + 0.5f};
-        quadTransform.Rotation = {0.0f, 180.0f, 0.0f};
-        Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
-        //Left
-        quadTransform.Position = {0.0f - 0.5f, 0.0f, 5.0f};
-        quadTransform.Rotation = {0.0f, 90.0f, 0.0f};
-        Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
-        //Right
-        quadTransform.Position = {0.0f + 0.5f, 0.0f, 5.0f};
-        quadTransform.Rotation = {0.0f, 270.0f, 0.0f};
-        Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
-        //Up
-        quadTransform.Position = {0.0f, 0.0f + 0.5f, 5.0f};
-        quadTransform.Rotation = {90.0f, 0.0f, 0.0f};
-        Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
-        //Down
-        quadTransform.Position = {0.0f, 0.0f - 0.5f, 5.0f};
-        quadTransform.Rotation = {270.0f, 0.0f, 0.0f};
-        Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
+        auto cubeTransform = Transform(glm::vec3(0, 0, 5));
+        Renderer::RenderCube(m_QuadShader, cubeTransform.GetTRSMatrix());
     }
 
     void SceneLayer::OnEvent(Event& event)

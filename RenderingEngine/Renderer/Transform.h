@@ -11,10 +11,10 @@ namespace RenderingEngine
                            const glm::vec3& initRot = glm::vec3(0),
                            const glm::vec3& initScale = glm::vec3(1));
 
-        glm::vec3 Position{};
-        glm::vec3 Rotation{};
-        glm::vec3 Scale{};
+        glm::vec3 Position = glm::vec3(0, 0, 0);
+        glm::vec3 Rotation = glm::vec3(0, 0, 0);
+        glm::vec3 Scale = glm::vec3(1, 1, 1);
 
-        glm::mat4 GetTRSMatrix() const;
+        [[nodiscard]] glm::mat4 GetTRSMatrix() const;
     };
 }

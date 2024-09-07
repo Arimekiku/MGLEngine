@@ -14,6 +14,10 @@ namespace RenderingEngine
         Ref<IndexBuffer> QuadIndexBuffer;
         Ref<VertexBuffer> QuadVertexBuffer;
         Ref<VertexArray> QuadVertexArray;
+
+        Ref<IndexBuffer> CubeIndexBuffer;
+        Ref<VertexBuffer> CubeVertexBuffer;
+        Ref<VertexArray> CubeVertexArray;
     };
 
     class Renderer
@@ -25,6 +29,8 @@ namespace RenderingEngine
         static void Clear(glm::vec4 color);
 
         static void RenderQuad(const Ref<Shader>& shader, const glm::mat4& trsMatrix = glm::mat4(1.0f));
+
+        static void RenderCube(const Ref<Shader>& shader, const glm::mat4& trsMatrix = glm::mat4(1.0f));
 
         static void RenderIndexed(const Ref<VertexArray>& vertices,
                                   const Ref<Shader>& shader,
