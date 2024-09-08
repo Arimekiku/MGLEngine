@@ -47,7 +47,7 @@ namespace RenderingEngine
         glBindVertexArray(0);
     }
 
-    void VertexArray::SetVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer)
+    void VertexArray::SetVertexBuffer(const Ref<VertexBuffer>& buffer)
     {
         LOG_CORE_ASSERT(buffer->GetLayout().GetElements().size(), "Layout was not setted properly!")
 
@@ -70,7 +70,7 @@ namespace RenderingEngine
         m_VertexBuffer = buffer;
     }
 
-    void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer)
+    void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& buffer)
     {
         glBindVertexArray(m_RendererID);
         buffer->Bind();

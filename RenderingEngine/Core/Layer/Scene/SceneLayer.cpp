@@ -10,7 +10,7 @@ namespace RenderingEngine
 {
     SceneLayer::SceneLayer() : m_Camera({0, 0, -2})
     {
-        m_VertexArray = std::make_shared<VertexArray>();
+        m_PyramidMesh = std::make_shared<Mesh>();
 
         constexpr float ver[5 * 9] = {
             -0.5f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -19,15 +19,7 @@ namespace RenderingEngine
             0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 5.0f, 0.0f,
             0.0f, 0.8f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 2.5f, 5.0f
         };
-        vertexBuffer = std::make_shared<VertexBuffer>(ver, sizeof(ver));
-
-        const RenderBufferLayout layout = {
-            {ShaderDataType::Float3, "a_Position"},
-            {ShaderDataType::Float4, "a_Color"},
-            {ShaderDataType::Float2, "a_TexCoord"}
-        };
-        vertexBuffer->SetLayout(layout);
-        m_VertexArray->SetVertexBuffer(vertexBuffer);
+        m_PyramidMesh->SetVertices(ver, sizeof(ver));
 
         constexpr int count = 18;
         constexpr uint32_t indices[count] =
@@ -39,8 +31,7 @@ namespace RenderingEngine
             2, 3, 4,
             3, 0, 4
         };
-        indexBuffer = std::make_shared<IndexBuffer>(indices, count);
-        m_VertexArray->SetIndexBuffer(indexBuffer);
+        m_PyramidMesh->SetIndices(indices, count);
 
         m_TestShader = std::make_shared<Shader>(
             "Resources/Shaders/standart.vert",
@@ -73,12 +64,13 @@ namespace RenderingEngine
 
         Renderer::Clear({0, 0, 0, 1});
         m_TestTexture->Bind();
-        Renderer::RenderIndexed(m_VertexArray, m_QuadShader, m_TestTransform->GetTRSMatrix());
+
+        Renderer::RenderIndexed(m_PyramidMesh->GetVertexArray(), m_QuadShader, m_TestTransform->GetTRSMatrix());
 
         const auto cubeTransform = Transform(glm::vec3(0, 0, 5));
-        const auto quadTransform = Transform(glm::vec3(3, 3, 2));
-
         Renderer::RenderCube(m_QuadShader, cubeTransform.GetTRSMatrix());
+
+        const auto quadTransform = Transform(glm::vec3(3, 3, 2));
         Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
     }
 

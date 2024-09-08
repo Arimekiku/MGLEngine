@@ -2,6 +2,7 @@
 
 #include "Core/Layer/Layer.h"
 #include "Renderer/Camera.h"
+#include "Renderer/Mesh.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
 #include "Renderer/Transform.h"
@@ -22,9 +23,7 @@ namespace RenderingEngine
         Ref<Shader> m_TestShader;
         Ref<Texture> m_TestTexture;
         Ref<Transform> m_TestTransform;
-        Ref<VertexBuffer> vertexBuffer;
-        Ref<IndexBuffer> indexBuffer;
-        Ref<VertexArray> m_VertexArray;
+        Ref<Mesh> m_PyramidMesh;
 
         Camera m_Camera;
         bool m_FirstClick = true;

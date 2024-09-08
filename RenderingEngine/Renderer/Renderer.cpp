@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include <memory>
+
 namespace RenderingEngine
 {
     RenderData Renderer::s_RenderData = RenderData();
@@ -10,7 +12,7 @@ namespace RenderingEngine
     void Renderer::Initialize()
     {
         //-------------------- QUAD --------------------
-        s_RenderData.QuadVertexArray = std::make_shared<VertexArray>();
+        s_RenderData.QuadMesh = std::make_shared<Mesh>();
 
         constexpr float quadVertex[4 * 9] = {
             -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
@@ -18,27 +20,16 @@ namespace RenderingEngine
             0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
             0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
         };
-        s_RenderData.QuadVertexBuffer = std::make_shared<VertexBuffer>(quadVertex, sizeof(quadVertex));
+        s_RenderData.QuadMesh->SetVertices(quadVertex, sizeof(quadVertex));
 
-        const RenderBufferLayout quadLayout = {
-            {ShaderDataType::Float3, "a_Position"},
-            {ShaderDataType::Float4, "a_Color"},
-            {ShaderDataType::Float2, "a_TexCoord"}
-        };
-        s_RenderData.QuadVertexBuffer->SetLayout(quadLayout);
-        s_RenderData.QuadVertexArray->SetVertexBuffer(s_RenderData.QuadVertexBuffer);
-
-        constexpr int quadIndicesCount = 6;
-        constexpr uint32_t quadIndices[quadIndicesCount] =
+        constexpr uint32_t quadIndices[6] =
         {
-            0, 1, 2,
-            0, 2, 3,
+            0, 1, 2, 0, 2, 3,
         };
-        s_RenderData.QuadIndexBuffer = std::make_shared<IndexBuffer>(quadIndices, quadIndicesCount);
-        s_RenderData.QuadVertexArray->SetIndexBuffer(s_RenderData.QuadIndexBuffer);
+        s_RenderData.QuadMesh->SetIndices(quadIndices, 6);
         //----------------------------------------------
         //-------------------- CUBE --------------------
-        s_RenderData.CubeVertexArray = std::make_shared<VertexArray>();
+        s_RenderData.CubeMesh = std::make_shared<Mesh>();
 
         constexpr float cubeVertex[8 * 9] = {
             -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 0.0f,
@@ -50,18 +41,9 @@ namespace RenderingEngine
              0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   1.0f, 1.0f,
             -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f, 1.0f,   0.0f, 1.0f
         };
-        s_RenderData.CubeVertexBuffer = std::make_shared<VertexBuffer>(cubeVertex, sizeof(cubeVertex));
+        s_RenderData.CubeMesh->SetVertices(cubeVertex, sizeof(cubeVertex));
 
-        const RenderBufferLayout cubeLayout = {
-            {ShaderDataType::Float3, "a_Position"},
-            {ShaderDataType::Float4, "a_Color"},
-            {ShaderDataType::Float2, "a_TexCoord"}
-        };
-        s_RenderData.CubeVertexBuffer->SetLayout(cubeLayout);
-        s_RenderData.CubeVertexArray->SetVertexBuffer(s_RenderData.CubeVertexBuffer);
-
-        constexpr int cubeIndicesCount = 6 * 6;
-        constexpr uint32_t cubeIndices[cubeIndicesCount] =
+        constexpr uint32_t cubeIndices[6 * 6] =
         {
             0, 1, 2, 2, 3, 0, //FRONT
             1, 5, 6, 6, 2, 1, //RIGHT
@@ -70,8 +52,7 @@ namespace RenderingEngine
             4, 5, 1, 1, 0, 4, //BOTTOM
             3, 2, 6, 6, 7, 3, //TOP
         };
-        s_RenderData.CubeIndexBuffer = std::make_shared<IndexBuffer>(cubeIndices, cubeIndicesCount);
-        s_RenderData.CubeVertexArray->SetIndexBuffer(s_RenderData.CubeIndexBuffer);
+        s_RenderData.CubeMesh->SetIndices(cubeIndices, 6 * 6);
         //----------------------------------------------
     }
 
@@ -88,12 +69,12 @@ namespace RenderingEngine
 
     void Renderer::RenderQuad(const Ref<Shader>& shader, const glm::mat4& trsMatrix)
     {
-        RenderIndexed(s_RenderData.QuadVertexArray, shader, trsMatrix);
+        RenderIndexed(s_RenderData.QuadMesh->GetVertexArray(), shader, trsMatrix);
     }
 
     void Renderer::RenderCube(const Ref<Shader>& shader, const glm::mat4& trsMatrix)
     {
-        RenderIndexed(s_RenderData.CubeVertexArray, shader, trsMatrix);
+        RenderIndexed(s_RenderData.CubeMesh->GetVertexArray(), shader, trsMatrix);
     }
 
     void Renderer::RenderIndexed(const Ref<VertexArray>& vertices,

@@ -14,11 +14,11 @@ namespace RenderingEngine
         void Bind() const;
         static void Unbind();
 
-        void SetVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer);
-        void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer);
+        void SetVertexBuffer(const Ref<VertexBuffer>& buffer);
+        void SetIndexBuffer(const Ref<IndexBuffer>& buffer);
 
-        [[nodiscard]] const std::shared_ptr<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
-        [[nodiscard]] const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
+        [[nodiscard]] const Ref<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
+        [[nodiscard]] const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 
     private:
         uint32_t m_RendererID = 0;

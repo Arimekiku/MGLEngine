@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "VertexArray.h"
 #include "Camera.h"
+#include "Mesh.h"
 
 namespace RenderingEngine
 {
@@ -11,13 +12,8 @@ namespace RenderingEngine
     {
         glm::mat4 ProjViewMat;
 
-        Ref<IndexBuffer> QuadIndexBuffer;
-        Ref<VertexBuffer> QuadVertexBuffer;
-        Ref<VertexArray> QuadVertexArray;
-
-        Ref<IndexBuffer> CubeIndexBuffer;
-        Ref<VertexBuffer> CubeVertexBuffer;
-        Ref<VertexArray> CubeVertexArray;
+        Ref<Mesh> QuadMesh;
+        Ref<Mesh> CubeMesh;
     };
 
     class Renderer
