@@ -4,34 +4,20 @@ project(RenderingEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
-set(PROJECT_OUTPUT_DIR "${CMAKE_BINARY_DIR}/../bin")
-set(PROJECT_BIN_DIR ${CMAKE_CURRENT_BINARY_DIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_OUTPUT_DIR})
-set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/RenderingEngine")
+set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin")
+set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
 set(PROJECT_LIBRARIES_DIR "${CMAKE_SOURCE_DIR}/vendor")
-set(RESOURCE_DIR "${PROJECT_SOURCE_DIR}/Resources")
+set(RESOURCE_DIR "${PROJECT_SOURCE_DIR}/Editor/Resources")
 
 # define headers
-file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/*.h ${PROJECT_SOURCE_DIR}/*.hpp ${PROJECT_SOURCE_DIR}/*.ini)
+file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/*.h)
 
 # define executables
-file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cpp ${PROJECT_SOURCE_DIR}/*.c)
+file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cpp)
 
 # define resources in binaries
 file(COPY ${RESOURCE_DIR} DESTINATION ${PROJECT_OUTPUT_DIR})
-
-# set all files
-set(AllFile ${HEADER_FILES} ${SOURCE_FILES})
-source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${AllFile})
-
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
-else ()
-    set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
-    add_definitions(-DRELEASE_MODE_ON=0)
-endif ()
 
 # GLFW
 set(GLFW_DIR "${PROJECT_LIBRARIES_DIR}/GLFW")
@@ -70,6 +56,12 @@ set_target_properties(glfw imgui glad spdlog stb PROPERTIES FOLDER "vendor")
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${PROJECT_SOURCE_DIR}/Editor/Resources/")
+else()
+    target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./Resources/")
+endif()
+
 target_include_directories(
         ${PROJECT_NAME}
         PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}"
@@ -82,5 +74,5 @@ target_link_libraries(
         PRIVATE ${CMAKE_DL_LIBS}
 )
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/RenderingEngine/mxpch.h)
+target_precompile_headers(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/mxpch.h)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
