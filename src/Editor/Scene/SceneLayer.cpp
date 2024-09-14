@@ -13,24 +13,39 @@ namespace RenderingEngine
     {
         m_PyramidMesh = std::make_shared<Mesh>();
 
-        constexpr float ver[5 * 9] = {
-            -0.5f,  0.0f,  0.5f,   1.0f, 0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-            -0.5f,  0.0f, -0.5f,   0.0f, 1.0f, 0.0f, 1.0f,   5.0f, 0.0f,
-             0.5f,  0.0f, -0.5f,   0.0f, 0.0f, 1.0f, 1.0f,   0.0f, 0.0f,
-             0.5f,  0.0f,  0.5f,   0.0f, 0.0f, 1.0f, 1.0f,   5.0f, 0.0f,
-             0.0f,  0.8f,  0.0f,   0.0f, 1.0f, 1.0f, 1.0f,   2.5f, 5.0f
+        constexpr float ver[16 * 11] = {
+            -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+            -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 5.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+             0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 5.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+             0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+
+            -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,     -0.8f, 0.5f,  0.0f, // Left Side
+            -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,     -0.8f, 0.5f,  0.0f, // Left Side
+             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,     -0.8f, 0.5f,  0.0f, // Left Side
+
+            -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
+             0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
+             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
+
+             0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.8f, 0.5f,  0.0f, // Right side
+             0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.8f, 0.5f,  0.0f, // Right side
+             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.8f, 0.5f,  0.0f, // Right side
+
+             0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 0.5f,  0.8f, // Facing side
+            -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 0.5f,  0.8f, // Facing side
+             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 0.5f,  0.8f,  // Facing side
         };
         m_PyramidMesh->SetVertices(ver, sizeof(ver));
 
         constexpr int count = 18;
         constexpr uint32_t indices[count] =
         {
-            0, 1, 2,
-            0, 2, 3,
-            0, 1, 4,
-            1, 2, 4,
-            2, 3, 4,
-            3, 0, 4
+            0, 1, 2, // Bottom side
+            0, 2, 3, // Bottom side
+            4, 6, 5, // Left side
+            7, 9, 8, // Non-facing side
+            10, 12, 11, // Right side
+            13, 15, 14 // Facing side
         };
         m_PyramidMesh->SetIndices(indices, count);
 
@@ -47,6 +62,14 @@ namespace RenderingEngine
         m_QuadShader->BindUniformInt1("u_Texture", 0);
 
         m_TestTransform = std::make_shared<Transform>();
+
+        m_Light = std::make_shared<AreaLighting>(glm::vec3(0, 4, 4));
+        m_QuadShader->Bind();
+        m_QuadShader->BindUniformFloat4("u_LightColor", m_Light->Color);
+        m_QuadShader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
+        m_TestShader->Bind();
+        m_TestShader->BindUniformFloat4("u_LightColor", m_Light->Color);
+        m_TestShader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
 
         Renderer::Initialize();
     }

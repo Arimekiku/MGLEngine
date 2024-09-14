@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Renderer/Core.h"
+#include "Renderer/Components/AreaLighting.h"
 #include "Renderer/Core/Layer/Layer.h"
 #include "Renderer/Components/Camera.h"
 #include "Renderer/Components/Mesh.h"
@@ -25,6 +26,8 @@ namespace RenderingEngine
         Ref<Texture> m_TestTexture;
         Ref<Transform> m_TestTransform;
         Ref<Mesh> m_PyramidMesh;
+
+        Ref<AreaLighting> m_Light;
 
         Camera m_Camera;
         bool m_FirstClick = true;

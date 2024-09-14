@@ -15,8 +15,9 @@ namespace RenderingEngine
 
         const RenderBufferLayout cubeLayout = {
             {ShaderDataType::Float3, "a_Position"},
-            {ShaderDataType::Float4, "a_Color"},
-            {ShaderDataType::Float2, "a_TexCoord"}
+            {ShaderDataType::Float3, "a_Color"},
+            {ShaderDataType::Float2, "a_TexCoord"},
+            {ShaderDataType::Float3, "a_Normals"}
         };
         m_VertexBuffer->SetLayout(cubeLayout);
         m_VertexArray->SetVertexBuffer(m_VertexBuffer);
