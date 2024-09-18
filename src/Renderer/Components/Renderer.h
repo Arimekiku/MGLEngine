@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Renderer/Core.h"
-#include "Shader.h"
-#include "VertexArray.h"
 #include "Camera.h"
-#include "Mesh.h"
+#include "Model.h"
 
 namespace RenderingEngine
 {
@@ -27,6 +25,8 @@ namespace RenderingEngine
         static void RenderQuad(const Ref<Shader>& shader, const glm::mat4& trsMatrix = glm::mat4(1.0f));
 
         static void RenderCube(const Ref<Shader>& shader, const glm::mat4& trsMatrix = glm::mat4(1.0f));
+
+        static void RenderModel(const Ref<Model>& model);
 
         static void RenderIndexed(const Ref<VertexArray>& vertices,
                                   const Ref<Shader>& shader,

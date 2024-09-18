@@ -11,7 +11,7 @@ namespace RenderingEngine
 {
     SceneLayer::SceneLayer() : m_Camera(glm::vec3(0, 0, -2))
     {
-        m_PyramidMesh = std::make_shared<Mesh>();
+        const auto& m_PyramidMesh = std::make_shared<Mesh>();
 
         constexpr float ver[16 * 11] = {
             -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
@@ -49,27 +49,20 @@ namespace RenderingEngine
         };
         m_PyramidMesh->SetIndices(indices, count);
 
-        m_TestShader = std::make_shared<Shader>(
-            RESOURCES_PATH "Shaders/standart.vert",
-            RESOURCES_PATH "Shaders/standart.frag");
-
-        m_QuadShader = std::make_shared<Shader>(
-            RESOURCES_PATH "Shaders/quad.vert",
-            RESOURCES_PATH "Shaders/quad.frag");
+        const auto& m_DefaultShader = std::make_shared<Shader>(
+            RESOURCES_PATH "Shaders/default.vert",
+            RESOURCES_PATH "Shaders/default.frag");
 
         m_TestTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
-        m_QuadShader->Bind();
-        m_QuadShader->BindUniformInt1("u_Texture", 0);
-
-        m_TestTransform = std::make_shared<Transform>();
+        m_DefaultShader->Bind();
+        m_DefaultShader->BindUniformInt1("u_Texture", 0);
 
         m_Light = std::make_shared<AreaLighting>(glm::vec3(0, 4, 4));
-        m_QuadShader->Bind();
-        m_QuadShader->BindUniformFloat4("u_LightColor", m_Light->Color);
-        m_QuadShader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
-        m_TestShader->Bind();
-        m_TestShader->BindUniformFloat4("u_LightColor", m_Light->Color);
-        m_TestShader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
+        m_DefaultShader->Bind();
+        m_DefaultShader->BindUniformFloat4("u_LightColor", m_Light->Color);
+        m_DefaultShader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
+
+        m_Pyramid = std::make_shared<Model>(m_PyramidMesh, m_DefaultShader);
 
         Renderer::Initialize();
     }
@@ -81,21 +74,21 @@ namespace RenderingEngine
         m_Camera.EveryUpdate();
 
         ImGui::Begin("Temple");
-        ImGui::InputFloat3("Position", glm::value_ptr(m_TestTransform->Position));
-        ImGui::InputFloat3("Rotation", glm::value_ptr(m_TestTransform->Rotation));
-        ImGui::InputFloat3("Scale", glm::value_ptr(m_TestTransform->Scale));
+        ImGui::InputFloat3("Position", glm::value_ptr(m_Pyramid->GetTransform()->Position));
+        ImGui::InputFloat3("Rotation", glm::value_ptr(m_Pyramid->GetTransform()->Rotation));
+        ImGui::InputFloat3("Scale", glm::value_ptr(m_Pyramid->GetTransform()->Scale));
         ImGui::End();
 
         Renderer::Clear({0, 0, 0, 1});
         m_TestTexture->Bind();
 
-        Renderer::RenderIndexed(m_PyramidMesh->GetVertexArray(), m_QuadShader, m_TestTransform->GetTRSMatrix());
+        Renderer::RenderModel(m_Pyramid);
 
         const auto cubeTransform = Transform(glm::vec3(0, 0, 5));
-        Renderer::RenderCube(m_QuadShader, cubeTransform.GetTRSMatrix());
+        Renderer::RenderCube(m_Pyramid->GetShader(), cubeTransform.GetTRSMatrix());
 
         const auto quadTransform = Transform(glm::vec3(3, 3, 2));
-        Renderer::RenderQuad(m_QuadShader, quadTransform.GetTRSMatrix());
+        Renderer::RenderQuad(m_Pyramid->GetShader(), quadTransform.GetTRSMatrix());
     }
 
     void SceneLayer::OnEvent(Event& event)
