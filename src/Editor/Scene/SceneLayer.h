@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Renderer/Core.h"
+#include "Renderer/Components/Model.h"
 #include "Renderer/Components/AreaLighting.h"
 #include "Renderer/Core/Layer/Layer.h"
 #include "Renderer/Components/Camera.h"
@@ -9,8 +10,6 @@
 
 namespace RenderingEngine
 {
-    class Model;
-
     class SceneLayer final : public Layer
     {
     public:
@@ -21,7 +20,8 @@ namespace RenderingEngine
 
     private:
         Ref<Model> m_Pyramid;
-        Ref<Texture> m_TestTexture;
+        Ref<Material> m_DefaultMat;
+        Ref<Texture> m_Texture;
         Ref<AreaLighting> m_Light;
 
         Camera m_Camera;

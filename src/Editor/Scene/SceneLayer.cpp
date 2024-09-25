@@ -1,5 +1,4 @@
 #include "mxpch.h"
-
 #include "SceneLayer.h"
 #include "Renderer/Components/Renderer.h"
 
@@ -11,31 +10,46 @@ namespace RenderingEngine
 {
     SceneLayer::SceneLayer() : m_Camera(glm::vec3(0, 0, -2))
     {
-        const auto& m_PyramidMesh = std::make_shared<Mesh>();
+        const auto& m_DefaultShader = std::make_shared<Shader>(
+            RESOURCES_PATH "Shaders/default.vert",
+            RESOURCES_PATH "Shaders/default.frag");
 
-        constexpr float ver[16 * 11] = {
-            -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
-            -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 5.0f,      0.0f, -1.0f, 0.0f, // Bottom side
-             0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 5.0f,      0.0f, -1.0f, 0.0f, // Bottom side
-             0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, -1.0f, 0.0f, // Bottom side
+        m_Texture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
+        m_Light = std::make_shared<AreaLighting>(glm::vec3(0, 4, 4));
 
-            -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,     -0.8f, 0.5f,  0.0f, // Left Side
-            -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,     -0.8f, 0.5f,  0.0f, // Left Side
-             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,     -0.8f, 0.5f,  0.0f, // Left Side
+        m_DefaultShader->Bind();
+        m_DefaultShader->BindUniformInt1("u_Texture", 0);
+        m_DefaultShader->BindUniformFloat4("u_LightColor", m_Light->Color);
+        m_DefaultShader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
 
-            -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
-             0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
-             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 0.5f, -0.8f, // Non-facing side
+        m_DefaultMat = std::make_shared<Material>(m_DefaultShader);
+        m_DefaultMat->Albedo = glm::vec3(0.83f, 0.70f, 0.44f);
 
-             0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	 0.0f, 0.0f,      0.8f, 0.5f,  0.0f, // Right side
-             0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.8f, 0.5f,  0.0f, // Right side
-             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.8f, 0.5f,  0.0f, // Right side
+        m_Pyramid = std::make_shared<Model>(m_DefaultMat);
 
-             0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	 5.0f, 0.0f,      0.0f, 0.5f,  0.8f, // Facing side
-            -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f, 	 0.0f, 0.0f,      0.0f, 0.5f,  0.8f, // Facing side
-             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	 2.5f, 5.0f,      0.0f, 0.5f,  0.8f,  // Facing side
+        constexpr float ver[16 * 8] = {
+            -0.5f, 0.0f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f, 0.0f, // Bottom side
+            -0.5f, 0.0f, -0.5f,	  0.0f, 5.0f,   0.0f, -1.0f, 0.0f, // Bottom side
+             0.5f, 0.0f, -0.5f,	  5.0f, 5.0f,   0.0f, -1.0f, 0.0f, // Bottom side
+             0.5f, 0.0f,  0.5f,	  5.0f, 0.0f,   0.0f, -1.0f, 0.0f, // Bottom side
+
+            -0.5f, 0.0f,  0.5f,   0.0f, 0.0f,   -0.8f, 0.5f, 0.0f, // Left Side
+            -0.5f, 0.0f, -0.5f,   5.0f, 0.0f,   -0.8f, 0.5f, 0.0f, // Left Side
+             0.0f, 0.8f,  0.0f,   2.5f, 5.0f,   -0.8f, 0.5f, 0.0f, // Left Side
+
+            -0.5f, 0.0f, -0.5f,   5.0f, 0.0f,   0.0f, 0.5f, -0.8f, // Non-facing side
+             0.5f, 0.0f, -0.5f,   0.0f, 0.0f,   0.0f, 0.5f, -0.8f, // Non-facing side
+             0.0f, 0.8f,  0.0f,   2.5f, 5.0f,   0.0f, 0.5f, -0.8f, // Non-facing side
+
+             0.5f, 0.0f, -0.5f,   0.0f, 0.0f,   0.8f, 0.5f,  0.0f, // Right side
+             0.5f, 0.0f,  0.5f,   5.0f, 0.0f,   0.8f, 0.5f,  0.0f, // Right side
+             0.0f, 0.8f,  0.0f,   2.5f, 5.0f,   0.8f, 0.5f,  0.0f, // Right side
+
+             0.5f, 0.0f,  0.5f,   5.0f, 0.0f,   0.0f, 0.5f,  0.8f, // Facing side
+            -0.5f, 0.0f,  0.5f,   0.0f, 0.0f,   0.0f, 0.5f,  0.8f, // Facing side
+             0.0f, 0.8f,  0.0f,   2.5f, 5.0f,   0.0f, 0.5f,  0.8f, // Facing side
         };
-        m_PyramidMesh->SetVertices(ver, sizeof(ver));
+        m_Pyramid->GetMesh()->SetVertices(ver, sizeof(ver));
 
         constexpr int count = 18;
         constexpr uint32_t indices[count] =
@@ -47,22 +61,7 @@ namespace RenderingEngine
             10, 12, 11, // Right side
             13, 15, 14 // Facing side
         };
-        m_PyramidMesh->SetIndices(indices, count);
-
-        const auto& m_DefaultShader = std::make_shared<Shader>(
-            RESOURCES_PATH "Shaders/default.vert",
-            RESOURCES_PATH "Shaders/default.frag");
-
-        m_TestTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
-        m_DefaultShader->Bind();
-        m_DefaultShader->BindUniformInt1("u_Texture", 0);
-
-        m_Light = std::make_shared<AreaLighting>(glm::vec3(0, 4, 4));
-        m_DefaultShader->Bind();
-        m_DefaultShader->BindUniformFloat4("u_LightColor", m_Light->Color);
-        m_DefaultShader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
-
-        m_Pyramid = std::make_shared<Model>(m_PyramidMesh, m_DefaultShader);
+        m_Pyramid->GetMesh()->SetIndices(indices, count);
 
         Renderer::Initialize();
     }
@@ -79,16 +78,18 @@ namespace RenderingEngine
         ImGui::InputFloat3("Scale", glm::value_ptr(m_Pyramid->GetTransform()->Scale));
         ImGui::End();
 
+        m_DefaultMat->OnGuiRender();
+
         Renderer::Clear({0, 0, 0, 1});
-        m_TestTexture->Bind();
+        m_Texture->Bind();
 
         Renderer::RenderModel(m_Pyramid);
 
         const auto cubeTransform = Transform(glm::vec3(0, 0, 5));
-        Renderer::RenderCube(m_Pyramid->GetShader(), cubeTransform.GetTRSMatrix());
+        Renderer::RenderCube(m_Pyramid->GetMaterial(), cubeTransform.GetTRSMatrix());
 
         const auto quadTransform = Transform(glm::vec3(3, 3, 2));
-        Renderer::RenderQuad(m_Pyramid->GetShader(), quadTransform.GetTRSMatrix());
+        Renderer::RenderQuad(m_Pyramid->GetMaterial(), quadTransform.GetTRSMatrix());
     }
 
     void SceneLayer::OnEvent(Event& event)

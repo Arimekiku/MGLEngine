@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Material.h"
 #include "Mesh.h"
-#include "Shader.h"
 #include "Transform.h"
 
 namespace RenderingEngine
@@ -9,16 +9,17 @@ namespace RenderingEngine
     class Model
     {
     public:
-        explicit Model(const Ref<Mesh>& mesh, const Ref<Shader>& shader);
+        explicit Model(const Ref<Mesh>& mesh, const Ref<Material>& material);
+        explicit Model(const Ref<Material>& material);
         explicit Model(const char* path);
 
         Ref<Mesh> GetMesh() { return m_Mesh; }
-        Ref<Shader> GetShader() { return m_Shader; }
+        Ref<Material> GetMaterial() { return m_Material; }
         Ref<Transform> GetTransform() { return m_Transform; }
 
     private:
         Ref<Mesh> m_Mesh;
-        Ref<Shader> m_Shader;
+        Ref<Material> m_Material;
         Ref<Transform> m_Transform;
     };
 }

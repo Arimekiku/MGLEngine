@@ -3,10 +3,17 @@
 
 namespace RenderingEngine
 {
-    Model::Model(const Ref<Mesh>& mesh, const Ref<Shader>& shader)
+    Model::Model(const Ref<Mesh>& mesh, const Ref<Material>& material)
     {
         m_Mesh = mesh;
-        m_Shader = shader;
+        m_Material = material;
+        m_Transform = std::make_shared<Transform>();
+    }
+
+    Model::Model(const Ref<Material>& material)
+    {
+        m_Mesh = std::make_shared<Mesh>();
+        m_Material = material;
         m_Transform = std::make_shared<Transform>();
     }
 

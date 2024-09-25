@@ -3,7 +3,6 @@
 out vec4 color;
 
 in vec3 v_Position;
-in vec4 v_Color;
 in vec2 v_TexCoord;
 in vec3 v_Normal;
 in vec3 v_CamPos;
@@ -11,11 +10,12 @@ in vec3 v_CamPos;
 uniform sampler2D u_Texture;
 uniform vec3 u_LightPos;
 uniform vec4 u_LightColor;
+uniform vec3 u_Albedo;
 
 void main()
 {
     //ambient
-    float ambient = 0.2f;
+    vec4 ambient = vec4(u_Albedo, 1.0f);
 
     //diffuse
     vec3 normalized = normalize(v_Normal);
@@ -30,6 +30,6 @@ void main()
     float specular = specAmount * specularValue;
 
     vec4 texColor = texture(u_Texture, v_TexCoord);
-    color = texColor * v_Color * u_LightColor * (diffuse + ambient + specular);
+    color = texColor * ambient * u_LightColor * (diffuse + specular);
     color = vec4(color.x, color.y, color.z, 1f);
 }

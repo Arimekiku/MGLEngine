@@ -1,5 +1,4 @@
 #include "mxpch.h"
-
 #include "Renderer.h"
 
 #include <glad/glad.h>
@@ -13,11 +12,11 @@ namespace RenderingEngine
         //-------------------- QUAD --------------------
         s_RenderData.QuadMesh = std::make_shared<Mesh>();
 
-        constexpr float quadVertex[4 * 12] = {
-            -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,  0.0f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.0f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-             0.5f, -0.5f, 0.0f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-             0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,  0.0f, 0.0f, 1.0f
+        constexpr float quadVertex[4 * 9] = {
+            -0.5f,  0.5f, 0.0f,   1.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.0f,   1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+             0.5f, -0.5f, 0.0f,   0.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+             0.5f,  0.5f, 0.0f,   0.0f, 0.0f,  0.0f, 0.0f, 1.0f
         };
         s_RenderData.QuadMesh->SetVertices(quadVertex, sizeof(quadVertex));
 
@@ -30,36 +29,36 @@ namespace RenderingEngine
         //-------------------- CUBE --------------------
         s_RenderData.CubeMesh = std::make_shared<Mesh>();
 
-        constexpr float cubeVertex[24 * 12] = {
-            -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,   0.0f,  0.0f,  1.0f, //FRONT
-             0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,   0.0f,  0.0f,  1.0f, //FRONT
-             0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,   0.0f,  0.0f,  1.0f, //FRONT
-            -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,   0.0f,  0.0f,  1.0f, //FRONT
+        constexpr float cubeVertex[24 * 9] = {
+            -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f,  0.0f,  1.0f, //FRONT
+             0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f,  0.0f,  1.0f, //FRONT
+             0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f,  0.0f,  1.0f, //FRONT
+            -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,   0.0f,  0.0f,  1.0f, //FRONT
 
-            -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,   0.0f,  0.0f, -1.0f, //BACK
-             0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,   0.0f,  0.0f, -1.0f, //BACK
-             0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,   0.0f,  0.0f, -1.0f, //BACK
-            -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,   0.0f,  0.0f, -1.0f, //BACK
+            -0.5f, -0.5f, -0.5f,   1.0f, 1.0f,   0.0f,  0.0f, -1.0f, //BACK
+             0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f,  0.0f, -1.0f, //BACK
+             0.5f,  0.5f, -0.5f,   0.0f, 0.0f,   0.0f,  0.0f, -1.0f, //BACK
+            -0.5f,  0.5f, -0.5f,   1.0f, 0.0f,   0.0f,  0.0f, -1.0f, //BACK
 
-             0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,  -1.0f,  0.0f,  0.0f, //RIGHT
-             0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,  -1.0f,  0.0f,  0.0f, //RIGHT
-             0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,  -1.0f,  0.0f,  0.0f, //RIGHT
-             0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,  -1.0f,  0.0f,  0.0f, //RIGHT
+             0.5f, -0.5f,  0.5f,   0.0f, 1.0f,  -1.0f,  0.0f,  0.0f, //RIGHT
+             0.5f, -0.5f, -0.5f,   0.0f, 0.0f,  -1.0f,  0.0f,  0.0f, //RIGHT
+             0.5f,  0.5f, -0.5f,   1.0f, 0.0f,  -1.0f,  0.0f,  0.0f, //RIGHT
+             0.5f,  0.5f,  0.5f,   1.0f, 1.0f,  -1.0f,  0.0f,  0.0f, //RIGHT
 
-            -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,   1.0f,  0.0f,  0.0f, //LEFT
-            -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,   1.0f,  0.0f,  0.0f, //LEFT
-            -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,   1.0f,  0.0f,  0.0f, //LEFT
-            -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,   1.0f,  0.0f,  0.0f, //LEFT
+            -0.5f, -0.5f, -0.5f,   1.0f, 1.0f,   1.0f,  0.0f,  0.0f, //LEFT
+            -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   1.0f,  0.0f,  0.0f, //LEFT
+            -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,   1.0f,  0.0f,  0.0f, //LEFT
+            -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,   1.0f,  0.0f,  0.0f, //LEFT
 
-            -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,   0.0f, -1.0f,  0.0f, //BOTTOM
-             0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,   0.0f, -1.0f,  0.0f, //BOTTOM
-             0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,   0.0f, -1.0f,  0.0f, //BOTTOM
-            -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,   0.0f, -1.0f,  0.0f, //BOTTOM
+            -0.5f, -0.5f, -0.5f,   1.0f, 1.0f,   0.0f, -1.0f,  0.0f, //BOTTOM
+             0.5f, -0.5f, -0.5f,   0.0f, 1.0f,   0.0f, -1.0f,  0.0f, //BOTTOM
+             0.5f, -0.5f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f,  0.0f, //BOTTOM
+            -0.5f, -0.5f,  0.5f,   1.0f, 0.0f,   0.0f, -1.0f,  0.0f, //BOTTOM
 
-            -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,   0.0f,  1.0f,  0.0f, //TOP
-             0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,   0.0f,  1.0f,  0.0f, //TOP
-             0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,   0.0f,  1.0f,  0.0f, //TOP
-            -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,   0.0f,  1.0f,  0.0f, //TOP
+            -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,   0.0f,  1.0f,  0.0f, //TOP
+             0.5f,  0.5f,  0.5f,   1.0f, 1.0f,   0.0f,  1.0f,  0.0f, //TOP
+             0.5f,  0.5f, -0.5f,   1.0f, 0.0f,   0.0f,  1.0f,  0.0f, //TOP
+            -0.5f,  0.5f, -0.5f,   0.0f, 0.0f,   0.0f,  1.0f,  0.0f, //TOP
         };
         s_RenderData.CubeMesh->SetVertices(cubeVertex, sizeof(cubeVertex));
 
@@ -87,31 +86,36 @@ namespace RenderingEngine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void Renderer::RenderQuad(const Ref<Shader>& shader, const glm::mat4& trsMatrix)
+    void Renderer::RenderQuad(const Ref<Material>& material, const glm::mat4& trsMatrix)
     {
-        RenderIndexed(s_RenderData.QuadMesh->GetVertexArray(), shader, trsMatrix);
+        RenderIndexed(s_RenderData.QuadMesh->GetVertexArray(), material, trsMatrix);
     }
 
-    void Renderer::RenderCube(const Ref<Shader>& shader, const glm::mat4& trsMatrix)
+    void Renderer::RenderCube(const Ref<Material>& material, const glm::mat4& trsMatrix)
     {
-        RenderIndexed(s_RenderData.CubeMesh->GetVertexArray(), shader, trsMatrix);
+        RenderIndexed(s_RenderData.CubeMesh->GetVertexArray(), material, trsMatrix);
     }
 
     void Renderer::RenderModel(const Ref<Model>& model)
     {
         RenderIndexed(
             model->GetMesh()->GetVertexArray(),
-            model->GetShader(),
+            model->GetMaterial(),
             model->GetTransform()->GetTRSMatrix());
     }
 
     void Renderer::RenderIndexed(const Ref<VertexArray>& vertices,
-                                 const Ref<Shader>& shader,
+                                 const Ref<Material>& material,
                                  const glm::mat4& trsMatrix)
     {
+        const auto& shader = material->Shader;
+
         shader->Bind();
+        //bind translation matrixes
         shader->BindUniformMat4("u_camMatrix", s_RenderData.ProjViewMat);
         shader->BindUniformMat4("u_trsMatrix", trsMatrix);
+        //bind material uniforms
+        shader->BindUniformFloat3("u_Albedo", material->Albedo);
 
         vertices->Bind();
         glDrawElements(GL_TRIANGLES, vertices->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
