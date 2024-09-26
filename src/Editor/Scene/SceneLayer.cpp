@@ -14,7 +14,9 @@ namespace RenderingEngine
             RESOURCES_PATH "Shaders/default.vert",
             RESOURCES_PATH "Shaders/default.frag");
 
-        m_Texture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
+        const auto& m_FaceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
+        const auto& m_HouseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
+
         m_Light = std::make_shared<AreaLighting>(glm::vec3(0, 4, 4));
 
         shader->Bind();
@@ -23,8 +25,11 @@ namespace RenderingEngine
         shader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
 
         m_DefaultMat = std::make_shared<Material>(shader);
+        m_DefaultMat->SetTextureMap(m_HouseTexture);
+
         m_PyramidMat = std::make_shared<Material>(shader);
         m_PyramidMat->SetAlbedo(glm::vec3(0.83f, 0.70f, 0.44f));
+        m_PyramidMat->SetTextureMap(m_FaceTexture);
 
         m_Pyramid = std::make_shared<Model>(m_PyramidMat);
 
@@ -83,7 +88,6 @@ namespace RenderingEngine
         m_PyramidMat->OnGuiRender("PyramidMat");
 
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
-        m_Texture->Bind();
 
         Renderer::RenderModel(m_Pyramid);
 

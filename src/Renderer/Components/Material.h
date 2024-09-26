@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
+#include "Texture.h"
 #include "Renderer/Core.h"
 
 namespace RenderingEngine
@@ -17,6 +18,9 @@ namespace RenderingEngine
         void Bind() const;
 
         void SetShader(const Ref<Shader>& shader);
+
+        void SetTextureMap(const Ref<Texture>& newTexture);
+
         void SetAlbedo(glm::vec3 value);
         void SetRoughness(float value);
         void SetMetallic(float value);
@@ -26,6 +30,7 @@ namespace RenderingEngine
 
     private:
         Ref<Shader> m_Shader;
+        Ref<Texture> m_Texture;
 
         glm::vec3 m_Albedo = glm::vec3(1.0f);
         float m_Roughness = 0.0f;

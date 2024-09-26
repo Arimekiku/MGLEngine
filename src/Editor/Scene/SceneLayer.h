@@ -22,7 +22,6 @@ namespace RenderingEngine
         Ref<Model> m_Pyramid;
         Ref<Material> m_DefaultMat;
         Ref<Material> m_PyramidMat;
-        Ref<Texture> m_Texture;
         Ref<AreaLighting> m_Light;
 
         Camera m_Camera;

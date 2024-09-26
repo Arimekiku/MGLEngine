@@ -42,6 +42,6 @@ namespace RenderingEngine
 
     void Texture::Unbind()
     {
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTextureUnit(GL_TEXTURE_2D, 0);
     }
 }

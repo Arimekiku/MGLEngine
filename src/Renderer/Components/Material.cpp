@@ -12,6 +12,9 @@ namespace RenderingEngine
 
     void Material::Bind() const
     {
+        m_Texture->Bind();
+
+        m_Shader->Bind();
         m_Shader->BindUniformFloat3("u_Albedo", m_Albedo);
         m_Shader->BindUniformFloat1("u_Roughness", m_Roughness);
         m_Shader->BindUniformFloat1("u_Metallic", m_Metallic);
@@ -21,6 +24,11 @@ namespace RenderingEngine
     void Material::SetShader(const Ref<RenderingEngine::Shader>& shader)
     {
         m_Shader = shader;
+    }
+
+    void Material::SetTextureMap(const Ref<Texture>& newTexture)
+    {
+        m_Texture = newTexture;
     }
 
     void Material::SetAlbedo(const glm::vec3 value)
