@@ -18,10 +18,11 @@ namespace RenderingEngine
         const auto& m_HouseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
 
         m_Light = std::make_shared<AreaLighting>(glm::vec3(0, 4, 4));
+        m_Light->Color = glm::vec3(300, 300, 300);
 
         shader->Bind();
         shader->BindUniformInt1("u_Texture", 0);
-        shader->BindUniformFloat4("u_LightColor", m_Light->Color);
+        shader->BindUniformFloat3("u_LightColor", m_Light->Color);
         shader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
 
         m_DefaultMat = std::make_shared<Material>(shader);

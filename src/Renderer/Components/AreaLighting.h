@@ -13,7 +13,7 @@ namespace RenderingEngine
 
         Ref<Transform> GetTransform() { return m_Position; }
 
-        glm::vec4 Color = glm::vec4(1, 1, 1, 1);
+        glm::vec3 Color = glm::vec3(1, 1, 1);
 
     private:
         Ref<Transform> m_Position = std::make_shared<Transform>();

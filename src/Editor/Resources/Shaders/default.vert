@@ -13,7 +13,7 @@ uniform mat4 u_trsMatrix;
 
 void main()
 {
-    v_Position = vec3(u_trsMatrix * vec4(a_Position, 1.0f));
+    v_Position = vec3(u_trsMatrix * vec4(a_Position, 1.0));
     v_TexCoord = a_TexCoord;
     v_Normal = a_Normal;
     v_CamPos = vec3(u_camMatrix[0][3], u_camMatrix[1][3], u_camMatrix[2][3]);
