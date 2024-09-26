@@ -21,6 +21,7 @@ namespace RenderingEngine
     private:
         Ref<Model> m_Pyramid;
         Ref<Material> m_DefaultMat;
+        Ref<Material> m_PyramidMat;
         Ref<Texture> m_Texture;
         Ref<AreaLighting> m_Light;
 

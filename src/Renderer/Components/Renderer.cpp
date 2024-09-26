@@ -108,15 +108,13 @@ namespace RenderingEngine
                                  const Ref<Material>& material,
                                  const glm::mat4& trsMatrix)
     {
-        const auto& shader = material->Shader;
-
+        const auto shader = material->GetShader();
         shader->Bind();
-        //bind translation matrixes
+
         shader->BindUniformMat4("u_camMatrix", s_RenderData.ProjViewMat);
         shader->BindUniformMat4("u_trsMatrix", trsMatrix);
-        //bind material uniforms
-        shader->BindUniformFloat3("u_Albedo", material->Albedo);
 
+        material->Bind();
         vertices->Bind();
         glDrawElements(GL_TRIANGLES, vertices->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
     }

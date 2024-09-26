@@ -1,5 +1,4 @@
 #version 410 core
-
 out vec4 color;
 
 in vec3 v_Position;
@@ -11,6 +10,9 @@ uniform sampler2D u_Texture;
 uniform vec3 u_LightPos;
 uniform vec4 u_LightColor;
 uniform vec3 u_Albedo;
+uniform float u_Roughness;
+uniform float u_Metallic;
+uniform float u_AO;
 
 void main()
 {
@@ -30,6 +32,7 @@ void main()
     float specular = specAmount * specularValue;
 
     vec4 texColor = texture(u_Texture, v_TexCoord);
+
     color = texColor * ambient * u_LightColor * (diffuse + specular);
     color = vec4(color.x, color.y, color.z, 1f);
 }

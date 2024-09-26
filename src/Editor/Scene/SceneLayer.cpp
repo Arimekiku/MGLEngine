@@ -10,22 +10,23 @@ namespace RenderingEngine
 {
     SceneLayer::SceneLayer() : m_Camera(glm::vec3(0, 0, -2))
     {
-        const auto& m_DefaultShader = std::make_shared<Shader>(
+        const auto& shader = std::make_shared<Shader>(
             RESOURCES_PATH "Shaders/default.vert",
             RESOURCES_PATH "Shaders/default.frag");
 
         m_Texture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
         m_Light = std::make_shared<AreaLighting>(glm::vec3(0, 4, 4));
 
-        m_DefaultShader->Bind();
-        m_DefaultShader->BindUniformInt1("u_Texture", 0);
-        m_DefaultShader->BindUniformFloat4("u_LightColor", m_Light->Color);
-        m_DefaultShader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
+        shader->Bind();
+        shader->BindUniformInt1("u_Texture", 0);
+        shader->BindUniformFloat4("u_LightColor", m_Light->Color);
+        shader->BindUniformFloat3("u_LightPos", m_Light->GetTransform()->Position);
 
-        m_DefaultMat = std::make_shared<Material>(m_DefaultShader);
-        m_DefaultMat->Albedo = glm::vec3(0.83f, 0.70f, 0.44f);
+        m_DefaultMat = std::make_shared<Material>(shader);
+        m_PyramidMat = std::make_shared<Material>(shader);
+        m_PyramidMat->SetAlbedo(glm::vec3(0.83f, 0.70f, 0.44f));
 
-        m_Pyramid = std::make_shared<Model>(m_DefaultMat);
+        m_Pyramid = std::make_shared<Model>(m_PyramidMat);
 
         constexpr float ver[16 * 8] = {
             -0.5f, 0.0f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f, 0.0f, // Bottom side
@@ -78,18 +79,19 @@ namespace RenderingEngine
         ImGui::InputFloat3("Scale", glm::value_ptr(m_Pyramid->GetTransform()->Scale));
         ImGui::End();
 
-        m_DefaultMat->OnGuiRender();
+        m_DefaultMat->OnGuiRender("DefaultMat");
+        m_PyramidMat->OnGuiRender("PyramidMat");
 
-        Renderer::Clear({0, 0, 0, 1});
+        Renderer::Clear(glm::vec4(0, 0, 0, 1));
         m_Texture->Bind();
 
         Renderer::RenderModel(m_Pyramid);
 
         const auto cubeTransform = Transform(glm::vec3(0, 0, 5));
-        Renderer::RenderCube(m_Pyramid->GetMaterial(), cubeTransform.GetTRSMatrix());
+        Renderer::RenderCube(m_DefaultMat, cubeTransform.GetTRSMatrix());
 
         const auto quadTransform = Transform(glm::vec3(3, 3, 2));
-        Renderer::RenderQuad(m_Pyramid->GetMaterial(), quadTransform.GetTRSMatrix());
+        Renderer::RenderQuad(m_DefaultMat, quadTransform.GetTRSMatrix());
     }
 
     void SceneLayer::OnEvent(Event& event)
