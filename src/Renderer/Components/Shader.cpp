@@ -4,7 +4,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <bits/fs_fwd.h>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -12,26 +11,32 @@ namespace RenderingEngine
 {
     std::string Shader::GetContent(const std::string& path)
     {
-        if (auto in = std::ifstream(path, std::ios::binary))
+        std::string result;
+        if (auto in = std::ifstream(path, std::ios::in | std::ios::binary))
         {
-            std::string content;
             in.seekg(0, std::ios::end);
-            content.resize(in.tellg());
-            in.seekg(0, std::ios::beg);
-            in.read(&content[0], static_cast<std::streamsize>(content.size()));
-            in.close();
-            return content;
+            if (const auto size = in.tellg(); size != -1)
+            {
+                result.resize(size);
+                in.seekg(0, std::ios::beg);
+                in.read(&result[0], size);
+
+                return result;
+            }
+
+            LOG_CORE_ASSERT(false, "Could not read from file '{0}'", path)
         }
 
-        LOG_CORE_ERROR("Can't read shader with path {0}", path);
-        LOG_CORE_ASSERT(false, "Shader compile reading error")
+        LOG_CORE_ERROR("Could not open file '{0}'", path);
     }
 
     Shader::Shader(const std::string& vertPath, const std::string& fragPath)
     {
         const uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-        const char* source = GetContent(vertPath).c_str();
+        auto content = GetContent(vertPath);
+        const char* source = content.c_str();
+
         glShaderSource(vertexShader, 1, &source, nullptr);
         glCompileShader(vertexShader);
 
@@ -47,12 +52,14 @@ namespace RenderingEngine
             glDeleteShader(vertexShader);
 
             LOG_CORE_WARN("Shader message: {0}", infoLog.data());
-            LOG_CORE_ASSERT(false, "Can't compile vertex shader!")
+            LOG_CORE_ASSERT(false, "Can't compile vertex shader!");
         }
 
         const uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-        source = GetContent(fragPath).c_str();
+        content = GetContent(fragPath);
+        source = content.c_str();
+
         glShaderSource(fragmentShader, 1, &source, nullptr);
         glCompileShader(fragmentShader);
 
@@ -68,7 +75,7 @@ namespace RenderingEngine
             glDeleteShader(vertexShader);
 
             LOG_CORE_WARN("Shader message: {0}", infoLog.data());
-            LOG_CORE_ASSERT(false, "Can't compile fragment shader!")
+            LOG_CORE_ASSERT(false, "Can't compile fragment shader!");
         }
 
         m_RendererID = glCreateProgram();
