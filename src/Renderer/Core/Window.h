@@ -14,8 +14,8 @@ namespace RenderingEngine
 		bool VSync;
 
 		explicit WindowProperties(const std::string& name = "Rendering Engine",
-		                          uint16_t width = 800,
-		                          uint16_t height = 600)
+		                          const uint16_t width = 800,
+		                          const uint16_t height = 600)
 		{
 			Name = name;
 			Width = width;
@@ -37,7 +37,7 @@ namespace RenderingEngine
 		[[nodiscard]] bool VSyncEnabled() const { return m_Data.Properties.VSync; }
 		[[nodiscard]] GLFWwindow* const& GetNativeWindow() const { return m_Window; }
 
-		void EveryUpdate() const;
+		void OnEveryUpdate() const;
 		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.Callback = callback; }
 		void SetVSync(bool isEnabled);
 

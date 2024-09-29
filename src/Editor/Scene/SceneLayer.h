@@ -5,20 +5,24 @@
 #include "Renderer/Components/AreaLighting.h"
 #include "Renderer/Core/Layer/Layer.h"
 #include "Renderer/Components/Camera.h"
+#include "Renderer/Components/Framebuffer.h"
 #include "Renderer/Components/Texture.h"
 #include "Renderer/Events/Event.h"
 
 namespace RenderingEngine
 {
-    class SceneLayer final : public Layer
+    class SceneLayer : public Layer
     {
     public:
         SceneLayer();
 
-        void EveryUpdate() override;
+        void OnEveryUpdate() override;
+        void OnGuiUpdate() override;
+
         void OnEvent(Event& event) override;
 
     private:
+        Ref<Framebuffer> m_Framebuffer;
         Ref<Model> m_Pyramid;
         Ref<Material> m_DefaultMat;
         Ref<Material> m_PyramidMat;

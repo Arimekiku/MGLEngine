@@ -40,12 +40,6 @@ namespace RenderingEngine
         ImGui::DestroyContext();
     }
 
-    void GuiLayer::EveryUpdate()
-    {
-        static bool show = true;
-        ImGui::ShowDemoWindow(&show);
-    }
-
     void GuiLayer::Begin()
     {
         ImGui_ImplOpenGL3_NewFrame();

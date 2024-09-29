@@ -131,7 +131,7 @@ namespace RenderingEngine
 		glfwDestroyWindow(m_Window);
 	}
 
-	void Window::EveryUpdate() const
+	void Window::OnEveryUpdate() const
 	{
 		glfwSwapBuffers(m_Window);
 		glfwPollEvents();

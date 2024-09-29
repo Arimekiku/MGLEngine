@@ -55,6 +55,9 @@ namespace RenderingEngine
     {
         ImGui::Begin(name);
 
+        const uint32_t ID = m_Texture->GetRendererID();
+        ImGui::Image(reinterpret_cast<void*>(ID), ImVec2(64, 64));
+
         if (ImGui::ColorEdit3("Albedo", glm::value_ptr(m_Albedo)))
             m_Shader->BindUniformFloat3("u_Albedo", m_Albedo);
 

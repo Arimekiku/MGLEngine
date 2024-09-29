@@ -4,7 +4,7 @@
 
 namespace RenderingEngine
 {
-    class GuiLayer final : public Layer
+    class GuiLayer : public Layer
     {
     public:
         GuiLayer() = default;
@@ -12,7 +12,6 @@ namespace RenderingEngine
 
         void Attach() override;
         void Detach() override;
-        void EveryUpdate() override;
 
         static void Begin();
         static void End();
