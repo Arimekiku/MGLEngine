@@ -4,6 +4,7 @@ project(RenderingEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "-Wall -std=c++0x -static -static-libstdc++ -static-libgcc")
 
 set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin")
 set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
