@@ -11,7 +11,6 @@ namespace RenderingEngine
     {
         m_FilePath = path;
 
-        stbi_set_flip_vertically_on_load(true);
         m_Buffer = stbi_load(path.c_str(), &m_Size.x, &m_Size.y, &m_BPP, 0);
         LOG_CORE_ASSERT(m_Buffer != nullptr, "Can't load texture from path")
 

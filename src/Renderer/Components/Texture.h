@@ -13,6 +13,8 @@ namespace RenderingEngine
         void Bind(uint8_t slot = 0) const;
         static void Unbind();
 
+        [[nodiscard]] uint32_t GetRendererID() const { return m_RendererID; }
+
     private:
         std::string m_FilePath;
         uint32_t m_RendererID = 0;
