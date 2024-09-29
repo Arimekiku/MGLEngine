@@ -4,7 +4,7 @@ project(RenderingEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Wall -std=c++0x -static -static-libstdc++ -static-libgcc")
+set(CMAKE_CXX_FLAGS "-Wall -std=c++0x -static -static-libstdc++ -static-libgcc -Wno-error=unknown-pragmas")
 
 set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin")
 set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -50,8 +50,12 @@ file(GLOB STB_SOURCES
         ${STB_DIR}/**.h)
 add_library(stb ${IMGUI_SOURCES})
 
+#assimp
+set(ASSIMP_DIR "${PROJECT_LIBRARIES_DIR}/assimp")
+add_subdirectory(${ASSIMP_DIR} EXCLUDE_FROM_ALL)
+
 target_include_directories(imgui PRIVATE ${IMGUI_DIR})
-set_target_properties(glfw imgui glad spdlog stb PROPERTIES FOLDER "vendor")
+set_target_properties(glfw imgui glad spdlog stb assimp PROPERTIES FOLDER "vendor")
 
 ################################# Executable ####################################
 
@@ -65,13 +69,13 @@ endif()
 
 target_include_directories(
         ${PROJECT_NAME}
-        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}"
+        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}" "${ASSIMP_DIR}"
         PRIVATE "${PROJECT_SOURCE_DIR}"
 )
 
 target_link_libraries(
         ${PROJECT_NAME}
-        PUBLIC glfw opengl32.lib spdlog glad imgui glm stb
+        PUBLIC glfw opengl32.lib spdlog glad imgui glm stb assimp
         PRIVATE ${CMAKE_DL_LIBS}
 )
 
