@@ -18,7 +18,7 @@ namespace RenderingEngine
         m_Attributes.Aspect = width / height;
     }
 
-    void Camera::EveryUpdate()
+    void Camera::EveryUpdate(Time deltaTime)
     {
         if (m_CameraEditorMode == true)
             return;
@@ -29,16 +29,16 @@ namespace RenderingEngine
         Input::SetCursorInCenterOfWindow();
 
         if (Input::KeyPressed(GLFW_KEY_A))
-            Position += 0.2f * -glm::normalize(glm::cross(m_Orientation, {0, 1, 0}));
+            Position += deltaTime.GetSeconds() * -glm::normalize(glm::cross(m_Orientation, {0, 1, 0}));
 
         if (Input::KeyPressed(GLFW_KEY_D))
-            Position += 0.2f * glm::normalize(glm::cross(m_Orientation, {0, 1, 0}));
+            Position += deltaTime.GetSeconds() * glm::normalize(glm::cross(m_Orientation, {0, 1, 0}));
 
         if (Input::KeyPressed(GLFW_KEY_W))
-            Position += m_Orientation * 0.2f;
+            Position += deltaTime.GetSeconds() * m_Orientation;
 
         if (Input::KeyPressed(GLFW_KEY_S))
-            Position += -m_Orientation * 0.2f;
+            Position += deltaTime.GetSeconds() * -m_Orientation;
     }
 
     void Camera::OnEvent(Event& e)

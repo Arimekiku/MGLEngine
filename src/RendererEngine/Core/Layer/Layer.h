@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RendererEngine/Core/Time.h"
 #include "RendererEngine/Events/Event.h"
 
 namespace RenderingEngine
@@ -12,7 +13,7 @@ namespace RenderingEngine
 
         virtual void Attach() { }
         virtual void Detach() { }
-        virtual void OnEveryUpdate() { }
+        virtual void OnEveryUpdate(Time deltaTime) { }
         virtual void OnGuiUpdate() { }
 
         virtual void OnEvent(Event& event) { }

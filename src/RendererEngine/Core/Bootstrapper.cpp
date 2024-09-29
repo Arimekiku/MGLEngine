@@ -31,8 +31,12 @@ namespace RenderingEngine
 			if (m_Minimized)
 				continue;
 
+			const auto time = static_cast<float>(glfwGetTime());
+			const auto deltaTime = Time(time - m_LastFrameTime);
+			m_LastFrameTime = time;
+
 			for (const auto layer : m_LayerStack)
-				layer->OnEveryUpdate();
+				layer->OnEveryUpdate(deltaTime);
 
 			GuiLayer::Begin();
 

@@ -6,7 +6,8 @@
 
 namespace RenderingEngine
 {
-    SceneLayer::SceneLayer() : m_Camera(glm::vec3(0, 0, -2))
+    SceneLayer::SceneLayer()
+        : m_Camera(glm::vec3(0, 0, -2)), m_Framebuffer(800, 600)
     {
         const auto& shader = std::make_shared<Shader>(
             RESOURCES_PATH "Shaders/default.vert",
@@ -68,36 +69,31 @@ namespace RenderingEngine
         };
         m_Pyramid->GetMesh()->SetIndices(indices, count);
 
-        m_Framebuffer = std::make_shared<Framebuffer>(800, 600);
-
         Renderer::Initialize();
     }
 
-    void SceneLayer::OnEveryUpdate()
+    void SceneLayer::OnEveryUpdate(const Time deltaTime)
     {
-        m_Framebuffer->Bind();
+        m_LastTime = deltaTime;
+
+        m_Framebuffer.Bind();
 
         Renderer::CreateWorld(m_Camera);
-
-        m_Camera.EveryUpdate();
+        m_Camera.EveryUpdate(deltaTime);
 
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
-
         Renderer::RenderModel(m_Pyramid);
-
         const auto cubeTransform = Transform(glm::vec3(0, 0, 5));
         Renderer::RenderCube(m_DefaultMat, cubeTransform.GetTRSMatrix());
-
         const auto quadTransform = Transform(glm::vec3(3, 3, 2));
         Renderer::RenderQuad(m_DefaultMat, quadTransform.GetTRSMatrix());
 
-        m_Framebuffer->Unbind();
+        Framebuffer::Unbind();
     }
 
     void SceneLayer::OnGuiUpdate()
     {
         static bool docking = true;
-        static bool optFullScreenPersistance = true;
         static bool optFullscreen = true;
         static ImGuiDockNodeFlags dockFlags = ImGuiDockNodeFlags_None;
 
@@ -145,18 +141,23 @@ namespace RenderingEngine
             ImGui::EndMenuBar();
         }
 
+        ImGui::Begin("Parameters");
+
+        ImGui::Text("DeltaTime: %.3f (%.0fmil)", m_LastTime.GetSeconds(), m_LastTime.GetMilliseconds());
+
+        ImGui::End();
+
         ImGui::Begin("Scene");
 
         const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
         const auto castSize = glm::i16vec2(viewportSize.x, viewportSize.y);
-        if (glm::i16vec2(m_Framebuffer->GetWidth(), m_Framebuffer->GetHeight()) != castSize)
+        if (glm::i16vec2(m_Framebuffer.GetWidth(), m_Framebuffer.GetHeight()) != castSize)
         {
             m_Camera.Resize(castSize.x, castSize.y);
-            //Bootstrapper::GetInstance()
-            m_Framebuffer->Resize(castSize.x, castSize.y);
+            m_Framebuffer.Resize(castSize.x, castSize.y);
         }
 
-        const uint32_t m_Texture = m_Framebuffer->GetTextureAttachment();
+        const uint32_t m_Texture = m_Framebuffer.GetTextureAttachment();
         ImGui::Image(reinterpret_cast<void*>(m_Texture), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
 
         ImGui::End();

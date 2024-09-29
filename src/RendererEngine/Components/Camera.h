@@ -4,6 +4,8 @@
 #include "RendererEngine/Events/KeyEvent.h"
 #include "RendererEngine/Events/WindowEvent.h"
 
+#include "RendererEngine/Core/Time.h"
+
 #include <glm/glm.hpp>
 
 namespace RenderingEngine
@@ -34,7 +36,7 @@ namespace RenderingEngine
 
         void Resize(float width, float height);
 
-        void EveryUpdate();
+        void EveryUpdate(Time deltaTime);
         void OnEvent(Event& e);
 
         const glm::mat4& GetProjViewMat();
