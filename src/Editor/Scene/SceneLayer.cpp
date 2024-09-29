@@ -1,12 +1,8 @@
 #include "mxpch.h"
 #include "SceneLayer.h"
-#include "Renderer/Components/Renderer.h"
+#include "RendererEngine.h"
 
 #include <imgui.h>
-#include <GLFW/glfw3.h>
-#include <glm/gtc/type_ptr.hpp>
-
-#include "Renderer/Core/Bootstrapper.h"
 
 namespace RenderingEngine
 {

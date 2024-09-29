@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Renderer/Core.h"
-#include "Renderer/Components/Model.h"
-#include "Renderer/Components/AreaLighting.h"
-#include "Renderer/Core/Layer/Layer.h"
-#include "Renderer/Components/Camera.h"
-#include "Renderer/Components/Framebuffer.h"
-#include "Renderer/Components/Texture.h"
-#include "Renderer/Events/Event.h"
+#include "RendererEngine/Core.h"
+#include "RendererEngine/Components/Model.h"
+#include "RendererEngine/Components/AreaLighting.h"
+#include "RendererEngine/Core/Layer/Layer.h"
+#include "RendererEngine/Components/Camera.h"
+#include "RendererEngine/Components/Framebuffer.h"
+#include "RendererEngine/Components/Texture.h"
+#include "RendererEngine/Events/Event.h"
 
 namespace RenderingEngine
 {

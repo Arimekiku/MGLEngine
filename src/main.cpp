@@ -1,11 +1,10 @@
 #define GLFW_INCLUDE_NONE
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 
-#include "Renderer/Core/Logger/Log.h"
-#include "Renderer/Core/Bootstrapper.h"
-#include "Renderer/Core/Layer/ImGui/GuiLayer.h"
+#include "RendererEngine/Core/Logger/Log.h"
+#include "RendererEngine/Core/Bootstrapper.h"
+#include "RendererEngine/Core/Layer/ImGui/GuiLayer.h"
 #include "Editor/Scene/SceneLayer.h"
-
 
 int main(int argc, char** argv)
 {
