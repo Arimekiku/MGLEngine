@@ -5,19 +5,19 @@
 #include "Renderer/Core/Input.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include<glm/glm.hpp>
-#include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtx/vector_angle.hpp>
 
 namespace RenderingEngine
 {
-    Camera::Camera(const glm::vec3& position, const CameraAttributes& attributes)
+    Camera::Camera(const glm::vec3& position, const CameraAttributes& attributes) : Position(position), m_Attributes(attributes)
     {
-        Position = position;
-        m_Attributes = attributes;
-
         const auto& window = Bootstrapper::GetInstance().GetWindow();
-        m_Attributes.Aspect = static_cast<float>(window.GetWidth()) / static_cast<float>(window.GetHeight());
+        Resize(window.GetWidth(), window.GetHeight());
+    }
+
+    void Camera::Resize(const float width, const float height)
+    {
+        m_Attributes.Aspect = width / height;
     }
 
     void Camera::EveryUpdate()
@@ -81,7 +81,7 @@ namespace RenderingEngine
     bool Camera::OnWindowResizeEvent(const WindowResizeEvent& e)
     {
         const auto& window = Bootstrapper::GetInstance().GetWindow();
-        m_Attributes.Aspect = static_cast<float>(window.GetWidth()) / static_cast<float>(window.GetHeight());
+        Resize(window.GetWidth(), window.GetHeight());
 
         return true;
     }

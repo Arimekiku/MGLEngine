@@ -29,7 +29,7 @@ namespace RenderingEngine
 		static Bootstrapper* s_Instance;
 		Scope<Window> m_Window;
 		LayerStack m_LayerStack;
-		bool m_Running = true;
+		bool m_Running = true, m_Minimized = false;
 	};
 
 	Bootstrapper* LoadEngine();

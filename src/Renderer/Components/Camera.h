@@ -32,12 +32,14 @@ namespace RenderingEngine
         explicit Camera(const glm::vec3& position, const CameraAttributes& attributes = CameraAttributes());
         ~Camera() = default;
 
+        void Resize(float width, float height);
+
         void EveryUpdate();
         void OnEvent(Event& e);
 
         const glm::mat4& GetProjViewMat();
 
-        glm::vec3 Position{};
+        glm::vec3 Position;
 
     private:
         bool OnWindowResizeEvent(const WindowResizeEvent& e);

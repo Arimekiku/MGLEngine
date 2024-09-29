@@ -21,8 +21,6 @@ namespace RenderingEngine
 
 		m_Window = std::make_unique<Window>();
 		m_Window->SetEventCallback(BIND_FUN(OnEvent));
-
-		AddLayer(new GuiLayer());
 	}
 
 	void Bootstrapper::Run()
@@ -33,12 +31,17 @@ namespace RenderingEngine
 
 		while (m_Running)
 		{
-			m_Window->EveryUpdate();
+			m_Window->OnEveryUpdate();
+			if (m_Minimized)
+				continue;
+
+			for (const auto layer : m_LayerStack)
+				layer->OnEveryUpdate();
 
 			GuiLayer::Begin();
 
 			for (const auto layer : m_LayerStack)
-				layer->EveryUpdate();
+				layer->OnGuiUpdate();
 
 			GuiLayer::End();
 		}
@@ -48,6 +51,7 @@ namespace RenderingEngine
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUN(OnWindowCloseEvent));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_FUN(OnWindowResizeEvent));
 		dispatcher.Dispatch<KeyPressedEvent>(BIND_FUN(OnKeyPressedEvent));
 
 		for (const auto layer : m_LayerStack)

@@ -118,4 +118,9 @@ namespace RenderingEngine
         vertices->Bind();
         glDrawElements(GL_TRIANGLES, vertices->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
     }
+
+    void Renderer::SetViewport(const int16_t x, const int16_t y, const int16_t width, const int16_t height)
+    {
+        glViewport(x, y, width, height);
+    }
 }

@@ -32,6 +32,8 @@ namespace RenderingEngine
                                   const Ref<Material>& material,
                                   const glm::mat4& trsMatrix = glm::mat4(1.0f));
 
+        static void SetViewport(int16_t x, int16_t y, int16_t width, int16_t height);
+
     private:
         static RenderData s_RenderData;
     };
