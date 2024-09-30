@@ -4,9 +4,15 @@ project(RenderingEngine)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-Wall -std=c++0x -static -static-libstdc++ -static-libgcc -Wno-error=unknown-pragmas")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS "-fsanitize=address /EHsc /Zi")
 
-set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/bin")
+if(CMAKE_COMPILER_IS_GNUCXX)
+    message(STATUS "GCC detected, adding compile flags")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -pedantic -Wall -Wextra")
+endif(CMAKE_COMPILER_IS_GNUCXX)
+
+set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build")
 set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
 set(PROJECT_LIBRARIES_DIR "${CMAKE_SOURCE_DIR}/vendor")
 set(RESOURCE_DIR "${PROJECT_SOURCE_DIR}/Editor/Resources")
@@ -52,6 +58,7 @@ add_library(stb ${IMGUI_SOURCES})
 
 #assimp
 set(ASSIMP_DIR "${PROJECT_LIBRARIES_DIR}/assimp")
+set(ASSIMP_WARNINGS_AS_ERRORS OFF)
 add_subdirectory(${ASSIMP_DIR} EXCLUDE_FROM_ALL)
 
 target_include_directories(imgui PRIVATE ${IMGUI_DIR})

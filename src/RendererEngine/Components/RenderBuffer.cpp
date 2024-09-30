@@ -4,11 +4,11 @@
 
 namespace RenderingEngine
 {
-    VertexBuffer::VertexBuffer(const float* vertices, const uint32_t size_t)
+	VertexBuffer::VertexBuffer(const std::vector<Vertex>& vertices)
     {
         glCreateBuffers(1, &m_RendererID);
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
-        glBufferData(GL_ARRAY_BUFFER, size_t, vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
     }
 
     VertexBuffer::~VertexBuffer()

@@ -15,9 +15,8 @@ namespace RenderingEngine
         void OnEvent(Event& event) override;
 
     private:
-        Ref<Model> m_Pyramid;
+        Ref<Model> m_BaseballBat;
         Ref<Material> m_DefaultMat;
-        Ref<Material> m_PyramidMat;
         Ref<AreaLighting> m_Light;
 
         Framebuffer m_Framebuffer;

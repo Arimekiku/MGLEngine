@@ -11,7 +11,6 @@ namespace RenderingEngine
         glm::mat4 ProjViewMat;
 
         Ref<Mesh> QuadMesh;
-        Ref<Mesh> CubeMesh;
     };
 
     class Renderer
@@ -23,8 +22,6 @@ namespace RenderingEngine
         static void Clear(glm::vec4 color);
 
         static void RenderQuad(const Ref<Material>& material, const glm::mat4& trsMatrix = glm::mat4(1.0f));
-
-        static void RenderCube(const Ref<Material>& material, const glm::mat4& trsMatrix = glm::mat4(1.0f));
 
         static void RenderModel(const Ref<Model>& model);
 

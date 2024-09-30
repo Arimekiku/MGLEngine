@@ -1,5 +1,6 @@
 # Visual Studio
 .vs/
+.vscode/
 **.sln
 **.vcxproj
 **.vcxproj.filters
@@ -13,6 +14,8 @@
 cmake-build-debug/
 bin/
 int/
+out/
+build/
 
 # Git
 .git/

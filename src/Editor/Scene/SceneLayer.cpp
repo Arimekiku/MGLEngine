@@ -7,7 +7,7 @@
 namespace RenderingEngine
 {
     SceneLayer::SceneLayer()
-        : m_Camera(glm::vec3(0, 0, -2)), m_Framebuffer(800, 600)
+        : m_Framebuffer(800, 600), m_Camera(glm::vec3(0, 0, -2))
     {
         const auto& shader = std::make_shared<Shader>(
             RESOURCES_PATH "Shaders/default.vert",
@@ -27,47 +27,10 @@ namespace RenderingEngine
         m_DefaultMat = std::make_shared<Material>(shader);
         m_DefaultMat->SetTextureMap(m_HouseTexture);
 
-        m_PyramidMat = std::make_shared<Material>(shader);
-        m_PyramidMat->SetAlbedo(glm::vec3(0.83f, 0.70f, 0.44f));
-        m_PyramidMat->SetTextureMap(m_FaceTexture);
-
-        m_Pyramid = std::make_shared<Model>(m_PyramidMat);
-
-        constexpr float ver[16 * 8] = {
-            -0.5f, 0.0f,  0.5f,   0.0f, 0.0f,   0.0f, -1.0f, 0.0f, // Bottom side
-            -0.5f, 0.0f, -0.5f,	  0.0f, 5.0f,   0.0f, -1.0f, 0.0f, // Bottom side
-             0.5f, 0.0f, -0.5f,	  5.0f, 5.0f,   0.0f, -1.0f, 0.0f, // Bottom side
-             0.5f, 0.0f,  0.5f,	  5.0f, 0.0f,   0.0f, -1.0f, 0.0f, // Bottom side
-
-            -0.5f, 0.0f,  0.5f,   0.0f, 0.0f,   -0.8f, 0.5f, 0.0f, // Left Side
-            -0.5f, 0.0f, -0.5f,   5.0f, 0.0f,   -0.8f, 0.5f, 0.0f, // Left Side
-             0.0f, 0.8f,  0.0f,   2.5f, 5.0f,   -0.8f, 0.5f, 0.0f, // Left Side
-
-            -0.5f, 0.0f, -0.5f,   5.0f, 0.0f,   0.0f, 0.5f, -0.8f, // Non-facing side
-             0.5f, 0.0f, -0.5f,   0.0f, 0.0f,   0.0f, 0.5f, -0.8f, // Non-facing side
-             0.0f, 0.8f,  0.0f,   2.5f, 5.0f,   0.0f, 0.5f, -0.8f, // Non-facing side
-
-             0.5f, 0.0f, -0.5f,   0.0f, 0.0f,   0.8f, 0.5f,  0.0f, // Right side
-             0.5f, 0.0f,  0.5f,   5.0f, 0.0f,   0.8f, 0.5f,  0.0f, // Right side
-             0.0f, 0.8f,  0.0f,   2.5f, 5.0f,   0.8f, 0.5f,  0.0f, // Right side
-
-             0.5f, 0.0f,  0.5f,   5.0f, 0.0f,   0.0f, 0.5f,  0.8f, // Facing side
-            -0.5f, 0.0f,  0.5f,   0.0f, 0.0f,   0.0f, 0.5f,  0.8f, // Facing side
-             0.0f, 0.8f,  0.0f,   2.5f, 5.0f,   0.0f, 0.5f,  0.8f, // Facing side
-        };
-        m_Pyramid->GetMesh()->SetVertices(ver, sizeof(ver));
-
-        constexpr int count = 18;
-        constexpr uint32_t indices[count] =
-        {
-            0, 1, 2, // Bottom side
-            0, 2, 3, // Bottom side
-            4, 6, 5, // Left side
-            7, 9, 8, // Non-facing side
-            10, 12, 11, // Right side
-            13, 15, 14 // Facing side
-        };
-        m_Pyramid->GetMesh()->SetIndices(indices, count);
+        m_BaseballBat = std::make_shared<Model>(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
+        m_BaseballBat->SetMaterial(m_DefaultMat);
+        auto& position = m_BaseballBat->GetPosition();
+        position = { 10, 6, 3 };
 
         Renderer::Initialize();
     }
@@ -82,11 +45,10 @@ namespace RenderingEngine
         m_Camera.EveryUpdate(deltaTime);
 
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
-        Renderer::RenderModel(m_Pyramid);
-        const auto cubeTransform = Transform(glm::vec3(0, 0, 5));
-        Renderer::RenderCube(m_DefaultMat, cubeTransform.GetTRSMatrix());
         const auto quadTransform = Transform(glm::vec3(3, 3, 2));
         Renderer::RenderQuad(m_DefaultMat, quadTransform.GetTRSMatrix());
+
+        Renderer::RenderModel(m_BaseballBat);
 
         Framebuffer::Unbind();
     }
@@ -162,14 +124,13 @@ namespace RenderingEngine
 
         ImGui::End();
 
-        ImGui::Begin("Temple");
-        ImGui::InputFloat3("Position", glm::value_ptr(m_Pyramid->GetTransform()->Position));
-        ImGui::InputFloat3("Rotation", glm::value_ptr(m_Pyramid->GetTransform()->Rotation));
-        ImGui::InputFloat3("Scale", glm::value_ptr(m_Pyramid->GetTransform()->Scale));
+        ImGui::Begin("Baseball Bat");
+        ImGui::InputFloat3("Position", glm::value_ptr(m_BaseballBat->GetPosition()));
+        ImGui::InputFloat3("Rotation", glm::value_ptr(m_BaseballBat->GetRotation()));
+        ImGui::InputFloat3("Scale", glm::value_ptr(m_BaseballBat->GetScale()));
         ImGui::End();
 
         m_DefaultMat->OnGuiRender("DefaultMat");
-        m_PyramidMat->OnGuiRender("PyramidMat");
 
         ImGui::End();
     }

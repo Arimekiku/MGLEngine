@@ -2,6 +2,8 @@
 
 #include "RendererEngine/Core/Logger/Log.h"
 
+#include <glm/glm.hpp>
+
 namespace RenderingEngine
 {
     enum class ShaderDataType : uint8_t
@@ -113,10 +115,17 @@ namespace RenderingEngine
         int32_t m_Stride = 0;
     };
 
+    struct Vertex
+    {
+	    glm::vec3 Position = glm::vec3(0);
+	    glm::vec3 Normal = glm::vec3(0);
+	    glm::vec2 TexCoord = glm::vec3(0);
+    };
+
     class VertexBuffer
     {
     public:
-        VertexBuffer(const float* vertices, uint32_t size_t);
+	    VertexBuffer(const std::vector<Vertex>& vertices);
         ~VertexBuffer();
 
         const RenderBufferLayout& GetLayout() { return m_Layout; }

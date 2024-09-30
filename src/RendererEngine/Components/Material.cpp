@@ -19,6 +19,8 @@ namespace RenderingEngine
         m_Shader->BindUniformFloat1("u_Roughness", m_Roughness);
         m_Shader->BindUniformFloat1("u_Metallic", m_Metallic);
         m_Shader->BindUniformFloat1("u_AO", m_AO);
+
+        m_Texture->Unbind();
     }
 
     void Material::SetShader(const Ref<RenderingEngine::Shader>& shader)
