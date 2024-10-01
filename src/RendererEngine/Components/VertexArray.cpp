@@ -23,7 +23,7 @@ namespace RenderingEngine
             default: ;
         }
 
-        LOG_CORE_ASSERT(false, "Can't get shader data type")
+        LOG_CORE_ASSERT(false, "Can't get shader data type");
         return 0;
     }
 

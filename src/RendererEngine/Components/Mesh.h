@@ -9,23 +9,16 @@ namespace RenderingEngine
 	class Mesh
     {
     public:
-        Mesh();
+        Mesh() = default;
+        Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
         ~Mesh();
 
-        void SetVertices(const std::vector<Vertex>& vertices);
-        void SetIndices(const std::vector<uint32_t>& indices);
+        void SetVertices(const float* vertices, size_t size);
+        void SetIndices(const uint32_t* indices, uint32_t count);
 
-        const std::vector<Vertex>& GetVertices() { return m_Vertices; }
-        const std::vector<uint32_t>& GetIndices() { return m_Indices; }
-
-        Ref<VertexArray> GetVertexArray() { return m_VertexArray; }
+        const Ref<VertexArray>& GetVertexArray() { return m_VertexArray; }
 
     private:
-        std::vector<Vertex> m_Vertices;
-        std::vector<uint32_t> m_Indices;
-
-        Ref<VertexArray> m_VertexArray;
-        Ref<IndexBuffer> m_IndexBuffer;
-        Ref<VertexBuffer> m_VertexBuffer;
+        Ref<VertexArray> m_VertexArray = std::make_shared<VertexArray>();
     };
 }

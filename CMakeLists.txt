@@ -5,12 +5,7 @@ project(RenderingEngine)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_FLAGS "-fsanitize=address /EHsc /Zi")
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-    message(STATUS "GCC detected, adding compile flags")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++98 -pedantic -Wall -Wextra")
-endif(CMAKE_COMPILER_IS_GNUCXX)
+set(CMAKE_CXX_FLAGS "-Wall -pedantic -DCMAKE_BUILD_TYPE=Debug")
 
 set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build")
 set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -20,7 +15,7 @@ set(RESOURCE_DIR "${PROJECT_SOURCE_DIR}/Editor/Resources")
 # define headers
 file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/*.h)
 
-# define executables
+# define source
 file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cpp)
 
 # define resources in binaries
@@ -66,7 +61,7 @@ set_target_properties(glfw imgui glad spdlog stb assimp PROPERTIES FOLDER "vendo
 
 ################################# Executable ####################################
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
+add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${PROJECT_SOURCE_DIR}/Editor/Resources/")

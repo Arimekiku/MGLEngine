@@ -16,8 +16,8 @@ namespace RenderingEngine
         void SetMesh(const Ref<Mesh>& mesh) { m_Mesh = mesh; }
         void SetMaterial(const Ref<Material>& mat) { m_Material = mat; }
 
-        Ref<Mesh> GetMesh() { return m_Mesh; }
-        Ref<Material> GetMaterial() { return m_Material; }
+        const Ref<Mesh>& GetMesh() { return m_Mesh; }
+        const Ref<Material>& GetMaterial() { return m_Material; }
 
         [[nodiscard]] glm::mat4 GetTRSMatrix() const { return m_Transform->GetTRSMatrix(); }
         [[nodiscard]] glm::vec3& GetPosition() const { return m_Transform->Position; }

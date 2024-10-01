@@ -1,4 +1,5 @@
 # Visual Studio
+.cache/
 .vs/
 .vscode/
 **.sln

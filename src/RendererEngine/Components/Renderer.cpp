@@ -12,16 +12,16 @@ namespace RenderingEngine
         //-------------------- QUAD --------------------
         s_RenderData.QuadMesh = std::make_shared<Mesh>();
 
-        std::vector<Vertex> quadVertex;
-        quadVertex.resize(4);
-        quadVertex[0] = { glm::vec3(-0.5, 0.5, 0), glm::vec3(0, 0, 1), glm::vec2(1, 0) };
-        quadVertex[1] = { glm::vec3(-0.5, -0.5, 0), glm::vec3(0, 0, 1), glm::vec2(1, 1) };
-        quadVertex[2] = { glm::vec3(0.5, -0.5, 0), glm::vec3(0, 0, 1), glm::vec2(0, 1) };
-        quadVertex[3] = { glm::vec3(0.5, 0.5, 0), glm::vec3(0, 0, 1), glm::vec2(0, 0) };
-        s_RenderData.QuadMesh->SetVertices(quadVertex);
+        constexpr float quadVertices[8 * 4] = {
+            -0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 0.0f,
+            -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  1.0f, 1.0f,
+             0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f,
+             0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f,
+        };
+        s_RenderData.QuadMesh->SetVertices(quadVertices, 32 * sizeof(float));
 
-        const std::vector<uint32_t> quadIndices = { 0, 1, 2, 0, 2, 3, };
-        s_RenderData.QuadMesh->SetIndices(quadIndices);
+        constexpr uint32_t quadIndices[6] = { 0, 1, 2, 0, 2, 3, };
+        s_RenderData.QuadMesh->SetIndices(quadIndices, 6);
         //----------------------------------------------
     }
 

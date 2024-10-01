@@ -117,15 +117,15 @@ namespace RenderingEngine
 
     struct Vertex
     {
-	    glm::vec3 Position = glm::vec3(0);
-	    glm::vec3 Normal = glm::vec3(0);
-	    glm::vec2 TexCoord = glm::vec3(0);
+	    glm::vec3 Position;
+	    glm::vec3 Normal;
+	    glm::vec2 TexCoord;
     };
 
     class VertexBuffer
     {
     public:
-	    VertexBuffer(const std::vector<Vertex>& vertices);
+        VertexBuffer(const float* vertices, size_t size);
         ~VertexBuffer();
 
         const RenderBufferLayout& GetLayout() { return m_Layout; }
