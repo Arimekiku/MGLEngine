@@ -9,7 +9,6 @@ namespace RenderingEngine
     class Renderer
     {
     public:
-        static void Initialize();
         static void OnEveryUpdate(Camera& camera);
         static void Clear(glm::vec4 color);
 
