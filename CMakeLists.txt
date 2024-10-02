@@ -5,7 +5,7 @@ project(RenderingEngine)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_FLAGS "-Wall -pedantic -DCMAKE_BUILD_TYPE=Debug")
+set(CMAKE_CXX_FLAGS "/Zi /EHsc")
 
 set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build")
 set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -19,7 +19,7 @@ file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/*.h)
 file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cpp)
 
 # define resources in binaries
-file(COPY ${RESOURCE_DIR} DESTINATION ${PROJECT_OUTPUT_DIR})
+file(COPY ${RESOURCE_DIR} DESTINATION ${CMAKE_BINARY_DIR})
 
 # GLFW
 set(GLFW_DIR "${PROJECT_LIBRARIES_DIR}/GLFW")
@@ -66,7 +66,7 @@ add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${PROJECT_SOURCE_DIR}/Editor/Resources/")
 else()
-    target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./Resources/")
+    target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_BINARY_DIR}/Resources/")
 endif()
 
 target_include_directories(

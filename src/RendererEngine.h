@@ -19,4 +19,5 @@
 #include "RendererEngine/Components/Framebuffer.h"
 
 #include "RendererEngine/Components/Model.h"
+#include "RendererEngine/Components/MeshImporter.h"
 #include "RendererEngine/Components/AreaLighting.h"

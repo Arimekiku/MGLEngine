@@ -8,6 +8,8 @@ namespace RenderingEngine
     {
     public:
         static const Ref<Mesh> CreateMesh(const char* path);
-    private:
+        static const Ref<Mesh> CreatePlane(const float size = 1);
+        static const Ref<Mesh> CreateCube(const float size = 1);
+        static const Ref<Mesh> CreateSphere(const float radius = 1);
     };    
 }

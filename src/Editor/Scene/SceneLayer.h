@@ -16,6 +16,9 @@ namespace RenderingEngine
 
     private:
         Ref<Model> m_BaseballBat;
+        Ref<Model> m_SphereModel;
+        Ref<Model> m_CubeModel;
+        Ref<Model> m_PlaneModel;
         Ref<Material> m_DefaultMat;
         Ref<AreaLighting> m_Light;
 

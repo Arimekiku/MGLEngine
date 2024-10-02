@@ -29,10 +29,20 @@ namespace RenderingEngine
 
         m_BaseballBat = std::make_shared<Model>(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
         m_BaseballBat->SetMaterial(m_DefaultMat);
-        auto& position = m_BaseballBat->GetPosition();
-        position = { 10, 6, 3 };
+        auto& batPos = m_BaseballBat->GetPosition();
+        batPos = { 10, 6, 3 };
 
-        Renderer::Initialize();
+        m_PlaneModel = std::make_shared<Model>(MeshImporter::CreatePlane(1), m_DefaultMat);
+        auto& PlanePos = m_PlaneModel->GetPosition();
+        PlanePos = { 0, 0, 0 };
+
+        m_CubeModel = std::make_shared<Model>(MeshImporter::CreateCube(2), m_DefaultMat);
+        auto& CubePos = m_CubeModel->GetPosition();
+        CubePos = { 0, 0, 2 };
+
+        m_SphereModel = std::make_shared<Model>(MeshImporter::CreateSphere(1), m_DefaultMat);
+        auto& SpherePos = m_SphereModel->GetPosition();
+        SpherePos = { 0, 0, 5 };
     }
 
     void SceneLayer::OnEveryUpdate(const Time deltaTime)
@@ -41,14 +51,15 @@ namespace RenderingEngine
 
         m_Framebuffer.Bind();
 
-        Renderer::CreateWorld(m_Camera);
+        Renderer::OnEveryUpdate(m_Camera);
         m_Camera.EveryUpdate(deltaTime);
 
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
-        const auto quadTransform = Transform(glm::vec3(3, 3, 2));
-        Renderer::RenderQuad(m_DefaultMat, quadTransform.GetTRSMatrix());
 
         Renderer::RenderModel(m_BaseballBat);
+        Renderer::RenderModel(m_CubeModel);
+        Renderer::RenderModel(m_PlaneModel);
+        Renderer::RenderModel(m_SphereModel);
 
         Framebuffer::Unbind();
     }
@@ -113,14 +124,18 @@ namespace RenderingEngine
 
         const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
         const auto castSize = glm::i16vec2(viewportSize.x, viewportSize.y);
-        if (glm::i16vec2(m_Framebuffer.GetWidth(), m_Framebuffer.GetHeight()) != castSize)
+
+        if (castSize != glm::i16vec2(0))
         {
-            m_Camera.Resize(castSize.x, castSize.y);
-            m_Framebuffer.Resize(castSize.x, castSize.y);
+            if (glm::i16vec2(m_Framebuffer.GetWidth(), m_Framebuffer.GetHeight()) != castSize)
+            {
+                m_Camera.Resize(castSize.x, castSize.y);
+                m_Framebuffer.Resize(castSize.x, castSize.y);
+            }
         }
 
         const uint32_t m_Texture = m_Framebuffer.GetTextureAttachment();
-        ImGui::Image(reinterpret_cast<void*>(m_Texture), ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
+        ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
 
         ImGui::End();
 

@@ -16,7 +16,7 @@ namespace RenderingEngine
         void SetVertices(const float* vertices, size_t size);
         void SetIndices(const uint32_t* indices, uint32_t count);
 
-        const Ref<VertexArray>& GetVertexArray() { return m_VertexArray; }
+        inline const Ref<VertexArray>& GetVertexArray() { return m_VertexArray; }
 
     private:
         Ref<VertexArray> m_VertexArray = std::make_shared<VertexArray>();
