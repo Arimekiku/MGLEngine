@@ -7,7 +7,7 @@
 namespace RenderingEngine
 {
     SceneLayer::SceneLayer()
-        : m_Framebuffer(800, 600), m_Camera(glm::vec3(0, 0, -2))
+        : m_Framebuffer(800, 600)
     {
         const auto& m_BaseballMesh = MeshImporter::CreateMesh(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
         m_Scene.Instantiate(m_BaseballMesh, glm::vec3(10, 6, 3));
@@ -28,12 +28,8 @@ namespace RenderingEngine
 
         m_Framebuffer.Bind();
 
-        Renderer::OnEveryUpdate(m_Camera);
-        m_Camera.EveryUpdate(deltaTime);
-
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
-
-        m_Scene.OnEveryUpdate();
+        m_Scene.OnEveryUpdate(deltaTime);
 
         Framebuffer::Unbind();
     }
@@ -105,7 +101,7 @@ namespace RenderingEngine
         {
             if (glm::i16vec2(m_Framebuffer.GetWidth(), m_Framebuffer.GetHeight()) != castSize)
             {
-                m_Camera.Resize(castSize.x, castSize.y);
+                m_Scene.GetSceneCamera().Resize(castSize.x, castSize.y);
                 m_Framebuffer.Resize(castSize.x, castSize.y);
             }
 
@@ -121,6 +117,6 @@ namespace RenderingEngine
 
     void SceneLayer::OnEvent(Event& event)
     {
-        m_Camera.OnEvent(event);
+        m_Scene.GetSceneCamera().OnEvent(event);
     }
 }

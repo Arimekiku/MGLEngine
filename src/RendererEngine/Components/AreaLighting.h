@@ -8,14 +8,10 @@ namespace RenderingEngine
     class AreaLighting
     {
     public:
-        explicit AreaLighting(glm::vec3 position);
+        AreaLighting(glm::vec3 position) : Position(position) { }
         ~AreaLighting() = default;
 
-        Ref<Transform> GetTransform() { return m_Position; }
-
         glm::vec3 Color = glm::vec3(1, 1, 1);
-
-    private:
-        Ref<Transform> m_Position = std::make_shared<Transform>();
+        glm::vec3 Position = glm::vec3(0, 0, 0);
     };
 }

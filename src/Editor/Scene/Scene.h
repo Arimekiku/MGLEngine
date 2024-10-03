@@ -10,16 +10,22 @@ namespace RenderingEngine
 		Scene();
 		~Scene();
 
-		void OnEveryUpdate();
+		void OnEveryUpdate(Time deltaTime);
 		void OnGUIUpdate();
 
-		const Ref<Model>& Instantiate(const Ref<Mesh>& mesh, const glm::vec3(position));
+		Camera& GetSceneCamera() { return m_Camera; }
+
+		const Ref<Model>& Instantiate(const Ref<Mesh>& mesh, const glm::vec3 position);
 
 	private:
-		std::vector<Ref<Model>> m_Instances;
+		void DrawScenePanel();
+		void DrawInspectorPanel();
 
+		std::vector<Ref<Model>> m_Instances;
 		Ref<Material> m_DefaultMaterial;
-		Ref<AreaLighting> m_Light;
+
+		AreaLighting m_Light;
+		Camera m_Camera;
 
 		Ref<Model> m_SelectedEntity;
 	};

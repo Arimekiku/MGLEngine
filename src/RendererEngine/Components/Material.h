@@ -9,15 +9,26 @@
 
 namespace RenderingEngine
 {
+    struct PBRMaterialProperties
+    {
+        uint32_t AlbedoID = 0;
+        glm::vec3 Albedo = glm::vec3(1.0f);
+        float Roughness = 0.0f;
+        float Metallic = 1.0f;
+        float AO = 1.0f;
+    };
+
     class Material
     {
     public:
         explicit Material(const Ref<Shader>& shader);
 
-        const Ref<Shader>& GetShader() { return m_Shader; }
         void Bind() const;
 
         void SetShader(const Ref<Shader>& shader);
+        const Ref<Shader>& GetShader() { return m_Shader; }
+
+        auto& GetProperties() { return m_Properties; }
 
         void SetTextureMap(const Ref<Texture>& newTexture);
 
@@ -26,15 +37,10 @@ namespace RenderingEngine
         void SetMetallic(float value);
         void SetAO(float value);
 
-        void OnGuiRender(const char* name = "Material");
-
     private:
         Ref<Shader> m_Shader;
         Ref<Texture> m_Texture;
 
-        glm::vec3 m_Albedo = glm::vec3(1.0f);
-        float m_Roughness = 0.0f;
-        float m_Metallic = 1.0f;
-        float m_AO = 1.0f;
+        PBRMaterialProperties m_Properties;
     };
 }

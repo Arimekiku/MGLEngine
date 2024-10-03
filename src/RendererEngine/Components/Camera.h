@@ -31,7 +31,7 @@ namespace RenderingEngine
     class Camera
     {
     public:
-        explicit Camera(const glm::vec3& position, const CameraAttributes& attributes = CameraAttributes());
+        Camera(const glm::vec3& position, const CameraAttributes& attributes = CameraAttributes());
         ~Camera() = default;
 
         void Resize(float width, float height);

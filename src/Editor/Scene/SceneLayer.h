@@ -17,7 +17,6 @@ namespace RenderingEngine
 
     private:
         Framebuffer m_Framebuffer;
-        Camera m_Camera;
         Scene m_Scene;
         bool m_FirstClick = true;
         Time m_LastTime = Time(0);
