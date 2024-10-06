@@ -28,6 +28,7 @@ namespace RenderingEngine
 
         const auto& vertexArray = model->GetMesh()->GetVertexArray();
         vertexArray->Bind();
+
         glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
     }
 
