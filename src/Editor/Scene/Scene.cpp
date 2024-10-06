@@ -7,7 +7,7 @@
 
 namespace RenderingEngine
 {
-	Scene::Scene() : m_Camera(glm::vec3(0, 0, -2)), m_Light(glm::vec3(0, 4, 4))
+	Scene::Scene() : m_Camera(glm::vec3(0, 0, 10)), m_Light(glm::vec3(0, 4, 4))
 	{
 		const auto& shader = std::make_shared<Shader>(
             RESOURCES_PATH "Shaders/default.vert",

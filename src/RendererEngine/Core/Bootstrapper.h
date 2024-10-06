@@ -35,6 +35,4 @@ namespace RenderingEngine
 		bool m_Running = true, m_Minimized = false;
 		float m_LastFrameTime = 0;
 	};
-
-	Bootstrapper* LoadEngine();
 }

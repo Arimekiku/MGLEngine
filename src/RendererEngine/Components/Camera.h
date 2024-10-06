@@ -51,8 +51,8 @@ namespace RenderingEngine
         CameraAttributes m_Attributes;
 
         glm::mat4 m_ProjView = glm::mat4(1.0f);
-        glm::vec3 m_Orientation = glm::vec3(0.25f, 0.25f, 1.0f);
-        glm::vec3 m_Up = glm::vec3(0, 1.0f, 0.0f);
+        glm::vec3 m_Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
+        glm::vec3 m_Up = glm::vec3(0.0f, 1.0f, 0.0f);
         bool m_CameraEditorMode = true;
     };
 }
