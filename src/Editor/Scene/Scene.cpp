@@ -73,7 +73,7 @@ namespace RenderingEngine
 		{
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 			flags |= (m_SelectedEntity == model) ? ImGuiTreeNodeFlags_Selected : 0;
-			bool isOpened = ImGui::TreeNodeEx((void*)model->GetID(), flags, model->GetName());
+			bool isOpened = ImGui::TreeNodeEx((void*)model->GetID(), flags, "%s", model->GetName());
 
 			if (ImGui::IsItemClicked(0))
 			{
