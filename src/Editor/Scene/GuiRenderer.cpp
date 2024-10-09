@@ -58,7 +58,7 @@ namespace RenderingEngine
 
 		ImGui::Columns(2);
 		ImGui::SetColumnWidth(0, panelWidth);
-		ImGui::Text(label);
+		ImGui::Text("%s", label);
 		ImGui::NextColumn();
 
 		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
