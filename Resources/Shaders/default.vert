@@ -7,9 +7,11 @@ out vec3 v_Position;
 out vec2 v_TexCoord;
 out vec3 v_Normal;
 out vec3 v_CamPos;
+out vec4 v_FragPosLight;
 
 uniform mat4 u_camMatrix;
 uniform mat4 u_trsMatrix;
+uniform mat4 u_lightViewProj;
 
 void main()
 {
@@ -17,6 +19,7 @@ void main()
     v_TexCoord = a_TexCoord;
     v_Normal = a_Normal;
     v_CamPos = vec3(u_camMatrix[0][3], u_camMatrix[1][3], u_camMatrix[2][3]);
+    v_FragPosLight = u_lightViewProj * vec4(v_Position, 1.0f);
 
     gl_Position = u_camMatrix * u_trsMatrix * vec4(a_Position, 1.0);
 }

@@ -7,7 +7,6 @@
 namespace RenderingEngine
 {
     SceneLayer::SceneLayer()
-        : m_Framebuffer(800, 600)
     {
         const auto& m_BaseballMesh = MeshImporter::CreateMesh(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
         m_Scene.Instantiate(m_BaseballMesh, glm::vec3(10, 6, 3));
@@ -26,12 +25,7 @@ namespace RenderingEngine
     {
         m_LastTime = deltaTime;
 
-        m_Framebuffer.Bind();
-
-        Renderer::Clear(glm::vec4(0, 0, 0, 1));
         m_Scene.OnEveryUpdate(deltaTime);
-
-        Framebuffer::Unbind();
     }
 
     void SceneLayer::OnGuiUpdate()
@@ -92,26 +86,8 @@ namespace RenderingEngine
 
         ImGui::End();
 
-        ImGui::Begin("Viewport");
-
-        const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        const auto castSize = glm::i16vec2(viewportSize.x, viewportSize.y);
-
-        if (castSize.x != 0 && castSize.y != 0)
-        {
-            if (glm::i16vec2(m_Framebuffer.GetWidth(), m_Framebuffer.GetHeight()) != castSize)
-            {
-                m_Scene.GetSceneCamera().Resize(castSize.x, castSize.y);
-                m_Framebuffer.Resize(castSize.x, castSize.y);
-            }
-
-            const uint32_t m_Texture = m_Framebuffer.GetTextureAttachment();
-            ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
-        }
-
-        ImGui::End();
-
         m_Scene.OnGUIUpdate();
+
         ImGui::End();
     }
 

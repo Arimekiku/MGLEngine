@@ -19,7 +19,7 @@ endif()
 set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build")
 set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
 set(PROJECT_LIBRARIES_DIR "${CMAKE_SOURCE_DIR}/vendor")
-set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/Resources/")
+set(RESOURCE_DIR "./Resources/")
 
 # define headers
 file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/*.h)
@@ -72,11 +72,7 @@ set_target_properties(glfw imgui glad spdlog stb assimp PROPERTIES FOLDER "vendo
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-    target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${RESOURCE_DIR}")
-else()
-    target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_BINARY_DIR}/Resources/")
-endif()
+target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${RESOURCE_DIR}")
 
 target_include_directories(
         ${PROJECT_NAME}

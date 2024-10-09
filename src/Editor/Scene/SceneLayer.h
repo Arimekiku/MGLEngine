@@ -16,7 +16,6 @@ namespace RenderingEngine
         void OnEvent(Event& event) override;
 
     private:
-        Framebuffer m_Framebuffer;
         Scene m_Scene;
         bool m_FirstClick = true;
         Time m_LastTime = Time(0);

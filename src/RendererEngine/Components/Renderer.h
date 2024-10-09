@@ -13,6 +13,7 @@ namespace RenderingEngine
         static void Clear(glm::vec4 color);
 
         static void RenderModel(const Ref<Model>& model);
+        static void RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& TRSMatrix);
 
         static void SetViewport(int16_t x, int16_t y, int16_t width, int16_t height);
 

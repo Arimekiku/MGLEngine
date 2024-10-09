@@ -5,8 +5,10 @@ in vec3 v_Position;
 in vec2 v_TexCoord;
 in vec3 v_Normal;
 in vec3 v_CamPos;
+in vec4 v_FragPosLight;
 
 uniform sampler2D u_Texture;
+uniform sampler2D u_DepthMap;
 
 uniform vec3 u_LightPos;
 uniform vec3 u_LightColor;
@@ -59,9 +61,23 @@ void main()
     float NdotL = max(dot(N, L), 0.0);
     vec3 Lo = (kD * albedo / PI + specular) * radiance * NdotL;
 
+    //shadow
+    float shadow = 0.0f;
+    vec3 lightCoords = v_FragPosLight.xyz / v_FragPosLight.w;
+    if (lightCoords.z <= 1.0f) 
+    {
+        lightCoords = (lightCoords + 1.0f) / 2.0f;
+        
+        float closestDepth = texture(u_ShadowMap, lightCoords.xy).r;
+        float currentDepth = lightCoords.z;
+
+        if (currentDepth > closestDepth) 
+            shadow = 1.0f;
+    }
+
     //ambient
     vec3 ambient = vec3(0.03) * albedo * u_AO;
-    vec3 result = ambient + Lo;
+    vec3 result = ambient + Lo * (1 - shadow);
 
     result = result / (result + vec3(1.0));
     result = pow(result, vec3(1.0/2.2));

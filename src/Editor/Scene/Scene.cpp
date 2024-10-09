@@ -9,27 +9,30 @@ namespace RenderingEngine
 {
 	Scene::Scene() : m_Camera(glm::vec3(0, 0, 10)), m_Light(glm::vec3(0, 4, 4))
 	{
+        const auto& m_FaceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
+        const auto& m_HouseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
+
+		m_Light.Color = glm::vec3(300, 300, 300);
+
+		m_ShadowMapShader = std::make_shared<Shader>(
+			RESOURCES_PATH "Shaders/shadowMap.vert",
+            RESOURCES_PATH "Shaders/shadowMap.frag");
+
+		m_ShadowMapShader->Bind();
+		m_ShadowMapShader->BindUniformMat4("u_lightViewProj", m_DirLight.GetProjViewMat());
+
 		const auto& shader = std::make_shared<Shader>(
             RESOURCES_PATH "Shaders/default.vert",
             RESOURCES_PATH "Shaders/default.frag");
 
-        const auto& m_FaceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
-        const auto& m_HouseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
-
-        m_Light.Color = glm::vec3(300, 300, 300);
-
         shader->Bind();
         shader->BindUniformInt1("u_Texture", 0);
+		shader->BindUniformInt1("u_ShadowMap", 1);
         shader->BindUniformFloat3("u_LightColor", m_Light.Color);
         shader->BindUniformFloat3("u_LightPos", m_Light.Position);
 
         m_DefaultMaterial = std::make_shared<Material>(shader);
         m_DefaultMaterial->SetTextureMap(m_HouseTexture);
-	}
-
-	Scene::~Scene()
-	{
-
 	}
 
 	const Ref<Model>& Scene::Instantiate(const Ref<Mesh>& mesh, const glm::vec3 transform)
@@ -48,12 +51,38 @@ namespace RenderingEngine
 	{
 		Renderer::OnEveryUpdate(m_Camera);
 
-        m_Camera.EveryUpdate(deltaTime); 
+        m_Camera.EveryUpdate(deltaTime);
+
+		m_DepthMap.Bind();
+
+		//Draw call for shadow map
+        Renderer::Clear(glm::vec4(0, 0, 0, 1));
+		for (auto& model : m_Instances)
+		{
+			Renderer::RenderMesh(model->GetMesh(), m_ShadowMapShader, model->GetTRSMatrix());
+		}
+
+		Framebuffer::Unbind();
+
+		m_Viewport.Bind();
+
+		//Draw call for actual models
+        Renderer::Clear(glm::vec4(0, 0, 0, 1));
 
 		for (auto& model : m_Instances)
 		{
+			glBindTextureUnit(0, m_DepthMap.GetAttachment(0));
+			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
+			m_DefaultMaterial->Bind();
+			m_DefaultMaterial->GetShader()->BindUniformMat4("u_lightViewProj", m_DirLight.GetProjViewMat());
+
 			Renderer::RenderModel(model);
+			glBindTextureUnit(GL_TEXTURE_2D, 0);
+			glBindTextureUnit(GL_TEXTURE_2D, 0);
 		}
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		Framebuffer::Unbind();
 	}
 
 	void Scene::OnGUIUpdate()
@@ -61,6 +90,25 @@ namespace RenderingEngine
 		DrawScenePanel();
 
 		DrawInspectorPanel();
+
+		ImGui::Begin("Viewport");
+
+        const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+        const auto castSize = glm::i16vec2(viewportSize.x, viewportSize.y);
+
+        if (castSize.x != 0 && castSize.y != 0)
+        {
+            if (glm::i16vec2(m_Viewport.GetWidth(), m_Viewport.GetHeight()) != castSize)
+            {
+                GetSceneCamera().Resize(castSize.x, castSize.y);
+                m_Viewport.Resize(castSize.x, castSize.y);
+            }
+
+            const uint32_t m_Texture = m_Viewport.GetAttachment(0);
+            ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
+        }
+
+        ImGui::End();
 
 		ImGui::ShowDemoWindow();
 	}
@@ -73,7 +121,7 @@ namespace RenderingEngine
 		{
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 			flags |= (m_SelectedEntity == model) ? ImGuiTreeNodeFlags_Selected : 0;
-			bool isOpened = ImGui::TreeNodeEx((void*)model->GetID(), flags, model->GetName());
+			bool isOpened = ImGui::TreeNodeEx((void*)model->GetID(), flags, "%s", model->GetName());
 
 			if (ImGui::IsItemClicked(0))
 			{

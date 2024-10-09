@@ -21,3 +21,4 @@
 #include "RendererEngine/Components/Model.h"
 #include "RendererEngine/Components/MeshImporter.h"
 #include "RendererEngine/Components/AreaLighting.h"
+#include "RendererEngine/Components/DirectionalLight.h"
