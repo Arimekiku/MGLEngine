@@ -20,3 +20,6 @@ build/
 
 # Git
 .git/
+
+# Nix
+.direnv
