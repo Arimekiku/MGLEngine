@@ -44,8 +44,8 @@ namespace RenderingEngine
     void Camera::OnEvent(Event& e)
     {
         EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<WindowResizeEvent>(BIND_FUN(OnWindowResizeEvent));
-        dispatcher.Dispatch<KeyPressedEvent>(BIND_FUN(OnKeyPressedEvent));
+        dispatcher.Dispatch<WindowResizeEvent>(BIND_FUNC(OnWindowResizeEvent));
+        dispatcher.Dispatch<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
     }
 
     const glm::mat4& Camera::GetProjViewMat()

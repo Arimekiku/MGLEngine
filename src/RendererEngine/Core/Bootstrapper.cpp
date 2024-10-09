@@ -1,5 +1,6 @@
 #include "mxpch.h"
 #include "Bootstrapper.h"
+#include "chrono"
 
 #include "Logger/Log.h"
 
@@ -16,7 +17,7 @@ namespace RenderingEngine
 		m_LayerStack = LayerStack();
 
 		m_Window = std::make_unique<Window>();
-		m_Window->SetEventCallback(BIND_FUN(OnEvent));
+		m_Window->SetEventCallback(BIND_FUNC(OnEvent));
 	}
 
 	void Bootstrapper::Run()
@@ -27,14 +28,17 @@ namespace RenderingEngine
         glEnable(GL_CULL_FACE);
 
 		while (m_Running)
-		{
+        {
+            auto startFrameTime = static_cast<float>(glfwGetTime());
+            for (; static_cast<float>(glfwGetTime()) - startFrameTime <= 0.02f;){}
+
 			m_Window->OnEveryUpdate();
 			if (m_Minimized)
 				continue;
 
-			const auto time = static_cast<float>(glfwGetTime());
-			const auto deltaTime = Time(time - m_LastFrameTime);
-			m_LastFrameTime = time;
+            m_LastFrameTime = static_cast<float>(glfwGetTime());
+
+			const auto deltaTime = Time(m_LastFrameTime - startFrameTime);
 
 			for (const auto layer : m_LayerStack)
 				layer->OnEveryUpdate(deltaTime);
@@ -45,14 +49,14 @@ namespace RenderingEngine
 				layer->OnGuiUpdate();
 
 			GuiLayer::End();
-		}
+        }
 	}
 
 	void Bootstrapper::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUN(OnWindowCloseEvent));
-		dispatcher.Dispatch<KeyPressedEvent>(BIND_FUN(OnKeyPressedEvent));
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUNC(OnWindowCloseEvent));
+		dispatcher.Dispatch<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
 
 		for (const auto layer : m_LayerStack)
 		{
