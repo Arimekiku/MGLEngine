@@ -49,6 +49,7 @@ namespace RenderingEngine
             glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
             glDeleteShader(vertexShader);
 
+            LOG_CORE_WARN("Shader name: {0}", vertPath);
             LOG_CORE_WARN("Shader message: {0}", infoLog.data());
             LOG_CORE_ASSERT(false, "Can't compile vertex shader!");
         }
@@ -72,6 +73,7 @@ namespace RenderingEngine
             glDeleteShader(fragmentShader);
             glDeleteShader(vertexShader);
 
+            LOG_CORE_WARN("Shader name: {0}", fragPath);
             LOG_CORE_WARN("Shader message: {0}", infoLog.data());
             LOG_CORE_ASSERT(false, "Can't compile fragment shader!");
         }

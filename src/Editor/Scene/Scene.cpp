@@ -7,12 +7,22 @@
 
 namespace RenderingEngine
 {
-	Scene::Scene() : m_Camera(glm::vec3(0, 0, 10)), m_Light(glm::vec3(0, 4, 4))
+	Scene::Scene() : m_Camera(glm::vec3(0, 0, 10))
 	{
+		const auto& lightShader = std::make_shared<Shader>(
+			RESOURCES_PATH "Shaders/areaLight.vert",
+            RESOURCES_PATH "Shaders/areaLight.frag");
+
+		lightShader->Bind();
+		lightShader->BindUniformFloat3("u_LightColor", {1, 1, 1});
+
+		const auto& lightMaterial = std::make_shared<Material>(lightShader);
+
+		const auto& lightModel = std::make_shared<Model>(MeshImporter::CreateCube(), lightMaterial);
+		m_Light = AreaLighting(glm::vec3(0, 2, 2), lightModel);
+
         const auto& m_FaceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
         const auto& m_HouseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
-
-		m_Light.Color = glm::vec3(300, 300, 300);
 
 		m_ShadowMapShader = std::make_shared<Shader>(
 			RESOURCES_PATH "Shaders/shadowMap.vert",
@@ -69,9 +79,10 @@ namespace RenderingEngine
 		//Draw call for actual models
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
 
+		m_Light.OnEveryUpdate();
+
 		for (auto& model : m_Instances)
 		{
-			glBindTextureUnit(0, m_DepthMap.GetAttachment(0));
 			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
 			m_DefaultMaterial->Bind();
 			m_DefaultMaterial->GetShader()->BindUniformMat4("u_lightViewProj", m_DirLight.GetProjViewMat());

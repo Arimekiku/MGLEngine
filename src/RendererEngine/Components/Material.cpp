@@ -12,7 +12,8 @@ namespace RenderingEngine
 
     void Material::Bind() const
     {
-        //m_Texture->Bind();
+        if (m_Texture)
+            m_Texture->Bind();
 
         m_Shader->Bind();
         m_Shader->BindUniformFloat3("u_Albedo", m_Properties.Albedo);
@@ -20,7 +21,8 @@ namespace RenderingEngine
         m_Shader->BindUniformFloat1("u_Metallic", m_Properties.Metallic);
         m_Shader->BindUniformFloat1("u_AO", m_Properties.AO);
 
-        //m_Texture->Unbind();
+        if (m_Texture)
+            m_Texture->Unbind();
     }
 
     void Material::SetShader(const Ref<RenderingEngine::Shader>& shader)

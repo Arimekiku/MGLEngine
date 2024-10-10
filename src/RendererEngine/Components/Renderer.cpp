@@ -21,7 +21,7 @@ namespace RenderingEngine
     void Renderer::RenderModel(const Ref<Model>& model)
     {
         const auto& material = model->GetMaterial();
-        //material->Bind();
+        material->Bind();
 
         material->GetShader()->BindUniformMat4("u_camMatrix", m_ProjViewMat);
         material->GetShader()->BindUniformMat4("u_trsMatrix", model->GetTRSMatrix());

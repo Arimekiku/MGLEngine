@@ -12,6 +12,6 @@ namespace RenderingEngine
 		const glm::mat4 view = glm::lookAt(m_Parameters.Position, glm::vec3(0), glm::vec3(0, 1, 0));
 
 
-		m_Parameters.ProjViewMat = ortho * view;
+		m_Parameters.ProjViewMat = glm::mat4(ortho * view);
 	}
 }
