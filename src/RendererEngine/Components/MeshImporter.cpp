@@ -80,11 +80,11 @@ namespace RenderingEngine
         auto vertices = std::vector<Vertex>(8);
         vertices[0].Position = glm::vec3(-0.5f, -0.5f, 0.5f) * size;
         vertices[1].Position = glm::vec3( 0.5f, -0.5f, 0.5f) * size;
-        vertices[2].Position = glm::vec3( 0.5f, -0.5f, 0.5f) * size;
+        vertices[2].Position = glm::vec3( 0.5f,  0.5f, 0.5f) * size;
         vertices[3].Position = glm::vec3(-0.5f,  0.5f, 0.5f) * size;
         vertices[4].Position = glm::vec3(-0.5f, -0.5f, -0.5f) * size;
         vertices[5].Position = glm::vec3( 0.5f, -0.5f, -0.5f) * size;
-        vertices[6].Position = glm::vec3(-0.5f,  0.5f, -0.5f) * size;
+        vertices[6].Position = glm::vec3( 0.5f,  0.5f, -0.5f) * size;
         vertices[7].Position = glm::vec3(-0.5f,  0.5f, -0.5f) * size;
 
         vertices[0].Normal = glm::vec3(-1.0f, -1.0f,  1.0f);
@@ -129,10 +129,9 @@ namespace RenderingEngine
 				const float cosPhi = glm::cos(phi);
 
                 auto vertex = Vertex();
-				vertices.push_back(vertex);
-
 				vertex.Normal = glm::vec3(cosPhi * sinTheta, cosTheta, sinPhi * sinTheta);
 				vertex.Position = glm::vec3(radius * vertex.Normal.x, radius * vertex.Normal.y, radius * vertex.Normal.z);
+				vertices.push_back(vertex);
 			}
 		}
 
