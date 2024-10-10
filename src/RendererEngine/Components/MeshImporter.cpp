@@ -129,7 +129,7 @@ namespace RenderingEngine
 				const float cosPhi = glm::cos(phi);
 
                 auto vertex = Vertex();
-				vertex.Normal = glm::vec3(cosPhi * sinTheta, cosTheta, sinPhi * sinTheta);
+				vertex.Normal = -glm::vec3(cosPhi * sinTheta, cosTheta, sinPhi * sinTheta);
 				vertex.Position = glm::vec3(radius * vertex.Normal.x, radius * vertex.Normal.y, radius * vertex.Normal.z);
 				vertices.push_back(vertex);
 			}

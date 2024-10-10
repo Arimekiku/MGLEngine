@@ -19,7 +19,7 @@ namespace RenderingEngine
 		const auto& lightMaterial = std::make_shared<Material>(lightShader);
 
 		const auto& lightModel = std::make_shared<Model>(MeshImporter::CreateCube(), lightMaterial);
-		m_Light = AreaLighting(glm::vec3(0, 2, 2), lightModel);
+		m_Light = AreaLighting(glm::vec3(0, 5, -5), lightModel);
 
         const auto& m_FaceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
         const auto& m_HouseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
@@ -37,7 +37,7 @@ namespace RenderingEngine
 
         shader->Bind();
         shader->BindUniformInt1("u_Texture", 0);
-		shader->BindUniformInt1("u_ShadowMap", 1);
+		shader->BindUniformInt1("u_DepthMap", 1);
         shader->BindUniformFloat3("u_LightColor", m_Light.Color);
         shader->BindUniformFloat3("u_LightPos", m_Light.Position);
 
@@ -53,8 +53,7 @@ namespace RenderingEngine
 		position = transform;
 		
 		m_Instances.push_back(model);
-
-		return model;
+		return m_Instances.back();
 	}
 
 	void Scene::OnEveryUpdate(Time deltaTime)
@@ -63,6 +62,7 @@ namespace RenderingEngine
 
         m_Camera.EveryUpdate(deltaTime);
 
+		glCullFace(GL_FRONT);
 		m_DepthMap.Bind();
 
 		//Draw call for shadow map
@@ -73,6 +73,7 @@ namespace RenderingEngine
 		}
 
 		Framebuffer::Unbind();
+		glCullFace(GL_BACK);
 
 		m_Viewport.Bind();
 
@@ -83,15 +84,14 @@ namespace RenderingEngine
 
 		for (auto& model : m_Instances)
 		{
+			m_DefaultMaterial->GetShader()->Bind();
+			glBindTextureUnit(0, m_DefaultMaterial->GetProperties().AlbedoID);
 			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
-			m_DefaultMaterial->Bind();
+
 			m_DefaultMaterial->GetShader()->BindUniformMat4("u_lightViewProj", m_DirLight.GetProjViewMat());
 
 			Renderer::RenderModel(model);
-			glBindTextureUnit(GL_TEXTURE_2D, 0);
-			glBindTextureUnit(GL_TEXTURE_2D, 0);
 		}
-		glBindTexture(GL_TEXTURE_2D, 0);
 
 		Framebuffer::Unbind();
 	}

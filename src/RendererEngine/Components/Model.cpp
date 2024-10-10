@@ -16,6 +16,7 @@ namespace RenderingEngine
     {
         m_Mesh = mesh;
         m_Material = material;
+        m_Transform = std::make_unique<Transform>();
 
         DefineUID();
     }
@@ -24,6 +25,7 @@ namespace RenderingEngine
     {
         m_Mesh = std::make_shared<Mesh>();
         m_Material = material;
+        m_Transform = std::make_unique<Transform>();
 
         DefineUID();
     }

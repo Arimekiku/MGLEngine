@@ -21,7 +21,7 @@ namespace RenderingEngine
 		void DrawScenePanel();
 		void DrawInspectorPanel();
 
-		std::vector<Ref<Model>> m_Instances;
+		std::list<Ref<Model>> m_Instances;
 		Ref<Material> m_DefaultMaterial;
 		Ref<Shader> m_ShadowMapShader;
 

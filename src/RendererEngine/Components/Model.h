@@ -31,7 +31,7 @@ namespace RenderingEngine
 
         Ref<Mesh> m_Mesh;
         Ref<Material> m_Material;
-        Scope<Transform> m_Transform = std::make_unique<Transform>();
+        Scope<Transform> m_Transform;
 
         std::string m_Name = "Model";
         uint32_t m_UID = 0;

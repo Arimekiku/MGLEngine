@@ -8,17 +8,23 @@ namespace RenderingEngine
 {
     SceneLayer::SceneLayer()
     {
-        const auto& m_BaseballMesh = MeshImporter::CreateMesh(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
-        m_Scene.Instantiate(m_BaseballMesh, glm::vec3(10, 6, 3));
+        const auto& groundPlane = MeshImporter::CreatePlane(50.0f);
+        auto& plane = m_Scene.Instantiate(groundPlane, glm::vec3(0, -10, 0));
+        plane->SetName("Ground");
+        auto& rotation = plane->GetRotation();
+        rotation = glm::vec3(-90, 0, 0);
 
-        const auto& m_PlaneMesh = MeshImporter::CreatePlane(1.0f);
-        m_Scene.Instantiate(m_PlaneMesh, glm::vec3(0));
+        const auto& baseballMesh = MeshImporter::CreateMesh(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
+        m_Scene.Instantiate(baseballMesh, glm::vec3(10, 6, 3));
 
-        const auto& m_CubeMesh = MeshImporter::CreateCube(1.0f);
-        m_Scene.Instantiate(m_CubeMesh, glm::vec3(0, 0, 2));
+        const auto& planeMesh = MeshImporter::CreatePlane(1.0f);
+        m_Scene.Instantiate(planeMesh, glm::vec3(0));
 
-        const auto& m_SphereMesh = MeshImporter::CreateSphere(1.0f);
-        m_Scene.Instantiate(m_SphereMesh, glm::vec3(0, 0, 5));
+        const auto& cubeMesh = MeshImporter::CreateCube(1.0f);
+        m_Scene.Instantiate(cubeMesh, glm::vec3(0, 0, 2));
+
+        const auto& sphereMesh = MeshImporter::CreateSphere(1.0f);
+        m_Scene.Instantiate(sphereMesh, glm::vec3(0, 0, 5));
     }
 
     void SceneLayer::OnEveryUpdate(const Time deltaTime)
