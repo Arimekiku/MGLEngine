@@ -1,0 +1,52 @@
+name: "Build check x86_64-linux workflow"
+on:
+  pull_request:
+    branches:
+      - "main"
+  push:
+    branches:
+      - "main"
+      
+jobs:
+  nix-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'true'
+
+    - uses: DeterminateSystems/nix-installer-action@main
+
+    - name: Build
+      run: nix build "git+file://$(pwd)?submodules=1" 
+
+    - name: Check
+      run: nix flake check
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: Update
+        run: sudo apt-get update
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install --fix-missing -y \
+          wayland-scanner++ \
+          libx11-dev \
+          libxrandr-dev \
+          libxinerama-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libxext-dev \
+          libxkbcommon-dev \
+          libwayland-dev \
+          wayland-protocols \
+          libgl1-mesa-dev \
+          zlib1g
+          
+      - name: Build
+        uses: nicledomaS/cmake_build_action@v1.4

@@ -82,7 +82,7 @@ target_include_directories(
 
 target_link_libraries(
         ${PROJECT_NAME}
-        PUBLIC glfw opengl32.lib spdlog glad imgui glm stb assimp
+        PUBLIC glfw GL spdlog glad imgui glm stb assimp
         PRIVATE ${CMAKE_DL_LIBS}
 )
 

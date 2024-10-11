@@ -2,6 +2,13 @@
 
 #include <spdlog/spdlog.h>
 
+#ifdef _MSC_VER
+#define debugbreak() __debugbreak()
+#else
+#include <signal.h>
+#define debugbreak() raise(SIGTRAP)
+#endif
+
 namespace RenderingEngine
 {
 	class Log
@@ -22,10 +29,10 @@ namespace RenderingEngine
 #define LOG_CORE_INFO(...)        ::RenderingEngine::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define LOG_CORE_WARN(...)        ::RenderingEngine::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define LOG_CORE_ERROR(...)       ::RenderingEngine::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define LOG_CORE_ASSERT(x, ...)   { if(x == false) { LOG_CORE_ERROR("Invalid assertion: {0}", __VA_ARGS__); __debugbreak(); } }
+#define LOG_CORE_ASSERT(x, ...)   { if(x == false) { LOG_CORE_ERROR("Invalid assertion: {0}", __VA_ARGS__); debugbreak(); } }
 
 #define LOG_CLIENT_TRACE(...)     ::RenderingEngine::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define LOG_CLIENT_INFO(...)      ::RenderingEngine::Log::GetClientLogger()->info(__VA_ARGS__)
 #define LOG_CLIENT_WARN(...)      ::RenderingEngine::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define LOG_CLIENT_ERROR(...)     ::RenderingEngine::Log::GetClientLogger()->error(__VA_ARGS__)
-#define LOG_CLIENT_ASSERT(x, ...) { if(x == false) { LOG_CLIENT_ERROR("Invalid assertion: {0}", __VA_ARGS__); __debugbreak(); } }
+#define LOG_CLIENT_ASSERT(x, ...) { if(x == false) { LOG_CLIENT_ERROR("Invalid assertion: {0}", __VA_ARGS__); debugbreak(); } }
