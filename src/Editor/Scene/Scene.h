@@ -25,7 +25,7 @@ namespace RenderingEngine
 		Ref<Material> m_DefaultMaterial;
 		Ref<Shader> m_ShadowMapShader;
 
-		Framebuffer m_DepthMap = Framebuffer(512, 512, FramebufferType::DepthBuffer);
+		Framebuffer m_DepthMap = Framebuffer(1024, 1024, FramebufferType::DepthBuffer);
 		Framebuffer m_Viewport = Framebuffer(800, 600, FramebufferType::Viewport);
 		AreaLighting m_Light;
 		DirectionalLight m_DirLight = DirectionalLight();

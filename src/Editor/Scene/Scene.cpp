@@ -113,6 +113,7 @@ namespace RenderingEngine
             {
                 GetSceneCamera().Resize(castSize.x, castSize.y);
                 m_Viewport.Resize(castSize.x, castSize.y);
+				//m_DepthMap.Resize(castSize.x, castSize.y);
             }
 
             const uint32_t m_Texture = m_Viewport.GetAttachment(0);

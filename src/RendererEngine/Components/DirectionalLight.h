@@ -9,14 +9,14 @@ namespace RenderingEngine
 	public:
 		DirectionalLight();
 
-		const glm::mat4& GetProjViewMat() const { return m_Parameters.ProjViewMat; }
+		const glm::mat4& GetProjViewMat() const { return m_Parameters.LightMat; }
 
 	private:
 		struct DLParameters
 		{
-			glm::vec3 Position = glm::vec3(0.0f, 5.0f, -5.0f);
+			glm::vec3 Position = glm::vec3(1.0f, 5.0f, -5.0f);
 
-			glm::mat4 ProjViewMat;
+			glm::mat4 LightMat;
 		};
 
 		DLParameters m_Parameters;
