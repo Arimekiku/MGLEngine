@@ -82,9 +82,16 @@ target_include_directories(
 
 target_link_libraries(
         ${PROJECT_NAME}
-        PUBLIC glfw GL spdlog glad imgui glm stb assimp
+        PUBLIC glfw spdlog glad imgui glm stb assimp
         PRIVATE ${CMAKE_DL_LIBS}
 )
+
+if(WIN32)
+        target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
+else()
+        target_link_libraries(${PROJECT_NAME} PUBLIC GL)
+endif()
+
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/mxpch.h)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
