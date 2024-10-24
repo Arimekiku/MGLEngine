@@ -21,10 +21,7 @@ namespace RenderingEngine
         const char* GetName() { return m_Name.c_str(); }
         const uint32_t GetID() const { return m_UID; }
 
-        [[nodiscard]] glm::mat4& GetTRSMatrix() const { return m_Transform->GetTRSMatrix(); }
-        [[nodiscard]] glm::vec3& GetPosition() const { return m_Transform->Position; }
-        [[nodiscard]] glm::vec3& GetRotation() const { return m_Transform->Rotation; }
-        [[nodiscard]] glm::vec3& GetScale() const { return m_Transform->Scale; }
+        Transform* GetTransform() const { return m_Transform.get(); }
 
     private:
         void DefineUID();

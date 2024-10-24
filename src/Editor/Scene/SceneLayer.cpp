@@ -9,8 +9,9 @@ namespace RenderingEngine
         const auto& groundPlane = MeshImporter::CreatePlane(50.0f);
         auto& plane = m_Scene.Instantiate(groundPlane, glm::vec3(0, -10, 0));
         plane->SetName("Ground");
-        auto& rotation = plane->GetRotation();
-        rotation = glm::vec3(-90, 0, 0);
+
+        auto planeTransform = plane->GetTransform();
+        planeTransform->Rotation = glm::vec3(-90, 0, 0);
 
         const auto& baseballMesh = MeshImporter::CreateMesh(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
         m_Scene.Instantiate(baseballMesh, glm::vec3(10, 6, 3));

@@ -1,12 +1,9 @@
 #include "Scene.h"
 #include "GuiRenderer.h"
-#include "glm/fwd.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/matrix.hpp"
-
-#include <imgui.h>
-#include <imgui_internal.h>
-#include <ImGuizmo.h>
+#include "ImGuizmo.h"
+#include "RendererEngine/Components/Transform.h"
+#include "RendererEngine/Core/Math.h"
+#include "glm/trigonometric.hpp"
 
 namespace RenderingEngine
 {
@@ -51,9 +48,9 @@ namespace RenderingEngine
 	const Ref<Model>& Scene::Instantiate(const Ref<Mesh>& mesh, const glm::vec3 transform)
 	{
 		auto model = std::make_shared<Model>(mesh, m_DefaultMaterial);
+		auto modelTransform = model->GetTransform();
 
-		auto& position = model->GetPosition();
-		position = transform;
+		modelTransform->Position = glm::vec3(transform);
 		
 		m_Instances.push_back(model);
 		return m_Instances.back();
@@ -72,7 +69,9 @@ namespace RenderingEngine
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
 		for (auto& model : m_Instances)
 		{
-			Renderer::RenderMesh(model->GetMesh(), m_ShadowMapShader, model->GetTRSMatrix());
+			const Transform* modelTransform = model->GetTransform();
+
+			Renderer::RenderMesh(model->GetMesh(), m_ShadowMapShader, modelTransform->GetTRSMatrix());
 		}
 
 		Framebuffer::Unbind();
@@ -176,24 +175,46 @@ namespace RenderingEngine
 			return;
 		}
 
+		if (Input::KeyPressed(GLFW_KEY_F1))
+			m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+
+        if (Input::KeyPressed(GLFW_KEY_F2))
+			m_GuizmoOperation = ImGuizmo::OPERATION::ROTATE;
+
+        if (Input::KeyPressed(GLFW_KEY_F3))
+			m_GuizmoOperation = ImGuizmo::OPERATION::SCALE;
+
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist();
 
 		float width = ImGui::GetWindowWidth();
-		float height = ImGui::GetWindowWidth();
+		float height = ImGui::GetWindowHeight();
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
 
 		glm::mat4 cameraView = m_Camera.GetViewMat();
 		glm::mat4 cameraProj = m_Camera.GetProjMat();
-		glm::mat4 entityTRS = m_SelectedEntity->GetTRSMatrix();
+
+		auto entityTransform = m_SelectedEntity->GetTransform();
+		glm::mat4 entityTRS = entityTransform->GetTRSMatrix();
 
 		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), 
-		ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
+		(ImGuizmo::OPERATION)m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
 
 		if (ImGuizmo::IsUsing()) 
 		{
-			auto& position = m_SelectedEntity->GetPosition();
-			position = glm::vec3(entityTRS[3]);
+			glm::vec3 position, rotation, scale;
+
+			if (Math::Decompose(entityTRS, position, rotation, scale) == false) 
+			{
+				return;
+			}
+
+			entityTransform->Position = position;
+
+			glm::vec3 deltaRot = rotation - glm::radians(entityTransform->Rotation);
+			entityTransform->Rotation += glm::degrees(deltaRot);
+
+			entityTransform->Scale = scale;
 		}
 	}
 }

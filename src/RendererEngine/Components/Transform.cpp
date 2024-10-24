@@ -14,13 +14,12 @@ namespace RenderingEngine
         Scale = initScale;
     }
 
-    glm::mat4& Transform::GetTRSMatrix()
+    glm::mat4 Transform::GetTRSMatrix() const
     {
         const glm::mat4 translation = glm::translate(glm::mat4(1.0f), Position);
         const glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(Rotation)));
         const glm::mat4 scaling = glm::scale(glm::mat4(1.0f), Scale);
 
-        m_TRSMatrix = translation * rotation * scaling;
-        return m_TRSMatrix;
+        return translation * rotation * scaling;
     }
 }

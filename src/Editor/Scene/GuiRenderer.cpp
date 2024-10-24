@@ -21,16 +21,18 @@ namespace RenderingEngine
 
 		if (ImGui::TreeNodeEx((void*)typeid(Transform).hash_code(), flags, "Transform"))
 		{
+			auto transform = selectedEntity->GetTransform();
+
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
 
 			ImGui::AlignTextToFramePadding();
-			DrawVector3Drag("Position", selectedEntity->GetPosition(), 100.0f);
+			DrawVector3Drag("Position", transform->Position, 100.0f);
 
 			ImGui::AlignTextToFramePadding();
-			DrawVector3Drag("Rotation", selectedEntity->GetRotation(), 100.0f);
+			DrawVector3Drag("Rotation", transform->Rotation, 100.0f);
 
 			ImGui::AlignTextToFramePadding();
-			DrawVector3Drag("Scale", selectedEntity->GetScale(), 100.0f);
+			DrawVector3Drag("Scale", transform->Scale, 100.0f);
 
 			ImGui::PopStyleVar();
 			ImGui::TreePop();

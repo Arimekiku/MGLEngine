@@ -24,7 +24,7 @@ namespace RenderingEngine
         material->Bind();
 
         material->GetShader()->BindUniformMat4("u_camMatrix", m_ProjViewMat);
-        material->GetShader()->BindUniformMat4("u_trsMatrix", model->GetTRSMatrix());
+        material->GetShader()->BindUniformMat4("u_trsMatrix", model->GetTransform()->GetTRSMatrix());
 
         const auto& vertexArray = model->GetMesh()->GetVertexArray();
         vertexArray->Bind();

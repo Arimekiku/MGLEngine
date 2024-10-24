@@ -1,6 +1,9 @@
 #pragma once
 
 #include <RendererEngine.h>
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <ImGuizmo.h>
 
 namespace RenderingEngine 
 {
@@ -32,6 +35,8 @@ namespace RenderingEngine
 		AreaLighting m_Light;
 		DirectionalLight m_DirLight = DirectionalLight();
 		Camera m_Camera;
+
+		ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 
 		Ref<Model> m_SelectedEntity;
 	};

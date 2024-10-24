@@ -15,9 +15,6 @@ namespace RenderingEngine
         glm::vec3 Rotation = glm::vec3(0, 0, 0);
         glm::vec3 Scale = glm::vec3(1, 1, 1);
 
-        glm::mat4& GetTRSMatrix();
-
-    private:
-        glm::mat4 m_TRSMatrix;
+        glm::mat4 GetTRSMatrix() const;
     };
 }

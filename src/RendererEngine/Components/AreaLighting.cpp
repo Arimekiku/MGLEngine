@@ -7,8 +7,8 @@ namespace RenderingEngine
 	AreaLighting::AreaLighting(glm::vec3 position, const Ref<Model>& model)
 		: Position(position), m_Model(model)
 	{
-		auto& modelPosition = m_Model->GetPosition();
-		modelPosition = position;
+		auto transform = m_Model->GetTransform();
+		transform->Position = position;
 	}
 
 	void AreaLighting::OnEveryUpdate() const
