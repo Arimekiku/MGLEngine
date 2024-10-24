@@ -52,21 +52,28 @@ file(GLOB IMGUI_SOURCES
         ${IMGUI_DIR}/**.cpp
         ${IMGUI_DIR}/**.h)
 add_library(imgui ${IMGUI_SOURCES})
+target_include_directories(imgui PRIVATE ${IMGUI_DIR})
 
 #stb
 set(STB_DIR "${PROJECT_LIBRARIES_DIR}/stb")
-file(GLOB STB_SOURCES
-        ${STB_DIR}/**.cpp
-        ${STB_DIR}/**.h)
-add_library(stb ${IMGUI_SOURCES})
+file(GLOB STB_SOURCES ${STB_DIR}/stb_image.h)
+add_library(stb ${STB_SOURCES})
+set_target_properties(stb PROPERTIES LINKER_LANGUAGE CXX)
 
 #assimp
 set(ASSIMP_DIR "${PROJECT_LIBRARIES_DIR}/assimp")
 set(ASSIMP_WARNINGS_AS_ERRORS OFF)
 add_subdirectory(${ASSIMP_DIR} EXCLUDE_FROM_ALL)
 
-target_include_directories(imgui PRIVATE ${IMGUI_DIR})
-set_target_properties(glfw imgui glad spdlog stb assimp PROPERTIES FOLDER "vendor")
+#imguizmo
+set(IMGUIZMO_DIR "${PROJECT_LIBRARIES_DIR}/ImGuizmo")
+file(GLOB IMGUIZMO_SOURCES 
+        ${IMGUIZMO_DIR}/ImGuizmo.h
+        ${IMGUIZMO_DIR}/ImGuizmo.cpp)
+add_library(imguizmo ${IMGUIZMO_SOURCES})
+target_include_directories(imguizmo PRIVATE ${IMGUI_DIR})
+
+set_target_properties(glfw imgui glad spdlog stb assimp imguizmo PROPERTIES FOLDER "vendor")
 
 ################################# Executable ####################################
 
@@ -76,13 +83,13 @@ target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${RESO
 
 target_include_directories(
         ${PROJECT_NAME}
-        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}" "${ASSIMP_DIR}"
+        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}" "${ASSIMP_DIR}" "${IMGUIZMO_DIR}"
         PRIVATE "${PROJECT_SOURCE_DIR}"
 )
 
 target_link_libraries(
         ${PROJECT_NAME}
-        PUBLIC glfw spdlog glad imgui glm stb assimp
+        PUBLIC glfw spdlog glad imgui glm stb assimp imguizmo
         PRIVATE ${CMAKE_DL_LIBS}
 )
 

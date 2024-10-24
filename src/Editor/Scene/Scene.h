@@ -20,6 +20,8 @@ namespace RenderingEngine
 	private:
 		void DrawScenePanel();
 		void DrawInspectorPanel();
+		void DrawViewport();
+		void DrawGuizmos();
 
 		std::vector<Ref<Model>> m_Instances;
 		Ref<Material> m_DefaultMaterial;

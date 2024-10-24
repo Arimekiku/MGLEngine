@@ -1,4 +1,3 @@
-#include "mxpch.h"
 #include "GuiRenderer.h"
 
 #include <imgui.h>
@@ -41,7 +40,8 @@ namespace RenderingEngine
 		{
 			auto& material = selectedEntity->GetMaterial();
 			auto& properties = material->GetProperties();
-			ImGui::Image((void*)properties.AlbedoID, ImVec2(64, 64));
+
+			ImGui::Image(properties.AlbedoID, ImVec2(64, 64));
 
 			ImGui::ColorEdit3("Albedo", glm::value_ptr(properties.Albedo));
 			ImGui::SliderFloat("Rougness", &properties.Roughness, 0, 1, "%.2f");

@@ -1,8 +1,9 @@
 #include "GuiLayer.h"
 #include "RendererEngine/Core/Bootstrapper.h"
 
-#include <backends/imgui_impl_opengl3.cpp>
+#include <backends/imgui_impl_opengl3.cpp> 
 #include <backends/imgui_impl_glfw.cpp>
+#include <ImGuizmo.h>
 
 namespace RenderingEngine
 {
@@ -13,7 +14,6 @@ namespace RenderingEngine
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
         ImGui::StyleColorsDark();
         ImGuiStyle& style = ImGui::GetStyle();
@@ -42,6 +42,7 @@ namespace RenderingEngine
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame(); 
     }
 
     void GuiLayer::End()

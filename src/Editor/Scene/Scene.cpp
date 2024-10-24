@@ -1,9 +1,12 @@
-#include "mxpch.h"
 #include "Scene.h"
 #include "GuiRenderer.h"
+#include "glm/fwd.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/matrix.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <ImGuizmo.h>
 
 namespace RenderingEngine
 {
@@ -102,27 +105,7 @@ namespace RenderingEngine
 
 		DrawInspectorPanel();
 
-		ImGui::Begin("Viewport");
-
-        const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        const auto castSize = glm::i16vec2(viewportSize.x, viewportSize.y);
-
-        if (castSize.x != 0 && castSize.y != 0)
-        {
-            if (glm::i16vec2(m_Viewport.GetWidth(), m_Viewport.GetHeight()) != castSize)
-            {
-                GetSceneCamera().Resize(castSize.x, castSize.y);
-                m_Viewport.Resize(castSize.x, castSize.y);
-				m_DepthMap.Resize(castSize.x, castSize.y);
-            }
-
-            const uint32_t m_Texture = m_Viewport.GetAttachment(0);
-            ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
-        }
-
-        ImGui::End();
-
-		ImGui::ShowDemoWindow();
+		DrawViewport();
 	}
 
 	void Scene::DrawScenePanel()
@@ -159,5 +142,58 @@ namespace RenderingEngine
 		}
 
 		ImGui::End();
+	}
+
+	void Scene::DrawViewport() 
+	{
+		ImGui::Begin("Viewport");
+
+        const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+        const auto castSize = glm::i16vec2(viewportSize.x, viewportSize.y);
+
+        if (castSize.x != 0 && castSize.y != 0)
+        {
+            if (glm::i16vec2(m_Viewport.GetWidth(), m_Viewport.GetHeight()) != castSize)
+            {
+                GetSceneCamera().Resize(castSize.x, castSize.y);
+                m_Viewport.Resize(castSize.x, castSize.y);
+				m_DepthMap.Resize(castSize.x, castSize.y);
+            }
+
+            const uint32_t m_Texture = m_Viewport.GetAttachment(0);
+            ImGui::Image(m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
+        }
+
+		DrawGuizmos();
+
+        ImGui::End();
+	}
+
+	void Scene::DrawGuizmos() 
+	{
+		if (!m_SelectedEntity) 
+		{
+			return;
+		}
+
+		ImGuizmo::SetOrthographic(false);
+		ImGuizmo::SetDrawlist();
+
+		float width = ImGui::GetWindowWidth();
+		float height = ImGui::GetWindowWidth();
+		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
+
+		glm::mat4 cameraView = m_Camera.GetViewMat();
+		glm::mat4 cameraProj = m_Camera.GetProjMat();
+		glm::mat4 entityTRS = m_SelectedEntity->GetTRSMatrix();
+
+		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), 
+		ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
+
+		if (ImGuizmo::IsUsing()) 
+		{
+			auto& position = m_SelectedEntity->GetPosition();
+			position = glm::vec3(entityTRS[3]);
+		}
 	}
 }

@@ -1,4 +1,3 @@
-#include "mxpch.h"
 #include "Camera.h"
 #include "RendererEngine.h"
 
@@ -16,12 +15,28 @@ namespace RenderingEngine
     void Camera::Resize(const float width, const float height)
     {
         m_Attributes.Aspect = width / height;
+
+        m_View = glm::lookAt(Position, Position + m_Orientation, m_Up);
+        m_Proj = glm::perspective(glm::radians(m_Attributes.FOV),
+                                                m_Attributes.Aspect,
+                                                m_Attributes.MinRenderDist,
+                                                m_Attributes.MaxRenderDist);
+
+        m_ProjView = glm::mat4(m_Proj * m_View);
     }
 
     void Camera::EveryUpdate(Time deltaTime)
     {
         if (m_CameraEditorMode == true)
             return;
+
+        m_View = glm::lookAt(Position, Position + m_Orientation, m_Up);
+        m_Proj = glm::perspective(glm::radians(m_Attributes.FOV),
+                                                m_Attributes.Aspect,
+                                                m_Attributes.MinRenderDist,
+                                                m_Attributes.MaxRenderDist);
+
+        m_ProjView = glm::mat4(m_Proj * m_View);
 
         Input::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
         const glm::vec2 rotationVector = Input::GetNormalizedCursor();
@@ -48,18 +63,6 @@ namespace RenderingEngine
         dispatcher.Dispatch<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
     }
 
-    const glm::mat4& Camera::GetProjViewMat()
-    {
-        const glm::mat4 view = glm::lookAt(Position, Position + m_Orientation, m_Up);
-        const glm::mat4 proj = glm::perspective(glm::radians(m_Attributes.FOV),
-                                                m_Attributes.Aspect,
-                                                m_Attributes.MinRenderDist,
-                                                m_Attributes.MaxRenderDist);
-
-        m_ProjView = glm::mat4(proj * view);
-        return m_ProjView;
-    }
-
     void Camera::SetOrientation(const float rotX, const float rotY)
     {
         // Calculates upcoming vertical change in the Orientation
@@ -67,7 +70,7 @@ namespace RenderingEngine
                                                      glm::normalize(glm::cross(m_Orientation, m_Up)));
 
         // Decides whether or not the next vertical Orientation is legal or not
-        if (abs(glm::angle(newOrientation, m_Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
+        if (std::abs(glm::angle(newOrientation, m_Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
         {
             m_Orientation = newOrientation;
         }

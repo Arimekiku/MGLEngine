@@ -1,10 +1,11 @@
-#include "mxpch.h"
 #include "Texture.h"
 
 #include "RendererEngine/Core/Logger/Log.h"
 
-#include <stb_image.cpp>
 #include <glad/glad.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 namespace RenderingEngine
 {

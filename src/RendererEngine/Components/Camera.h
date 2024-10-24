@@ -1,5 +1,6 @@
 #pragma once
 
+#include "RendererEngine/Components/Transform.h"
 #include "RendererEngine/Events/Event.h"
 #include "RendererEngine/Events/KeyEvent.h"
 #include "RendererEngine/Events/WindowEvent.h"
@@ -39,7 +40,9 @@ namespace RenderingEngine
         void EveryUpdate(Time deltaTime);
         void OnEvent(Event& e);
 
-        const glm::mat4& GetProjViewMat();
+        const glm::mat4& GetProjViewMat() { return m_ProjView; }
+        const glm::mat4& GetViewMat() { return m_View; }
+        const glm::mat4& GetProjMat() { return m_Proj; }
 
         glm::vec3 Position;
 
@@ -50,7 +53,10 @@ namespace RenderingEngine
 
         CameraAttributes m_Attributes;
 
+        glm::mat4 m_Proj = glm::mat4(1.0f);
+        glm::mat4 m_View = glm::mat4(1.0f);
         glm::mat4 m_ProjView = glm::mat4(1.0f);
+
         glm::vec3 m_Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
         glm::vec3 m_Up = glm::vec3(0.0f, 1.0f, 0.0f);
         bool m_CameraEditorMode = true;

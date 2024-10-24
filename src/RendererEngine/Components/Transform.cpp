@@ -1,6 +1,8 @@
-#include "mxpch.h"
 #include "Transform.h"
+#include "glm/trigonometric.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
 namespace RenderingEngine
@@ -12,22 +14,13 @@ namespace RenderingEngine
         Scale = initScale;
     }
 
-    glm::mat4 Transform::GetTRSMatrix() const
+    glm::mat4& Transform::GetTRSMatrix()
     {
         const glm::mat4 translation = glm::translate(glm::mat4(1.0f), Position);
-
+        const glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(Rotation)));
         const glm::mat4 scaling = glm::scale(glm::mat4(1.0f), Scale);
 
-        float rad = glm::radians(Rotation.x);
-        const glm::mat4 rotationX = glm::rotate(glm::mat4(1.0f), rad, {1, 0, 0});
-
-        rad = glm::radians(Rotation.y);
-        const glm::mat4 rotationY = glm::rotate(glm::mat4(1.0f), rad, {0, 1, 0});
-
-        rad = glm::radians(Rotation.z);
-        const glm::mat4 rotationZ = glm::rotate(glm::mat4(1.0f), rad, {0, 0, 1});
-
-        const glm::mat4 model = translation * scaling * rotationX * rotationY * rotationZ;
-        return model;
+        m_TRSMatrix = translation * rotation * scaling;
+        return m_TRSMatrix;
     }
 }
