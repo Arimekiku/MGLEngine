@@ -18,7 +18,6 @@ endif()
 
 set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build")
 set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
-set(PROJECT_LIBRARIES_DIR "${CMAKE_SOURCE_DIR}/vendor")
 set(RESOURCE_DIR "./Resources/")
 
 # define headers
@@ -30,79 +29,15 @@ file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cpp)
 # define resources in binaries
 file(COPY ${RESOURCE_DIR} DESTINATION "${CMAKE_BINARY_DIR}/Resources/")
 
-# GLFW
-set(GLFW_DIR "${PROJECT_LIBRARIES_DIR}/GLFW")
-add_subdirectory(${GLFW_DIR} EXCLUDE_FROM_ALL)
-
-# GLAD
-set(GLAD_DIR "${PROJECT_LIBRARIES_DIR}/GLAD")
-add_subdirectory(${GLAD_DIR} EXCLUDE_FROM_ALL)
-
-# glm
-set(GLM_DIR "${PROJECT_LIBRARIES_DIR}/glm")
-add_subdirectory(${GLM_DIR} EXCLUDE_FROM_ALL)
-
-# spdlog
-set(SPDLOG_DIR "${PROJECT_LIBRARIES_DIR}/spdlog")
-add_subdirectory(${SPDLOG_DIR} EXCLUDE_FROM_ALL)
-
-# imgui
-set(IMGUI_DIR "${PROJECT_LIBRARIES_DIR}/ImGui")
-file(GLOB IMGUI_SOURCES
-        ${IMGUI_DIR}/**.cpp
-        ${IMGUI_DIR}/**.h)
-add_library(imgui ${IMGUI_SOURCES})
-target_include_directories(imgui PRIVATE ${IMGUI_DIR})
-
-#stb
-set(STB_DIR "${PROJECT_LIBRARIES_DIR}/stb")
-file(GLOB STB_SOURCES ${STB_DIR}/stb_image.h)
-add_library(stb ${STB_SOURCES})
-set_target_properties(stb PROPERTIES LINKER_LANGUAGE CXX)
-
-#assimp
-set(ASSIMP_DIR "${PROJECT_LIBRARIES_DIR}/assimp")
-set(ASSIMP_WARNINGS_AS_ERRORS OFF)
-add_subdirectory(${ASSIMP_DIR} EXCLUDE_FROM_ALL)
-
-#imguizmo
-set(IMGUIZMO_DIR "${PROJECT_LIBRARIES_DIR}/ImGuizmo")
-file(GLOB IMGUIZMO_SOURCES 
-        ${IMGUIZMO_DIR}/ImGuizmo.h
-        ${IMGUIZMO_DIR}/ImGuizmo.cpp)
-add_library(imguizmo ${IMGUIZMO_SOURCES})
-target_include_directories(imguizmo PRIVATE ${IMGUI_DIR})
-
-#entt
-set(ENTT_DIR "${PROJECT_LIBRARIES_DIR}/entt")
-add_subdirectory(${ENTT_DIR} EXCLUDE_FROM_ALL)
-
-set_target_properties(glfw imgui glad spdlog stb assimp imguizmo PROPERTIES FOLDER "vendor")
+add_subdirectory("vendor" EXCLUDE_FROM_ALL)
 
 ################################# Executable ####################################
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${RESOURCE_DIR}")
-
-target_include_directories(
-        ${PROJECT_NAME}
-        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}" "${ASSIMP_DIR}" "${IMGUIZMO_DIR}" "${ENTT_DIR}"
-        PRIVATE "${PROJECT_SOURCE_DIR}"
-)
-
-target_link_libraries(
-        ${PROJECT_NAME}
-        PUBLIC glfw spdlog glad imgui glm stb assimp imguizmo EnTT
-        PRIVATE ${CMAKE_DL_LIBS}
-)
-
-if(WIN32)
-        target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
-else()
-        target_link_libraries(${PROJECT_NAME} PUBLIC GL)
-endif()
-
+target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}")
+target_link_libraries(${PROJECT_NAME} PUBLIC libs PRIVATE ${CMAKE_DL_LIBS})
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/mxpch.h)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
