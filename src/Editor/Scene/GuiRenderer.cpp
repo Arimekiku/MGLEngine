@@ -9,11 +9,11 @@ namespace RenderingEngine
 	{
 		char buf[256];
 		memset(buf, 0, 256);
-		strcpy(buf, selectedEntity->GetName());
+		strcpy(buf, selectedEntity->Name.c_str());
 
 		if (ImGui::InputText("Name", buf, sizeof(buf)))
 		{
-			selectedEntity->SetName(buf);
+			selectedEntity->Name = buf;
 		}
 
 		auto flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen;
@@ -40,10 +40,10 @@ namespace RenderingEngine
 
 		if (ImGui::TreeNodeEx((void*)typeid(Material).hash_code(), flags, "Matetial"))
 		{
-			auto& material = selectedEntity->GetMaterial();
+			auto& material = selectedEntity->Material;
 			auto& properties = material->GetProperties();
 
-			ImGui::Image(properties.AlbedoID, ImVec2(64, 64));
+			ImGui::Image((void*)properties.AlbedoID, ImVec2(64, 64));
 
 			ImGui::ColorEdit3("Albedo", glm::value_ptr(properties.Albedo));
 			ImGui::SliderFloat("Rougness", &properties.Roughness, 0, 1, "%.2f");

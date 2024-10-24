@@ -8,7 +8,7 @@ namespace RenderingEngine
     {
         const auto& groundPlane = MeshImporter::CreatePlane(50.0f);
         auto& plane = m_Scene.Instantiate(groundPlane, glm::vec3(0, -10, 0));
-        plane->SetName("Ground");
+        plane->Name = "Ground";
 
         auto planeTransform = plane->GetTransform();
         planeTransform->Rotation = glm::vec3(-90, 0, 0);

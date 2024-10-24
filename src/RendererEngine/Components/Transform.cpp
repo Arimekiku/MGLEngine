@@ -7,7 +7,7 @@
 
 namespace RenderingEngine
 {
-    Transform::Transform(const glm::vec3& initPos, const glm::vec3& initRot, const glm::vec3& initScale)
+    Transform::Transform(glm::vec3 initPos, glm::vec3 initRot, glm::vec3 initScale)
     {
         Position = initPos;
         Rotation = initRot;

@@ -18,7 +18,9 @@ namespace RenderingEngine
 
 		const auto& lightMaterial = std::make_shared<Material>(lightShader);
 
-		const auto& lightModel = std::make_shared<Model>(MeshImporter::CreateCube(), lightMaterial);
+		const auto& lightModel = std::make_shared<Model>();
+		lightModel->Mesh = MeshImporter::CreateCube();
+		lightModel->Material = lightMaterial;
 		m_Light = AreaLighting(glm::vec3(0, 5, -5), lightModel);
 
         const auto& m_FaceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
@@ -47,9 +49,11 @@ namespace RenderingEngine
 
 	const Ref<Model>& Scene::Instantiate(const Ref<Mesh>& mesh, const glm::vec3 transform)
 	{
-		auto model = std::make_shared<Model>(mesh, m_DefaultMaterial);
-		auto modelTransform = model->GetTransform();
+		auto model = std::make_shared<Model>();
+		model->Material = m_DefaultMaterial;
+		model->Mesh = mesh;
 
+		auto modelTransform = model->GetTransform();
 		modelTransform->Position = glm::vec3(transform);
 		
 		m_Instances.push_back(model);
@@ -71,7 +75,7 @@ namespace RenderingEngine
 		{
 			const Transform* modelTransform = model->GetTransform();
 
-			Renderer::RenderMesh(model->GetMesh(), m_ShadowMapShader, modelTransform->GetTRSMatrix());
+			Renderer::RenderMesh(model->Mesh, m_ShadowMapShader, modelTransform->GetTRSMatrix());
 		}
 
 		Framebuffer::Unbind();
@@ -115,7 +119,7 @@ namespace RenderingEngine
 		{
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 			flags |= (m_SelectedEntity == model) ? ImGuiTreeNodeFlags_Selected : 0;
-			bool isOpened = ImGui::TreeNodeEx((void*)model->GetID(), flags, "%s", model->GetName());
+			bool isOpened = ImGui::TreeNodeEx((void*)model->GetID(), flags, "%s", model->Name.c_str());
 
 			if (ImGui::IsItemClicked(0))
 			{
@@ -159,8 +163,8 @@ namespace RenderingEngine
 				m_DepthMap.Resize(castSize.x, castSize.y);
             }
 
-            const uint32_t m_Texture = m_Viewport.GetAttachment(0);
-            ImGui::Image(m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
+            uint32_t m_Texture = m_Viewport.GetAttachment(0);
+            ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
         }
 
 		DrawGuizmos();

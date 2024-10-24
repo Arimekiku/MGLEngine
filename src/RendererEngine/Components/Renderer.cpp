@@ -20,13 +20,13 @@ namespace RenderingEngine
 
     void Renderer::RenderModel(const Ref<Model>& model)
     {
-        const auto& material = model->GetMaterial();
+        const auto& material = model->Material;
         material->Bind();
 
         material->GetShader()->BindUniformMat4("u_camMatrix", m_ProjViewMat);
         material->GetShader()->BindUniformMat4("u_trsMatrix", model->GetTransform()->GetTRSMatrix());
 
-        const auto& vertexArray = model->GetMesh()->GetVertexArray();
+        const auto& vertexArray = model->Mesh->GetVertexArray();
         vertexArray->Bind();
 
         glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
