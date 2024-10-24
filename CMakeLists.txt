@@ -73,6 +73,10 @@ file(GLOB IMGUIZMO_SOURCES
 add_library(imguizmo ${IMGUIZMO_SOURCES})
 target_include_directories(imguizmo PRIVATE ${IMGUI_DIR})
 
+#entt
+set(ENTT_DIR "${PROJECT_LIBRARIES_DIR}/entt")
+add_subdirectory(${ENTT_DIR} EXCLUDE_FROM_ALL)
+
 set_target_properties(glfw imgui glad spdlog stb assimp imguizmo PROPERTIES FOLDER "vendor")
 
 ################################# Executable ####################################
@@ -83,13 +87,13 @@ target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${RESO
 
 target_include_directories(
         ${PROJECT_NAME}
-        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}" "${ASSIMP_DIR}" "${IMGUIZMO_DIR}"
+        PUBLIC "${GLFW_INCLUDE_DIRS}" "${SPDLOG_DIR}" "${GLAD_DIR}" "${IMGUI_DIR}" "${GLM_DIR}" "${STB_DIR}" "${ASSIMP_DIR}" "${IMGUIZMO_DIR}" "${ENTT_DIR}"
         PRIVATE "${PROJECT_SOURCE_DIR}"
 )
 
 target_link_libraries(
         ${PROJECT_NAME}
-        PUBLIC glfw spdlog glad imgui glm stb assimp imguizmo
+        PUBLIC glfw spdlog glad imgui glm stb assimp imguizmo EnTT
         PRIVATE ${CMAKE_DL_LIBS}
 )
 
