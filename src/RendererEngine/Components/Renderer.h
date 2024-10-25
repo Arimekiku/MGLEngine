@@ -10,7 +10,7 @@ namespace RenderingEngine
     class Renderer
     {
     public:
-        static void OnEveryUpdate(Camera& camera);
+        static void OnEveryUpdate(Ref<Camera>& camera);
         static void Clear(glm::vec4 color);
 
         static void RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& TRSMatrix);

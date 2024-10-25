@@ -83,10 +83,11 @@ namespace RenderingEngine
 
 	struct CameraComponent
 	{
+		Ref<Camera> MainCamera;
 		bool Enabled = false;
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
-		CameraComponent(const bool enabled) : Enabled(enabled) {}
+		CameraComponent(const bool enabled, Ref<Camera>& camera) : Enabled(enabled), MainCamera(camera) {}
 	};
 }

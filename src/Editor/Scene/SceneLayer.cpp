@@ -6,13 +6,13 @@
 
 namespace RenderingEngine
 {
-    SceneLayer::SceneLayer() : m_Camera(glm::vec3(0, 0, 10))
+    SceneLayer::SceneLayer()
     {
         m_GuiRenderer.SetContext(m_Scene);
 
         //CAMERAS
         Entity camera = m_Scene->Instantiate("Camera");
-        camera.AddComponent<CameraComponent>(true);
+        camera.AddComponent<CameraComponent>(true, m_Camera);
 
         //MATERIALS AND LIGHT
         const auto& lightShader = std::make_shared<Shader>(
@@ -25,6 +25,7 @@ namespace RenderingEngine
 		const auto& lightMaterial = std::make_shared<Material>(lightShader);
 
         Entity areaLight = m_Scene->Instantiate("AreaLight");
+		areaLight.AddComponent<TransformComponent>();
         auto& areaLightTransform = areaLight.GetComponent<TransformComponent>();
         auto& lightComponent = areaLight.AddComponent<AreaLightComponent>();
         areaLight.AddComponent<MeshComponent>(MeshImporter::CreateCube());
@@ -56,6 +57,7 @@ namespace RenderingEngine
         const auto& groundPlane = MeshImporter::CreatePlane(50.0f);
         Entity plane = m_Scene->Instantiate("Ground");
         plane.AddComponent<MeshComponent>(groundPlane);
+		plane.AddComponent<TransformComponent>();
         plane.AddComponent<MaterialComponent>(m_DefaultMaterial);
 
         auto& transformComponent = plane.GetComponent<TransformComponent>();
@@ -66,6 +68,7 @@ namespace RenderingEngine
         const auto& baseballMesh = MeshImporter::CreateMesh(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
         Entity baseballBat = m_Scene->Instantiate("Bat");
         baseballBat.AddComponent<MeshComponent>(baseballMesh);
+		baseballBat.AddComponent<TransformComponent>();
         baseballBat.AddComponent<MaterialComponent>(m_DefaultMaterial);
         baseballBat.GetComponent<TransformComponent>().Position = glm::vec3(10, 6, 3);
 
@@ -73,17 +76,20 @@ namespace RenderingEngine
         const auto& planeMesh = MeshImporter::CreatePlane(1.0f);
         Entity planePrimitive = m_Scene->Instantiate("Plane");
         planePrimitive.AddComponent<MeshComponent>(planeMesh);
+		planePrimitive.AddComponent<TransformComponent>();
         planePrimitive.AddComponent<MaterialComponent>(m_DefaultMaterial);
 
         const auto& cubeMesh = MeshImporter::CreateCube(1.0f);
         Entity cubePrimitive = m_Scene->Instantiate("Cube");
         cubePrimitive.AddComponent<MeshComponent>(cubeMesh);
+		cubePrimitive.AddComponent<TransformComponent>();
         cubePrimitive.AddComponent<MaterialComponent>(m_DefaultMaterial);
         cubePrimitive.GetComponent<TransformComponent>().Position = glm::vec3(0, 0, 2);
 
         const auto& sphereMesh = MeshImporter::CreateSphere(1.0f);
         Entity spherePrimitive = m_Scene->Instantiate("Sphere");
         spherePrimitive.AddComponent<MeshComponent>(sphereMesh);
+		spherePrimitive.AddComponent<TransformComponent>();
         spherePrimitive.AddComponent<MaterialComponent>(m_DefaultMaterial);
         spherePrimitive.GetComponent<TransformComponent>().Position = glm::vec3(0, 0, 5);
     }
@@ -93,8 +99,8 @@ namespace RenderingEngine
         m_LastTime = deltaTime;
 
         Renderer::OnEveryUpdate(m_Camera);
-        m_Camera.EveryUpdate(deltaTime);
 
+        m_Camera->EveryUpdate(deltaTime);
         m_Scene->OnEveryUpdate(deltaTime);
     }
 
@@ -159,13 +165,13 @@ namespace RenderingEngine
         m_GuiRenderer.DrawViewport();
         m_GuiRenderer.DrawScenePanel();
         m_GuiRenderer.DrawInspectorPanel();
-        //m_GuiRenderer.DrawGuizmos();
+        m_GuiRenderer.DrawGuizmos();
 
         ImGui::End();
     }
 
     void SceneLayer::OnEvent(Event& event)
     {
-        m_Camera.OnEvent(event);
+        m_Camera->OnEvent(event);
     }
 }

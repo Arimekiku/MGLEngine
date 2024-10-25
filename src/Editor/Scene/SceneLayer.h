@@ -20,7 +20,7 @@ namespace RenderingEngine
         Scene* m_Scene = new Scene();
         bool m_FirstClick = true;
         Time m_LastTime = Time(0);
-        Camera m_Camera;
+        Ref<Camera> m_Camera = std::make_shared<Camera>(glm::vec3(0, 0, 10));
 
         GuiRenderer m_GuiRenderer = GuiRenderer();
     };

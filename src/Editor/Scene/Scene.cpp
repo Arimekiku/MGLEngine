@@ -21,13 +21,31 @@ namespace RenderingEngine
 		Entity entity = { m_Entities.create(), this };
 
 		entity.AddComponent<NameComponent>(name.empty() ? "Entity" : name);
-		entity.AddComponent<TransformComponent>();
 
 		return entity;
 	}
 
 	void Scene::OnEveryUpdate(Time deltaTime)
 	{
+		Ref<Camera> mainCamera = nullptr;
+		auto& cameraEntities = m_Entities.view<CameraComponent>();
+		for (auto& cameraEntity : cameraEntities)
+		{
+			CameraComponent cameraComponent = cameraEntities.get<CameraComponent>(cameraEntity);
+
+			if (cameraComponent.Enabled == false)
+			{
+				continue;
+			}
+
+			mainCamera = cameraComponent.MainCamera;
+		}
+
+		if (mainCamera == nullptr)
+		{
+			return;
+		}
+
 		auto& meshRenderers = m_Entities.view<MeshComponent, TransformComponent>();
 
 		glCullFace(GL_FRONT);

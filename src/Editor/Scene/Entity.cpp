@@ -7,6 +7,4 @@ namespace RenderingEngine
 		m_EntityID = handle;
 		m_Scene = parent;
 	}
-
-	
 }

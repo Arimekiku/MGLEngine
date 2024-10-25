@@ -7,9 +7,9 @@ namespace RenderingEngine
 {
     glm::mat4 Renderer::m_ProjViewMat;
 
-    void Renderer::OnEveryUpdate(Camera& camera)
+    void Renderer::OnEveryUpdate(Ref<Camera>& camera)
     {
-        m_ProjViewMat = camera.GetProjViewMat();
+        m_ProjViewMat = camera->GetProjViewMat();
     }
 
     void Renderer::Clear(const glm::vec4 color)

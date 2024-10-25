@@ -41,23 +41,11 @@ namespace RenderingEngine
 		template<typename T>
 		T& GetComponent()
 		{
-			LOG_CLIENT_ASSERT(this->HasComponent<T>(), "Entity %d does not have component!", (int32_t)m_EntityID);
+			LOG_CLIENT_ASSERT(this->HasComponent<T>(), "Entity does not have component!");
 
 			T& component = m_Scene->m_Entities.get<T>(m_EntityID);
 
 			return component;
-		}
-
-		template<typename T>
-		bool TryGetComponent(T& value)
-		{
-			if (this->HasComponent<T>() == false) 
-			{
-				return false;
-			}
-
-			value = this->GetComponent<T>();
-			return true;
 		}
 
 		operator bool() const { return m_EntityID != entt::null; }

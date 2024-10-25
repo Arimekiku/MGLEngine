@@ -15,7 +15,26 @@ namespace RenderingEngine
         {
             if (glm::i16vec2(m_Context->m_Viewport.GetWidth(), m_Context->m_Viewport.GetHeight()) != castSize)
             {
-                //m_Context->GetSceneCamera().Resize(castSize.x, castSize.y);
+				//Camera
+				Ref<Camera> mainCamera = nullptr;
+				auto view = m_Context->m_Entities.view<CameraComponent>();
+				for (auto& cameraEntity : view)
+				{
+					CameraComponent& camera = view.get<CameraComponent>(cameraEntity);
+
+					if (camera.Enabled == false)
+					{
+						continue;
+					}
+
+					mainCamera = camera.MainCamera;
+				}
+
+				if (mainCamera != nullptr)
+				{
+					mainCamera->Resize(castSize.x, castSize.y);
+				}
+
                 m_Context->m_Viewport.Resize(castSize.x, castSize.y);
 				m_Context->m_DepthMap.Resize(castSize.x, castSize.y);
             }
@@ -66,9 +85,10 @@ namespace RenderingEngine
 
 		if (m_SelectedEntity)
 		{
-			NameComponent nameComponent;
-			if (m_SelectedEntity.TryGetComponent<NameComponent>(nameComponent))
+			if (m_SelectedEntity.HasComponent<NameComponent>())
 			{
+				NameComponent& nameComponent = m_SelectedEntity.GetComponent<NameComponent>();
+
 				char buf[256];
 				memset(buf, 0, 256);
 				strcpy(buf, nameComponent.Name.c_str());
@@ -82,9 +102,10 @@ namespace RenderingEngine
 			auto flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen;
 			flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 
-			TransformComponent transformComponent;
-			if (m_SelectedEntity.TryGetComponent<TransformComponent>(transformComponent))
+			if (m_SelectedEntity.HasComponent<TransformComponent>())
 			{
+				TransformComponent& transformComponent = m_SelectedEntity.GetComponent<TransformComponent>();
+
 				if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), flags, "Transform"))
 				{
 					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
@@ -103,9 +124,10 @@ namespace RenderingEngine
 				}
 			}
 
-			MaterialComponent materialComponent;
-			if (m_SelectedEntity.TryGetComponent<MaterialComponent>(materialComponent))
+			if (m_SelectedEntity.HasComponent<MaterialComponent>())
 			{
+				MaterialComponent& materialComponent = m_SelectedEntity.GetComponent<MaterialComponent>();
+
 				if (ImGui::TreeNodeEx((void*)typeid(MaterialComponent).hash_code(), flags, "Matetial"))
 				{
 					auto& material = materialComponent.SharedMat;
@@ -128,19 +150,25 @@ namespace RenderingEngine
 
 	void GuiRenderer::DrawGuizmos() 
 	{
-		if (!m_SelectedEntity)
+		if (!m_SelectedEntity || m_SelectedEntity.HasComponent<TransformComponent>() == false)
 		{
 			return;
 		}
 
 		if (Input::KeyPressed(GLFW_KEY_F1))
+		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+		}
 
-        if (Input::KeyPressed(GLFW_KEY_F2))
+		if (Input::KeyPressed(GLFW_KEY_F2))
+		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::ROTATE;
+		}
 
-        if (Input::KeyPressed(GLFW_KEY_F3))
+		if (Input::KeyPressed(GLFW_KEY_F3))
+		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::SCALE;
+		}
 
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist();
@@ -149,14 +177,31 @@ namespace RenderingEngine
 		float height = ImGui::GetWindowHeight();
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
 
-		//glm::mat4 cameraView = m_Context->GetSceneCamera().GetViewMat();
-		//glm::mat4 cameraProj = m_Context->GetSceneCamera().GetProjMat();
+		//Camera
+		Ref<Camera> mainCamera = nullptr;
+		auto view = m_Context->m_Entities.view<CameraComponent>();
+		for (auto& cameraEntity : view)
+		{
+			CameraComponent& camera = view.get<CameraComponent>(cameraEntity);
+
+			if (camera.Enabled == false)
+			{
+				continue;
+			}
+
+			mainCamera = camera.MainCamera;
+		}
+		glm::mat4 cameraView = mainCamera->GetViewMat();
+		glm::mat4 cameraProj = mainCamera->GetProjMat();
+
+		if (mainCamera == nullptr)
+			return;
 
 		TransformComponent& entityTransform = m_SelectedEntity.GetComponent<TransformComponent>();
 		glm::mat4 entityTRS = entityTransform.GetTRSMatrix();
 
-		//ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), 
-		//(ImGuizmo::OPERATION)m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
+		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), 
+		(ImGuizmo::OPERATION)m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
 
 		if (ImGuizmo::IsUsing()) 
 		{
