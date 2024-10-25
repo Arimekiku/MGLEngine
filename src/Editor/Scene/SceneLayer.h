@@ -2,6 +2,7 @@
 
 #include "RendererEngine.h"
 #include "Scene.h"
+#include "GuiRenderer.h"
 
 namespace RenderingEngine
 {
@@ -16,8 +17,11 @@ namespace RenderingEngine
         void OnEvent(Event& event) override;
 
     private:
-        Scene m_Scene;
+        Scene* m_Scene = new Scene();
         bool m_FirstClick = true;
         Time m_LastTime = Time(0);
+        Camera m_Camera;
+
+        GuiRenderer m_GuiRenderer = GuiRenderer();
     };
 }

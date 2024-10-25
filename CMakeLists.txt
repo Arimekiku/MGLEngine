@@ -21,10 +21,10 @@ set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
 set(RESOURCE_DIR "./Resources/")
 
 # define headers
-file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/*.h)
+file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/**.h)
 
 # define source
-file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/**.cpp)
 
 # define resources in binaries
 file(COPY ${RESOURCE_DIR} DESTINATION "${CMAKE_BINARY_DIR}/Resources/")

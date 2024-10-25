@@ -1,15 +1,31 @@
 #pragma once
 
-#include "RendererEngine.h"
+#include "Entity.h"
+
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <ImGuizmo.h>
 
 namespace RenderingEngine
 {
 	class GuiRenderer
 	{
 	public:
-		static void DrawImGuiModel(const Ref<Model> selectedEntity);
+		GuiRenderer() = default;
+
+		void DrawViewport();
+		void DrawScenePanel();
+		void DrawInspectorPanel();
+		void DrawGuizmos();
+
+		void SetContext(Scene* context);
 
 	private:
-		static void DrawVector3Drag(const char* label, glm::vec3& vector, float panelWidth);
+		void DrawVector3Drag(const char* label, glm::vec3& vector, float panelWidth);
+
+		Scene* m_Context = nullptr;
+		Entity m_SelectedEntity = {};
+
+		ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	};
 }

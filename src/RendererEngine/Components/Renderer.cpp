@@ -18,20 +18,6 @@ namespace RenderingEngine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void Renderer::RenderModel(const Ref<Model>& model)
-    {
-        const auto& material = model->Material;
-        material->Bind();
-
-        material->GetShader()->BindUniformMat4("u_camMatrix", m_ProjViewMat);
-        material->GetShader()->BindUniformMat4("u_trsMatrix", model->GetTransform()->GetTRSMatrix());
-
-        const auto& vertexArray = model->Mesh->GetVertexArray();
-        vertexArray->Bind();
-
-        glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
-    }
-
     void Renderer::RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& TRSMatrix)
     {
         shader->Bind();

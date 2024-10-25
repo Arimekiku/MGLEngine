@@ -1,81 +1,46 @@
 #include "Scene.h"
 #include "GuiRenderer.h"
-#include "ImGuizmo.h"
-#include "RendererEngine/Components/Transform.h"
 #include "RendererEngine/Core/Math.h"
-#include "glm/trigonometric.hpp"
+#include "ComponentRegistry.h"
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/trigonometric.hpp>
+#include <entt/entt.hpp>
 
 namespace RenderingEngine
 {
-	Scene::Scene() : m_Camera(glm::vec3(0, 0, 10))
+	Scene::Scene()
 	{
-		const auto& lightShader = std::make_shared<Shader>(
-			RESOURCES_PATH "Shaders/areaLight.vert",
-            RESOURCES_PATH "Shaders/areaLight.frag");
-
-		lightShader->Bind();
-		lightShader->BindUniformFloat3("u_LightColor", {1, 1, 1});
-
-		const auto& lightMaterial = std::make_shared<Material>(lightShader);
-
-		const auto& lightModel = std::make_shared<Model>();
-		lightModel->Mesh = MeshImporter::CreateCube();
-		lightModel->Material = lightMaterial;
-		m_Light = AreaLighting(glm::vec3(0, 5, -5), lightModel);
-
-        const auto& m_FaceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
-        const auto& m_HouseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
-
 		m_ShadowMapShader = std::make_shared<Shader>(
 			RESOURCES_PATH "Shaders/shadowMap.vert",
             RESOURCES_PATH "Shaders/shadowMap.frag");
-
-		m_ShadowMapShader->Bind();
-		m_ShadowMapShader->BindUniformMat4("u_lightViewProj", m_DirLight.GetProjViewMat());
-
-		const auto& shader = std::make_shared<Shader>(
-            RESOURCES_PATH "Shaders/default.vert",
-            RESOURCES_PATH "Shaders/default.frag");
-
-        shader->Bind();
-        shader->BindUniformInt1("u_Texture", 0);
-		shader->BindUniformInt1("u_DepthMap", 1);
-        shader->BindUniformFloat3("u_LightColor", m_Light.Color);
-        shader->BindUniformFloat3("u_LightPos", m_Light.Position);
-
-        m_DefaultMaterial = std::make_shared<Material>(shader);
-        m_DefaultMaterial->SetTextureMap(m_HouseTexture);
 	}
 
-	const Ref<Model>& Scene::Instantiate(const Ref<Mesh>& mesh, const glm::vec3 transform)
+	Entity Scene::Instantiate(const std::string& name)
 	{
-		auto model = std::make_shared<Model>();
-		model->Material = m_DefaultMaterial;
-		model->Mesh = mesh;
+		Entity entity = { m_Entities.create(), this };
 
-		auto modelTransform = model->GetTransform();
-		modelTransform->Position = glm::vec3(transform);
-		
-		m_Instances.push_back(model);
-		return m_Instances.back();
+		entity.AddComponent<NameComponent>(name.empty() ? "Entity" : name);
+		entity.AddComponent<TransformComponent>();
+
+		return entity;
 	}
 
 	void Scene::OnEveryUpdate(Time deltaTime)
 	{
-		Renderer::OnEveryUpdate(m_Camera);
-
-        m_Camera.EveryUpdate(deltaTime);
+		auto& meshRenderers = m_Entities.view<MeshComponent, TransformComponent>();
 
 		glCullFace(GL_FRONT);
 		m_DepthMap.Bind();
 
 		//Draw call for shadow map
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
-		for (auto& model : m_Instances)
-		{
-			const Transform* modelTransform = model->GetTransform();
 
-			Renderer::RenderMesh(model->Mesh, m_ShadowMapShader, modelTransform->GetTRSMatrix());
+		for (auto& meshEntity : meshRenderers)
+		{
+			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+
+			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
 		}
 
 		Framebuffer::Unbind();
@@ -86,139 +51,21 @@ namespace RenderingEngine
 		//Draw call for actual models
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
 
-		m_Light.OnEveryUpdate();
-
-		for (auto& model : m_Instances)
+		for (auto& meshEntity : meshRenderers)
 		{
-			m_DefaultMaterial->GetShader()->Bind();
-			glBindTextureUnit(0, m_DefaultMaterial->GetProperties().AlbedoID);
+			Ref<Material> modelMat;
+
+			if (m_Entities.any_of<MaterialComponent>(meshEntity))
+				modelMat = m_Entities.get<MaterialComponent>(meshEntity).SharedMat;
+
+			modelMat->GetShader()->Bind();
+			glBindTextureUnit(0, modelMat->GetProperties().AlbedoID);
 			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
 
-			m_DefaultMaterial->GetShader()->BindUniformMat4("u_lightViewProj", m_DirLight.GetProjViewMat());
-
-			Renderer::RenderModel(model);
+			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
 		}
 
 		Framebuffer::Unbind();
-	}
-
-	void Scene::OnGUIUpdate()
-	{
-		DrawScenePanel();
-
-		DrawInspectorPanel();
-
-		DrawViewport();
-	}
-
-	void Scene::DrawScenePanel()
-	{
-		ImGui::Begin("Scene");
-
-		for (auto& model : m_Instances)
-		{
-			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
-			flags |= (m_SelectedEntity == model) ? ImGuiTreeNodeFlags_Selected : 0;
-			bool isOpened = ImGui::TreeNodeEx((void*)model->GetID(), flags, "%s", model->Name.c_str());
-
-			if (ImGui::IsItemClicked(0))
-			{
-				m_SelectedEntity = model;
-			}
-
-			if (isOpened)
-			{
-				ImGui::TreePop();
-			}
-		}
-
-		ImGui::End();
-	}
-
-	void Scene::DrawInspectorPanel()
-	{
-		ImGui::Begin("Inspector");
-
-		if (m_SelectedEntity)
-		{
-			GuiRenderer::DrawImGuiModel(m_SelectedEntity);
-		}
-
-		ImGui::End();
-	}
-
-	void Scene::DrawViewport() 
-	{
-		ImGui::Begin("Viewport");
-
-        const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        const auto castSize = glm::i16vec2(viewportSize.x, viewportSize.y);
-
-        if (castSize.x != 0 && castSize.y != 0)
-        {
-            if (glm::i16vec2(m_Viewport.GetWidth(), m_Viewport.GetHeight()) != castSize)
-            {
-                GetSceneCamera().Resize(castSize.x, castSize.y);
-                m_Viewport.Resize(castSize.x, castSize.y);
-				m_DepthMap.Resize(castSize.x, castSize.y);
-            }
-
-            uint32_t m_Texture = m_Viewport.GetAttachment(0);
-            ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
-        }
-
-		DrawGuizmos();
-
-        ImGui::End();
-	}
-
-	void Scene::DrawGuizmos() 
-	{
-		if (!m_SelectedEntity) 
-		{
-			return;
-		}
-
-		if (Input::KeyPressed(GLFW_KEY_F1))
-			m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-
-        if (Input::KeyPressed(GLFW_KEY_F2))
-			m_GuizmoOperation = ImGuizmo::OPERATION::ROTATE;
-
-        if (Input::KeyPressed(GLFW_KEY_F3))
-			m_GuizmoOperation = ImGuizmo::OPERATION::SCALE;
-
-		ImGuizmo::SetOrthographic(false);
-		ImGuizmo::SetDrawlist();
-
-		float width = ImGui::GetWindowWidth();
-		float height = ImGui::GetWindowHeight();
-		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
-
-		glm::mat4 cameraView = m_Camera.GetViewMat();
-		glm::mat4 cameraProj = m_Camera.GetProjMat();
-
-		auto entityTransform = m_SelectedEntity->GetTransform();
-		glm::mat4 entityTRS = entityTransform->GetTRSMatrix();
-
-		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), 
-		(ImGuizmo::OPERATION)m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
-
-		if (ImGuizmo::IsUsing()) 
-		{
-			glm::vec3 position, rotation, scale;
-
-			if (Math::Decompose(entityTRS, position, rotation, scale) == false) 
-			{
-				return;
-			}
-
-			entityTransform->Position = position;
-
-			glm::vec3 deltaRot = rotation - glm::radians(entityTransform->Rotation);
-			entityTransform->Rotation += glm::degrees(deltaRot);
-
-			entityTransform->Scale = scale;
-		}
 	}
 }
