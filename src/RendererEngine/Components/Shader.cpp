@@ -21,10 +21,10 @@ namespace RenderingEngine
                 return result;
             }
 
-            LOG_CORE_ASSERT(false, "Could not read from file '{0}'", path)
+            LOG_RENDERER_ASSERT(false, "Could not read from file '{0}'", path)
         }
 
-        LOG_CORE_ERROR("Could not open file '{0}'", path);
+        LOG_RENDERER_ERROR("Could not open file '{0}'", path);
         throw std::exception();
     }
 
@@ -49,9 +49,9 @@ namespace RenderingEngine
             glGetShaderInfoLog(vertexShader, maxLength, &maxLength, &infoLog[0]);
             glDeleteShader(vertexShader);
 
-            LOG_CORE_WARN("Shader name: {0}", vertPath);
-            LOG_CORE_WARN("Shader message: {0}", infoLog.data());
-            LOG_CORE_ASSERT(false, "Can't compile vertex shader!");
+            LOG_RENDERER_WARN("Shader name: {0}", vertPath);
+            LOG_RENDERER_WARN("Shader message: {0}", infoLog.data());
+            LOG_RENDERER_ASSERT(false, "Can't compile vertex shader!");
         }
 
         const uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -73,9 +73,9 @@ namespace RenderingEngine
             glDeleteShader(fragmentShader);
             glDeleteShader(vertexShader);
 
-            LOG_CORE_WARN("Shader name: {0}", fragPath);
-            LOG_CORE_WARN("Shader message: {0}", infoLog.data());
-            LOG_CORE_ASSERT(false, "Can't compile fragment shader!");
+            LOG_RENDERER_WARN("Shader name: {0}", fragPath);
+            LOG_RENDERER_WARN("Shader message: {0}", infoLog.data());
+            LOG_RENDERER_ASSERT(false, "Can't compile fragment shader!");
         }
 
         m_RendererID = glCreateProgram();
@@ -96,8 +96,8 @@ namespace RenderingEngine
             glDeleteShader(fragmentShader);
             glDeleteShader(vertexShader);
 
-            LOG_CORE_WARN("Program message: {0}", infoLog.data());
-            LOG_CORE_ASSERT(false, "Can't link shaders!")
+            LOG_RENDERER_WARN("Program message: {0}", infoLog.data());
+            LOG_RENDERER_ASSERT(false, "Can't link shaders!")
         }
 
         glDetachShader(m_RendererID, vertexShader);

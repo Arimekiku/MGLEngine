@@ -23,7 +23,7 @@ namespace RenderingEngine
             default: ;
         }
 
-        LOG_CORE_ASSERT(false, "Can't get shader data type");
+        LOG_RENDERER_ASSERT(false, "Can't get shader data type");
         return 0;
     }
 
@@ -49,7 +49,7 @@ namespace RenderingEngine
 
     void VertexArray::SetVertexBuffer(const Ref<VertexBuffer>& buffer)
     {
-        LOG_CORE_ASSERT(buffer->GetLayout().GetElements().size(), "Layout was not setted properly!")
+        LOG_RENDERER_ASSERT(buffer->GetLayout().GetElements().size(), "Layout was not setted properly!")
 
         glBindVertexArray(m_RendererID);
         buffer->Bind();

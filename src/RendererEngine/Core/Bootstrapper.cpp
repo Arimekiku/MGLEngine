@@ -74,8 +74,8 @@ namespace RenderingEngine
 
 	bool Bootstrapper::OnWindowCloseEvent(const WindowCloseEvent& e)
 	{
-		LOG_CORE_INFO("Shutdown");
-		LOG_CORE_INFO("{0}", e.ToString());
+		LOG_RENDERER_INFO("Shutdown");
+		LOG_RENDERER_INFO("{0}", e.ToString());
 
 		m_Running = false;
 		return false;
@@ -85,7 +85,7 @@ namespace RenderingEngine
 	{
 		if (e.GetKeyCode() == GLFW_KEY_ESCAPE)
 		{
-			LOG_CORE_INFO("Shutdown");
+			LOG_RENDERER_INFO("Shutdown");
 
 			m_Running = false;
 			return true;

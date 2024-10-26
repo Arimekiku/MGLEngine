@@ -17,7 +17,7 @@ namespace RenderingEngine
         void OnEvent(Event& event) override;
 
     private:
-        Scene* m_Scene = new Scene();
+        Ref<Scene> m_Scene = std::make_shared<Scene>();
         bool m_FirstClick = true;
         Time m_LastTime = Time(0);
         Ref<Camera> m_Camera = std::make_shared<Camera>(glm::vec3(0, 0, 10));

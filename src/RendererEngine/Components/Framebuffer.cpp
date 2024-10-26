@@ -60,7 +60,7 @@ namespace RenderingEngine
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthMapID, 0);
         m_Attachments.push_back(depthMapID);
 
-        LOG_CORE_ASSERT((glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE), "Framebuffer is invalid!");
+        LOG_RENDERER_ASSERT((glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE), "Framebuffer is invalid!");
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -88,7 +88,7 @@ namespace RenderingEngine
 
         glDrawBuffer(GL_NONE);
 
-        LOG_CORE_ASSERT((glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE), "Framebuffer is invalid!");
+        LOG_RENDERER_ASSERT((glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE), "Framebuffer is invalid!");
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
@@ -106,7 +106,7 @@ namespace RenderingEngine
     {
         if (index > m_Attachments.capacity())
         {
-            LOG_CORE_WARN("Can't get attachment from FBO with index: %d", index);
+            LOG_RENDERER_WARN("Can't get attachment from FBO with index: %d", index);
             return 0;
         }
 

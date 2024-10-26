@@ -16,12 +16,12 @@ namespace RenderingEngine
 		m_Data = WindowData();
 		m_Data.Properties = properties;
 
-		LOG_CORE_INFO("Creating window {0}, ({1}, {2})", properties.Name, properties.Width, properties.Height);
+		LOG_RENDERER_INFO("Creating window {0}, ({1}, {2})", properties.Name, properties.Width, properties.Height);
 
 		if (s_GLFWInit == false)
 		{
 			const int isInitialized = glfwInit();
-			LOG_CORE_ASSERT(isInitialized, "GLFW initialize failed")
+			LOG_RENDERER_ASSERT(isInitialized, "GLFW initialize failed")
 
 			s_GLFWInit = true;
 		}
@@ -31,13 +31,13 @@ namespace RenderingEngine
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
 		const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-		LOG_CORE_ASSERT(status, "GLAD initialize failed")
+		LOG_RENDERER_ASSERT(status, "GLAD initialize failed")
 
 		glViewport(0, 0, m_Data.Properties.Width, m_Data.Properties.Height);
 
 		glfwSetErrorCallback([](int error, const char* description)
 		{
-			LOG_CORE_ERROR("GLFW ({0}, {1})", error, description);
+			LOG_RENDERER_ERROR("GLFW ({0}, {1})", error, description);
 		});
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* w, const int width, const int height)

@@ -17,6 +17,8 @@ namespace RenderingEngine
 		void OnEveryUpdate(Time deltaTime);
 
 		Entity Instantiate(const std::string& name = std::string());
+		void Destroy(Entity entity);
+		Entity GetActiveCameraEntity();
 
 	private:
 		entt::registry m_Entities;

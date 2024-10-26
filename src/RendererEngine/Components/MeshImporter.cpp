@@ -12,7 +12,7 @@ namespace RenderingEngine
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-            LOG_CORE_ASSERT(false, "Could not load from path: {0} with message: {1}", path, importer.GetErrorString());
+            LOG_RENDERER_ASSERT(false, "Could not load from path: {0} with message: {1}", path, importer.GetErrorString());
 
         aiMesh* mesh = scene->mMeshes[0];
 

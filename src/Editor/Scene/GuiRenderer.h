@@ -18,12 +18,10 @@ namespace RenderingEngine
 		void DrawInspectorPanel();
 		void DrawGuizmos();
 
-		void SetContext(Scene* context);
+		void SetContext(Ref<Scene> context);
 
 	private:
-		void DrawVector3Drag(const char* label, glm::vec3& vector, float panelWidth);
-
-		Scene* m_Context = nullptr;
+		Ref<Scene> m_Context = nullptr;
 		Entity m_SelectedEntity = {};
 
 		ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;

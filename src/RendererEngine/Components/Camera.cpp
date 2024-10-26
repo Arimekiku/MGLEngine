@@ -99,7 +99,7 @@ namespace RenderingEngine
                 m_CameraEditorMode = true;
                 Input::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-                LOG_CORE_INFO("Switched to Editor Mode");
+                LOG_RENDERER_INFO("Switched to Editor Mode");
                 return true;
             }
 
@@ -109,7 +109,7 @@ namespace RenderingEngine
             Input::SetCursorInCenterOfWindow();
 
             m_CameraEditorMode = false;
-            LOG_CORE_INFO("Switched to Camera Mode");
+            LOG_RENDERER_INFO("Switched to Camera Mode");
         }
 
         return true;

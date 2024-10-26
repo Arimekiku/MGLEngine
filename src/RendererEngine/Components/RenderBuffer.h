@@ -30,10 +30,10 @@ namespace RenderingEngine
             case ShaderDataType::Float4: return sizeof(float) * 4;
             case ShaderDataType::Mat3x3: return sizeof(float) * 3 * 3;
             case ShaderDataType::Mat4x4: return sizeof(float) * 4 * 4;
-            default: LOG_CORE_ASSERT(false, "None buffer type requested");
+            default: LOG_RENDERER_ASSERT(false, "None buffer type requested");
         }
 
-        LOG_CORE_ASSERT(false, "Can't get shader data type");
+        LOG_RENDERER_ASSERT(false, "Can't get shader data type");
         throw std::exception();
     }
 
@@ -72,10 +72,10 @@ namespace RenderingEngine
                 case ShaderDataType::Float4: return 4;
                 case ShaderDataType::Mat3x3: return 3 * 3;
                 case ShaderDataType::Mat4x4: return 4 * 4;
-                default: LOG_CORE_ASSERT(false, "None buffer type requested");
+                default: LOG_RENDERER_ASSERT(false, "None buffer type requested");
             }
 
-            LOG_CORE_ASSERT(false, "Can't get shader data type");
+            LOG_RENDERER_ASSERT(false, "Can't get shader data type");
             throw std::exception();
         }
     };

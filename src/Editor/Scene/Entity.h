@@ -15,7 +15,7 @@ namespace RenderingEngine
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			LOG_CLIENT_ASSERT(this->HasComponent<T>() == false, "Entity %d already has component!", (int32_t)m_EntityID);
+			LOG_EDITOR_ASSERT(this->HasComponent<T>() == false, "Entity %d already has component!", (int32_t)m_EntityID);
 
 			T& component = m_Scene->m_Entities.emplace<T>(m_EntityID, std::forward<Args>(args)...);
 
@@ -25,7 +25,7 @@ namespace RenderingEngine
 		template<typename T>
 		void RemoveComponent()
 		{
-			LOG_CLIENT_ASSERT(this.HasComponent<T>(), "Entity %d does not have component!", (int32_t)m_EntityID);
+			LOG_EDITOR_ASSERT(this->HasComponent<T>(), "Entity %d does not have component!", (int32_t)m_EntityID);
 		
 			m_Scene->m_Entities.remove<T>(m_EntityID);
 		}
@@ -41,7 +41,7 @@ namespace RenderingEngine
 		template<typename T>
 		T& GetComponent()
 		{
-			LOG_CLIENT_ASSERT(this->HasComponent<T>(), "Entity does not have component!");
+			LOG_EDITOR_ASSERT(this->HasComponent<T>(), "Entity does not have component!");
 
 			T& component = m_Scene->m_Entities.get<T>(m_EntityID);
 

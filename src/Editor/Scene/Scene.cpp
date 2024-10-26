@@ -18,30 +18,40 @@ namespace RenderingEngine
 
 	Entity Scene::Instantiate(const std::string& name)
 	{
-		Entity entity = { m_Entities.create(), this };
+		Entity entity = Entity(m_Entities.create(), this);
 
 		entity.AddComponent<NameComponent>(name.empty() ? "Entity" : name);
 
 		return entity;
 	}
 
-	void Scene::OnEveryUpdate(Time deltaTime)
+	void Scene::Destroy(Entity entity)
 	{
-		Ref<Camera> mainCamera = nullptr;
-		auto& cameraEntities = m_Entities.view<CameraComponent>();
-		for (auto& cameraEntity : cameraEntities)
-		{
-			CameraComponent cameraComponent = cameraEntities.get<CameraComponent>(cameraEntity);
+		m_Entities.destroy(entity);
+	}
 
-			if (cameraComponent.Enabled == false)
+	Entity Scene::GetActiveCameraEntity()
+	{
+		auto view = m_Entities.view<CameraComponent>();
+		for (auto& cameraEntity : view)
+		{
+			CameraComponent& camera = view.get<CameraComponent>(cameraEntity);
+
+			if (camera.Enabled == false)
 			{
 				continue;
 			}
 
-			mainCamera = cameraComponent.MainCamera;
+			return Entity(cameraEntity, this);
 		}
 
-		if (mainCamera == nullptr)
+		return Entity();
+	}
+
+	void Scene::OnEveryUpdate(Time deltaTime)
+	{
+		Entity mainCameraEntity = GetActiveCameraEntity();
+		if (!mainCameraEntity)
 		{
 			return;
 		}
