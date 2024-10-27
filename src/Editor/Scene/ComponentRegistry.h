@@ -4,7 +4,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 
 namespace RenderingEngine 
 {
@@ -40,8 +40,9 @@ namespace RenderingEngine
 
 	struct MeshComponent
 	{
-		Ref<Mesh> SharedMesh;
+		Ref<Mesh> SharedMesh = nullptr;
 
+		MeshComponent() = default;
 		MeshComponent(const MeshComponent&) = default;
 		MeshComponent(const Ref<Mesh>& mesh) : SharedMesh(mesh) {}
 	};
@@ -83,11 +84,15 @@ namespace RenderingEngine
 
 	struct CameraComponent
 	{
-		Ref<Camera> MainCamera;
+		glm::vec3 Orientation = glm::vec3(0, 0, -1);
+		glm::vec3 Position = glm::vec3(0);
+		float MinRenderDist = 0.01;
+		float MaxRenderDist = 100.0f;
+		float FOV = 45.0f;
 		bool Enabled = false;
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
-		CameraComponent(const bool enabled, Ref<Camera>& camera) : Enabled(enabled), MainCamera(camera) {}
+		CameraComponent(const bool enabled) : Enabled(enabled) {}
 	};
 }

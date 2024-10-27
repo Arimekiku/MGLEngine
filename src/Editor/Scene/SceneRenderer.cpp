@@ -1,4 +1,4 @@
-#include "GuiRenderer.h"
+#include "SceneRenderer.h"
 #include "ComponentRegistry.h"
 #include "RendererEngine/Core/Math.h"
 
@@ -82,7 +82,69 @@ namespace RenderingEngine
 		}
 	}
 
-	void GuiRenderer::DrawViewport() 
+	SceneRenderer::SceneRenderer()
+	{
+		m_ShadowMapShader = std::make_shared<Shader>(
+				RESOURCES_PATH "Shaders/shadowMap.vert",
+				RESOURCES_PATH "Shaders/shadowMap.frag");
+	}
+
+	void SceneRenderer::DrawDepthBuffer()
+	{
+		auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, TransformComponent>();
+
+		glCullFace(GL_FRONT);
+		m_DepthMap.Bind();
+
+		//Draw call for shadow map
+        Renderer::Clear(glm::vec4(0, 0, 0, 1));
+
+		for (auto& meshEntity : meshRenderers)
+		{
+			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+
+			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
+		}
+
+		Framebuffer::Unbind();
+		glCullFace(GL_BACK);
+	}
+
+	void SceneRenderer::DrawTextureBuffer()
+	{
+		Entity cameraEntity = m_Context->GetActiveCameraEntity();
+		CameraComponent camera = cameraEntity.GetComponent<CameraComponent>();
+        Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
+
+		auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
+
+		m_Viewport.Bind();
+
+		//Draw call for actual models
+        Renderer::Clear(glm::vec4(0, 0, 0, 1));
+
+		Entity mainCameraEntity = m_Context->GetActiveCameraEntity();
+		if (!mainCameraEntity)
+		{
+			Framebuffer::Unbind();
+			return;
+		}
+
+		for (auto& meshEntity : meshRenderers)
+		{
+			Ref<Material> modelMat = meshRenderers.get<MaterialComponent>(meshEntity).SharedMat;
+
+			modelMat->Bind();
+			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
+
+			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
+		}
+
+		Framebuffer::Unbind();
+	}
+
+	void SceneRenderer::DrawViewport()
 	{
 		ImGui::Begin("Viewport");
 
@@ -91,20 +153,14 @@ namespace RenderingEngine
 
         if (castSize.x != 0 && castSize.y != 0)
         {
-            if (glm::i16vec2(m_Context->m_Viewport.GetWidth(), m_Context->m_Viewport.GetHeight()) != castSize)
+            if (glm::i16vec2(m_Viewport.GetWidth(), m_Viewport.GetHeight()) != castSize)
             {
-				Entity cameraEntity = m_Context->GetActiveCameraEntity();
-
-				if (cameraEntity)
-				{
-					CameraComponent camera = cameraEntity.GetComponent<CameraComponent>();
-					camera.MainCamera->Resize(castSize.x, castSize.y);
-					m_Context->m_Viewport.Resize(castSize.x, castSize.y);
-					m_Context->m_DepthMap.Resize(castSize.x, castSize.y);
-				}
+				m_ViewportCamera->Resize(castSize.x, castSize.y);
+				m_Viewport.Resize(castSize.x, castSize.y);
+				m_DepthMap.Resize(castSize.x, castSize.y);
             }
 
-            uint32_t m_Texture = m_Context->m_Viewport.GetAttachment(0);
+            uint32_t m_Texture = m_Viewport.GetAttachment(0);
             ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
         }
 
@@ -116,7 +172,7 @@ namespace RenderingEngine
         ImGui::End();
 	}
 
-	void GuiRenderer::DrawScenePanel()
+	void SceneRenderer::DrawScenePanel()
 	{
 		ImGui::Begin("Scene");
 
@@ -179,7 +235,7 @@ namespace RenderingEngine
 		ImGui::End();
 	}
 
-	void GuiRenderer::DrawInspectorPanel()
+	void SceneRenderer::DrawInspectorPanel()
 	{
 		ImGui::Begin("Inspector");
 
@@ -218,14 +274,6 @@ namespace RenderingEngine
 			DrawComponent<MaterialComponent>("Material", m_SelectedEntity, [](MaterialComponent& component)
 			{
 				auto& material = component.SharedMat;
-				auto& properties = material->GetProperties();
-
-				ImGui::Image((void*)properties.AlbedoID, ImVec2(64, 64));
-
-				ImGui::ColorEdit3("Albedo", glm::value_ptr(properties.Albedo));
-				ImGui::SliderFloat("Rougness", &properties.Roughness, 0, 1, "%.2f");
-				ImGui::SliderFloat("Metallic", &properties.Metallic, 0, 1, "%.2f");
-				ImGui::SliderFloat("AO", &properties.AO, 0, 1, "%.2f");
 			});
 
 			DrawComponent<MeshComponent>("Mesh", m_SelectedEntity, [](MeshComponent& component)
@@ -243,7 +291,7 @@ namespace RenderingEngine
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
 
 				ImGui::AlignTextToFramePadding();
-				DrawVector3Drag("Position", component.MainCamera->Position, 100.0f);
+				DrawVector3Drag("Position", component.Position, 100.0f);
 
 				ImGui::Checkbox("Enabled", &component.Enabled);
 
@@ -279,7 +327,7 @@ namespace RenderingEngine
 		ImGui::End();
 	}
 
-	void GuiRenderer::DrawGuizmos() 
+	void SceneRenderer::DrawGuizmos() 
 	{
 		Entity cameraEntity = m_Context->GetActiveCameraEntity();
 
@@ -311,8 +359,9 @@ namespace RenderingEngine
 		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
 
 		CameraComponent camera = cameraEntity.GetComponent<CameraComponent>();
-		glm::mat4 cameraView = camera.MainCamera->GetViewMat();
-		glm::mat4 cameraProj = camera.MainCamera->GetProjMat();
+
+		glm::mat4 cameraView = glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up());
+		glm::mat4 cameraProj = m_ViewportCamera->GetProjMat();
 
 		TransformComponent& entityTransform = m_SelectedEntity.GetComponent<TransformComponent>();
 		glm::mat4 entityTRS = entityTransform.GetTRSMatrix();
@@ -338,9 +387,23 @@ namespace RenderingEngine
 		}
 	}
 
-	void GuiRenderer::SetContext(Ref<Scene> context)
+	void SceneRenderer::OnEvent(Event& e)
+	{
+		m_ViewportCamera->OnEvent(e);
+	}
+
+	void SceneRenderer::SetContext(Ref<Scene> context)
 	{
 		m_Context = context;
 		m_SelectedEntity = Entity();
+	}
+
+	void SceneRenderer::OnResizeEvent(WindowResizeEvent& e)
+	{
+		glm::vec2 size = glm::vec2(e.GetWidth(), e.GetHeight());
+
+		m_ViewportCamera->Resize(size.x, size.y);
+		m_Viewport.Resize(size.x, size.y);
+		m_DepthMap.Resize(size.x, size.y);
 	}
 }

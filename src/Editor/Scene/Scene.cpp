@@ -1,19 +1,58 @@
 #include "Scene.h"
-#include "GuiRenderer.h"
-#include "RendererEngine/Core/Math.h"
-#include "ComponentRegistry.h"
+#include "Entity.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/trigonometric.hpp>
-#include <entt/entt.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 namespace RenderingEngine
 {
+	void SetOrientation(CameraComponent& mainCamera, const float rotX, const float rotY)
+    {
+		glm::vec3& cameraOrientation = mainCamera.Orientation;
+
+        // Calculates upcoming vertical change in the Orientation
+        const glm::vec3 newOrientation = glm::rotate(cameraOrientation, glm::radians(-rotX),
+                                                     glm::normalize(glm::cross(cameraOrientation, Vector3::Up())));
+
+        // Decides whether or not the next vertical Orientation is legal or not
+        if (std::abs(glm::angle(newOrientation, Vector3::Up()) - glm::radians(90.0f)) <= glm::radians(85.0f))
+        {
+            cameraOrientation = newOrientation;
+        }
+
+        // Rotates the Orientation left and right
+        cameraOrientation = glm::rotate(cameraOrientation, glm::radians(-rotY), Vector3::Up());
+    }
+
+	void Scene::UpdateCamera(CameraComponent& mainCamera, Time deltaTime)
+	{
+		 if (m_CameraEditorMode == true)
+            return;
+
+        Input::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        const glm::vec2 rotationVector = Input::GetNormalizedCursor();
+        SetOrientation(mainCamera, rotationVector.x, rotationVector.y);
+        Input::SetCursorInCenterOfWindow();
+
+		glm::vec3& cameraOrientation = mainCamera.Orientation;
+
+        if (Input::KeyPressed(GLFW_KEY_A))
+            mainCamera.Position += deltaTime.GetSeconds() * -glm::normalize(glm::cross(cameraOrientation, {0, 1, 0}));
+
+        if (Input::KeyPressed(GLFW_KEY_D))
+            mainCamera.Position += deltaTime.GetSeconds() * glm::normalize(glm::cross(cameraOrientation, {0, 1, 0}));
+
+        if (Input::KeyPressed(GLFW_KEY_W))
+            mainCamera.Position += deltaTime.GetSeconds() * cameraOrientation;
+
+        if (Input::KeyPressed(GLFW_KEY_S))
+            mainCamera.Position += deltaTime.GetSeconds() * -cameraOrientation;
+	}
+
 	Scene::Scene()
 	{
-		m_ShadowMapShader = std::make_shared<Shader>(
-			RESOURCES_PATH "Shaders/shadowMap.vert",
-            RESOURCES_PATH "Shaders/shadowMap.frag");
+		
 	}
 
 	Entity Scene::Instantiate(const std::string& name)
@@ -48,6 +87,19 @@ namespace RenderingEngine
 		return Entity();
 	}
 
+	Entity Scene::GetDirectionalLightEntity()
+	{
+		auto view = m_Entities.view<DirectLightComponent>();
+		for (auto& lightEntity : view)
+		{
+			DirectLightComponent& light = view.get<DirectLightComponent>(lightEntity);
+
+			return Entity(lightEntity, this);
+		}
+
+		return Entity();
+	}
+
 	void Scene::OnEveryUpdate(Time deltaTime)
 	{
 		Entity mainCameraEntity = GetActiveCameraEntity();
@@ -56,44 +108,41 @@ namespace RenderingEngine
 			return;
 		}
 
-		auto& meshRenderers = m_Entities.view<MeshComponent, TransformComponent>();
-
-		glCullFace(GL_FRONT);
-		m_DepthMap.Bind();
-
-		//Draw call for shadow map
-        Renderer::Clear(glm::vec4(0, 0, 0, 1));
-
-		for (auto& meshEntity : meshRenderers)
-		{
-			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
-
-			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
-		}
-
-		Framebuffer::Unbind();
-		glCullFace(GL_BACK);
-
-		m_Viewport.Bind();
-
-		//Draw call for actual models
-        Renderer::Clear(glm::vec4(0, 0, 0, 1));
-
-		for (auto& meshEntity : meshRenderers)
-		{
-			Ref<Material> modelMat;
-
-			if (m_Entities.any_of<MaterialComponent>(meshEntity))
-				modelMat = m_Entities.get<MaterialComponent>(meshEntity).SharedMat;
-
-			modelMat->GetShader()->Bind();
-			glBindTextureUnit(0, modelMat->GetProperties().AlbedoID);
-			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
-
-			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
-			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
-		}
-
-		Framebuffer::Unbind();
+		UpdateCamera(mainCameraEntity.GetComponent<CameraComponent>(), deltaTime);
 	}
+
+	void Scene::OnEvent(Event& e)
+	{
+		EventDispatcher dispatcher(e);
+        dispatcher.Dispatch<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
+	}
+
+	bool Scene::OnKeyPressedEvent(const KeyPressedEvent& e)
+    {
+        if (e.GetRepeatCount() != 0)
+            return true;
+
+        if (e.GetKeyCode() == GLFW_KEY_C)
+        {
+            if (m_CameraEditorMode == false)
+            {
+                m_CameraEditorMode = true;
+                Input::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+                LOG_RENDERER_INFO("Switched to Editor Mode");
+                return true;
+            }
+
+			Entity mainCameraEntity = GetActiveCameraEntity();
+            const glm::vec2 rotationVector = Input::GetNormalizedCursor();
+            SetOrientation(mainCameraEntity.GetComponent<CameraComponent>(), rotationVector.x, rotationVector.y);
+
+            Input::SetCursorInCenterOfWindow();
+
+            m_CameraEditorMode = false;
+            LOG_RENDERER_INFO("Switched to Camera Mode");
+        }
+
+        return true;
+    }
 }

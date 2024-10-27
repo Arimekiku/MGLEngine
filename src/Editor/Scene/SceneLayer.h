@@ -2,7 +2,7 @@
 
 #include "RendererEngine.h"
 #include "Scene.h"
-#include "GuiRenderer.h"
+#include "SceneRenderer.h"
 
 namespace RenderingEngine
 {
@@ -20,8 +20,7 @@ namespace RenderingEngine
         Ref<Scene> m_Scene = std::make_shared<Scene>();
         bool m_FirstClick = true;
         Time m_LastTime = Time(0);
-        Ref<Camera> m_Camera = std::make_shared<Camera>(glm::vec3(0, 0, 10));
 
-        GuiRenderer m_GuiRenderer = GuiRenderer();
+        SceneRenderer m_GuiRenderer = SceneRenderer();
     };
 }

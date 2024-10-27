@@ -7,9 +7,10 @@ namespace RenderingEngine
     class MeshImporter
     {
     public:
-        static const Ref<Mesh> CreateMesh(const char* path);
-        static const Ref<Mesh> CreatePlane(const float size = 1);
-        static const Ref<Mesh> CreateCube(const float size = 1);
-        static const Ref<Mesh> CreateSphere(const float radius = 1);
+        static const Ref<Mesh>& CreateMesh(const std::string& path);
+        
+        static const Ref<Mesh>& CreatePlane();
+        static const Ref<Mesh>& CreateCube();
+        static const Ref<Mesh>& CreateSphere();
     };    
 }

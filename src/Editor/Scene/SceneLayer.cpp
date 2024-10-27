@@ -1,6 +1,6 @@
 #include "SceneLayer.h"
 #include "ComponentRegistry.h"
-#include "Entity.h"
+#include "Editor/Persistence/SceneSerializer.h"
 
 #include <imgui.h>
 
@@ -8,100 +8,42 @@ namespace RenderingEngine
 {
     SceneLayer::SceneLayer()
     {
-        m_GuiRenderer.SetContext(m_Scene);
-
-        //CAMERAS
-        Entity camera = m_Scene->Instantiate("Camera");
-        camera.AddComponent<CameraComponent>(true, m_Camera);
-
-        //MATERIALS AND LIGHT
-        const auto& lightShader = std::make_shared<Shader>(
-			RESOURCES_PATH "Shaders/areaLight.vert",
-            RESOURCES_PATH "Shaders/areaLight.frag");
-
-		lightShader->Bind();
-		lightShader->BindUniformFloat3("u_LightColor", {1, 1, 1});
-
-		const auto& lightMaterial = std::make_shared<Material>(lightShader);
-
-        Entity areaLight = m_Scene->Instantiate("AreaLight");
-		areaLight.AddComponent<TransformComponent>();
-        auto& areaLightTransform = areaLight.GetComponent<TransformComponent>();
-        auto& lightComponent = areaLight.AddComponent<AreaLightComponent>();
-        areaLight.AddComponent<MeshComponent>(MeshImporter::CreateCube());
-        areaLight.AddComponent<MaterialComponent>(lightMaterial);
-
-        areaLightTransform.Position = glm::vec3(0, 5, -5);
+        //ASSETS
+		const auto& lightMaterial = MaterialImporter::GetMaterial("Light", "Shaders/areaLight.vert", "Shaders/areaLight.frag");
+        auto& defaultMaterial = MaterialImporter::GetMaterial("Default", "Shaders/default.vert", "Shaders/default.frag");
 
         const auto& m_FaceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
         const auto& m_HouseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
 
-        Entity directLight = m_Scene->Instantiate("DirectLight");
-        auto& dirLightComp = directLight.AddComponent<DirectLightComponent>();
+        MeshImporter::CreatePlane();
+        MeshImporter::CreateCube();
+        MeshImporter::CreateSphere();
 
-		const auto& shader = std::make_shared<Shader>(
-            RESOURCES_PATH "Shaders/default.vert",
-            RESOURCES_PATH "Shaders/default.frag");
+        SceneSerializer serializer = SceneSerializer(m_Scene);
+        serializer.Deserialize(RESOURCES_PATH "Persistence/Scene.scene");
 
-        shader->Bind();
-        shader->BindUniformInt1("u_Texture", 0);
-		shader->BindUniformInt1("u_DepthMap", 1);
-        shader->BindUniformFloat3("u_LightColor", lightComponent.Color);
-        shader->BindUniformFloat3("u_LightPos", areaLightTransform.Position);
-		shader->BindUniformMat4("u_lightViewProj", dirLightComp.GetDLMatrix());
+        m_GuiRenderer.SetContext(m_Scene);
 
-        auto& m_DefaultMaterial = std::make_shared<Material>(shader);
-        m_DefaultMaterial->SetTextureMap(m_HouseTexture);
+        Entity directLight = m_Scene->GetDirectionalLightEntity();
+        auto& dirLightComp = directLight.GetComponent<DirectLightComponent>();
 
-        //GROUND
-        const auto& groundPlane = MeshImporter::CreatePlane(50.0f);
-        Entity plane = m_Scene->Instantiate("Ground");
-        plane.AddComponent<MeshComponent>(groundPlane);
-		plane.AddComponent<TransformComponent>();
-        plane.AddComponent<MaterialComponent>(m_DefaultMaterial);
+        lightMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
 
-        auto& transformComponent = plane.GetComponent<TransformComponent>();
-        transformComponent.Position = glm::vec3(0, -10, 0);
-        transformComponent.Rotation = glm::vec3(-90, 0, 0);
-
-        //BASEBALL BAT
-        const auto& baseballMesh = MeshImporter::CreateMesh(RESOURCES_PATH "Models/baseballbat_mesh.fbx");
-        Entity baseballBat = m_Scene->Instantiate("Bat");
-        baseballBat.AddComponent<MeshComponent>(baseballMesh);
-		baseballBat.AddComponent<TransformComponent>();
-        baseballBat.AddComponent<MaterialComponent>(m_DefaultMaterial);
-        baseballBat.GetComponent<TransformComponent>().Position = glm::vec3(10, 6, 3);
-
-        //PRIMITIVES
-        const auto& planeMesh = MeshImporter::CreatePlane(1.0f);
-        Entity planePrimitive = m_Scene->Instantiate("Plane");
-        planePrimitive.AddComponent<MeshComponent>(planeMesh);
-		planePrimitive.AddComponent<TransformComponent>();
-        planePrimitive.AddComponent<MaterialComponent>(m_DefaultMaterial);
-
-        const auto& cubeMesh = MeshImporter::CreateCube(1.0f);
-        Entity cubePrimitive = m_Scene->Instantiate("Cube");
-        cubePrimitive.AddComponent<MeshComponent>(cubeMesh);
-		cubePrimitive.AddComponent<TransformComponent>();
-        cubePrimitive.AddComponent<MaterialComponent>(m_DefaultMaterial);
-        cubePrimitive.GetComponent<TransformComponent>().Position = glm::vec3(0, 0, 2);
-
-        const auto& sphereMesh = MeshImporter::CreateSphere(1.0f);
-        Entity spherePrimitive = m_Scene->Instantiate("Sphere");
-        spherePrimitive.AddComponent<MeshComponent>(sphereMesh);
-		spherePrimitive.AddComponent<TransformComponent>();
-        spherePrimitive.AddComponent<MaterialComponent>(m_DefaultMaterial);
-        spherePrimitive.GetComponent<TransformComponent>().Position = glm::vec3(0, 0, 5);
+        defaultMaterial->AddTexture(m_HouseTexture);
+        defaultMaterial->BindTextureSlot("u_Texture", 0);
+		defaultMaterial->BindTextureSlot("u_DepthMap", 1);
+        defaultMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
+        defaultMaterial->BindVec3Uniform("u_LightPos", {0, 5, 5});
+		defaultMaterial->BindMat4Uniform("u_lightViewProj", dirLightComp.GetDLMatrix());
     }
 
     void SceneLayer::OnEveryUpdate(const Time deltaTime)
     {
         m_LastTime = deltaTime;
 
-        Renderer::OnEveryUpdate(m_Camera);
-
-        m_Camera->EveryUpdate(deltaTime);
         m_Scene->OnEveryUpdate(deltaTime);
+        m_GuiRenderer.DrawDepthBuffer();
+        m_GuiRenderer.DrawTextureBuffer();
     }
 
     void SceneLayer::OnGuiUpdate()
@@ -172,6 +114,7 @@ namespace RenderingEngine
 
     void SceneLayer::OnEvent(Event& event)
     {
-        m_Camera->OnEvent(event);
+        m_GuiRenderer.OnEvent(event);
+        m_Scene->OnEvent(event);
     }
 }

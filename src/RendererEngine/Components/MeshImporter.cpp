@@ -6,13 +6,25 @@
 
 namespace RenderingEngine
 {
-    const Ref<Mesh> MeshImporter::CreateMesh(const char* path)
+    static std::unordered_map<std::string, Ref<Mesh>> m_Meshes;
+
+    const Ref<Mesh>& MeshImporter::CreateMesh(const std::string& path)
     {
+        if (m_Meshes[path])
+        {
+            return m_Meshes[path];
+        }
+
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+
+        std::stringstream resultPath;
+        resultPath << RESOURCES_PATH << path;
+        const aiScene* scene = importer.ReadFile(resultPath.str().c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-            LOG_RENDERER_ASSERT(false, "Could not load from path: {0} with message: {1}", path, importer.GetErrorString());
+        {
+            LOG_RENDERER_ASSERT(false, "Could not load from path: {0} with message: {1}", resultPath.str().c_str(), importer.GetErrorString());
+        }
 
         aiMesh* mesh = scene->mMeshes[0];
 
@@ -46,46 +58,64 @@ namespace RenderingEngine
             aiFace face = mesh->mFaces[i];
 
             for (uint32_t j = 0; j < face.mNumIndices; j++)
+            {
                 indices.push_back(face.mIndices[j]);
+            }
         }
 
-        return std::make_shared<Mesh>(vertices, indices);
+        m_Meshes[path] = std::make_shared<Mesh>(vertices, indices);
+        m_Meshes[path]->SetPath(path);
+        return m_Meshes[path];
     }
 
-    const Ref<Mesh> MeshImporter::CreatePlane(const float size)
+    const Ref<Mesh>& MeshImporter::CreatePlane()
     {
+        if (m_Meshes["Plane"])
+        {
+            return m_Meshes["Plane"];
+        }
+
         auto vertices = std::vector<Vertex>(4);
-        vertices[0].Position = glm::vec3(-0.5f, 0.5f, 0.0f) * size;
+        vertices[0].Position = glm::vec3(-0.5f, 0.5f, 0.0f);
         vertices[0].TexCoord = glm::vec2(1.0f, 0.0f);
 
-        vertices[1].Position = glm::vec3(-0.5f, -0.5f, 0.0f) * size;
+        vertices[1].Position = glm::vec3(-0.5f, -0.5f, 0.0f);
         vertices[1].TexCoord = glm::vec2(1.0f, 1.0f);
 
-        vertices[2].Position = glm::vec3(0.5f, -0.5f, 0.0f) * size;
+        vertices[2].Position = glm::vec3(0.5f, -0.5f, 0.0f);
         vertices[2].TexCoord = glm::vec2(0.0f, 1.0f);
 
-        vertices[3].Position = glm::vec3(0.5f, 0.5f, 0.0f) * size;
+        vertices[3].Position = glm::vec3(0.5f, 0.5f, 0.0f);
         vertices[3].TexCoord = glm::vec2(0.0f, 0.0f);
 
         for (auto& vertex : vertices)
+        {
             vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
+        }
 
         std::vector<uint32_t> indices = { 0, 1, 2, 0, 2, 3, };
 
-        return std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Plane"] = std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Plane"]->SetPath("Plane");
+        return m_Meshes["Plane"];
     }
 
-    const Ref<Mesh> MeshImporter::CreateCube(const float size)
+    const Ref<Mesh>& MeshImporter::CreateCube()
     {
+        if (m_Meshes["Cube"])
+        {
+            return m_Meshes["Cube"];
+        }
+
         auto vertices = std::vector<Vertex>(8);
-        vertices[0].Position = glm::vec3(-0.5f, -0.5f, 0.5f) * size;
-        vertices[1].Position = glm::vec3( 0.5f, -0.5f, 0.5f) * size;
-        vertices[2].Position = glm::vec3( 0.5f,  0.5f, 0.5f) * size;
-        vertices[3].Position = glm::vec3(-0.5f,  0.5f, 0.5f) * size;
-        vertices[4].Position = glm::vec3(-0.5f, -0.5f, -0.5f) * size;
-        vertices[5].Position = glm::vec3( 0.5f, -0.5f, -0.5f) * size;
-        vertices[6].Position = glm::vec3( 0.5f,  0.5f, -0.5f) * size;
-        vertices[7].Position = glm::vec3(-0.5f,  0.5f, -0.5f) * size;
+        vertices[0].Position = glm::vec3(-0.5f, -0.5f, 0.5f);
+        vertices[1].Position = glm::vec3( 0.5f, -0.5f, 0.5f);
+        vertices[2].Position = glm::vec3( 0.5f,  0.5f, 0.5f);
+        vertices[3].Position = glm::vec3(-0.5f,  0.5f, 0.5f);
+        vertices[4].Position = glm::vec3(-0.5f, -0.5f, -0.5f);
+        vertices[5].Position = glm::vec3( 0.5f, -0.5f, -0.5f);
+        vertices[6].Position = glm::vec3( 0.5f,  0.5f, -0.5f);
+        vertices[7].Position = glm::vec3(-0.5f,  0.5f, -0.5f);
 
         vertices[0].Normal = glm::vec3(-1.0f, -1.0f,  1.0f);
 		vertices[1].Normal = glm::vec3( 1.0f, -1.0f,  1.0f);
@@ -106,11 +136,19 @@ namespace RenderingEngine
             3, 2, 6, 6, 7, 3,
         };
         
-        return std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Cube"] = std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Cube"]->SetPath("Cube");
+        return m_Meshes["Cube"];
     }
 
-    const Ref<Mesh> MeshImporter::CreateSphere(const float radius)
+    const Ref<Mesh>& MeshImporter::CreateSphere()
     {
+        if (m_Meshes["Sphere"])
+        {
+            return m_Meshes["Sphere"];
+        }
+
+        const float radius = 1.0f;
         const float pi = 3.14f;
 		constexpr float latitudeBands = 30;
 		constexpr float longitudeBands = 30;
@@ -153,6 +191,8 @@ namespace RenderingEngine
 			}
 		}
 
-        return std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Sphere"] = std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Sphere"]->SetPath("Sphere");
+        return m_Meshes["Sphere"];
     }
 }

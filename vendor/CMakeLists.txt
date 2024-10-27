@@ -39,6 +39,10 @@ file(GLOB IMGUIZMO_SOURCES ${IMGUIZMO_DIR}/ImGuizmo.h ${IMGUIZMO_DIR}/ImGuizmo.c
 set(ENTT_DIR "entt")
 add_subdirectory(${ENTT_DIR} EXCLUDE_FROM_ALL)
 
+#yaml-cpp
+set(YAMLCPP_DIR "yaml-cpp")
+add_subdirectory(${YAMLCPP_DIR} EXCLUDE_FROM_ALL)
+
 ################################# Executable ####################################
 
 add_library(${PROJECT_NAME} ${IMGUI_SOURCES} ${STB_SOURCES} ${IMGUIZMO_SOURCES})
@@ -53,9 +57,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     "${STB_DIR}"
     "${ASSIMP_DIR}" 
     "${IMGUIZMO_DIR}" 
-    "${ENTT_DIR}")
+    "${ENTT_DIR}"
+    "${YAMLCPP_DIR}")
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw spdlog glad glm assimp EnTT)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw spdlog glad glm assimp EnTT yaml-cpp)
 
 if(WIN32)
         target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RendererEngine.h"
+#include "ComponentRegistry.h"
 
 #include <entt/entt.hpp>
 
@@ -15,20 +15,23 @@ namespace RenderingEngine
 		~Scene() = default;
 
 		void OnEveryUpdate(Time deltaTime);
+		void OnEvent(Event& e);
 
 		Entity Instantiate(const std::string& name = std::string());
 		void Destroy(Entity entity);
+
 		Entity GetActiveCameraEntity();
+		Entity GetDirectionalLightEntity();
 
 	private:
+		bool OnKeyPressedEvent(const KeyPressedEvent& e);
+		void UpdateCamera(CameraComponent& mainCamera, Time deltaTime);
+
 		entt::registry m_Entities;
-
-		Ref<Shader> m_ShadowMapShader;
-
-		Framebuffer m_DepthMap = Framebuffer(1024, 1024, FramebufferType::DepthBuffer);
-		Framebuffer m_Viewport = Framebuffer(800, 600, FramebufferType::Viewport);
+		bool m_CameraEditorMode = false;
 
 		friend class Entity;
-		friend class GuiRenderer;
+		friend class SceneRenderer;
+		friend class SceneSerializer;
 	};
 }

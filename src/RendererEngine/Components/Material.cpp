@@ -5,53 +5,77 @@
 
 namespace RenderingEngine
 {
+    Material::Material(const std::string& vertPath, const std::string& fragPath)
+    {
+        std::stringstream vertResult;
+        vertResult << RESOURCES_PATH << vertPath;
+
+        std::stringstream fragResult;
+        fragResult << RESOURCES_PATH << fragPath;
+
+        m_Shader = std::make_shared<Shader>(vertResult.str(), fragResult.str());
+
+        m_VertPath = vertPath;
+        m_FragPath = fragPath;
+    }
+
     Material::Material(const Ref<RenderingEngine::Shader>& shader)
     {
         m_Shader = shader;
     }
 
-    void Material::Bind() const
-    {
-        //m_Texture->Bind();
-
-        m_Shader->Bind();
-        m_Shader->BindUniformFloat3("u_Albedo", m_Properties.Albedo);
-        m_Shader->BindUniformFloat1("u_Roughness", m_Properties.Roughness);
-        m_Shader->BindUniformFloat1("u_Metallic", m_Properties.Metallic);
-        m_Shader->BindUniformFloat1("u_AO", m_Properties.AO);
-
-        //m_Texture->Unbind();
-    }
-
-    void Material::SetShader(const Ref<RenderingEngine::Shader>& shader)
+    void Material::SetShader(const Ref<Shader>& shader)
     {
         m_Shader = shader;
     }
 
-    void Material::SetTextureMap(const Ref<Texture>& newTexture)
+    void Material::AddTexture(const Ref<Texture>& texture)
     {
-        m_Texture = newTexture;
-
-        m_Properties.AlbedoID = newTexture->GetRendererID();
+        m_Textures.push_back(texture);
     }
 
-    void Material::SetAlbedo(const glm::vec3 value)
+    void Material::Bind() const
     {
-        m_Properties.Albedo = value;
+        for (auto& texture : m_Textures)
+        {
+            texture->Bind();
+        }
+
+        m_Shader->Bind();
+
+        for (auto& [name, value] : m_Uniforms.FloatUniforms)
+        {
+            m_Shader->BindUniformFloat1(name, value);
+        }
+
+        for (auto& [name, value] : m_Uniforms.Vec3Uniforms)
+        {
+            m_Shader->BindUniformFloat3(name, value);
+        }
+
+        for (auto& texture : m_Textures)
+        {
+            texture->Unbind();
+        }
     }
 
-    void Material::SetRoughness(const float value)
+    void Material::BindFloatUniform(std::string name, float value)
     {
-        m_Properties.Roughness = std::clamp(value, 0.0f, 1.0f);
+        m_Uniforms.FloatUniforms[name] = value;
     }
 
-    void Material::SetMetallic(const float value)
+    void Material::BindVec3Uniform(std::string name, glm::vec3 value)
     {
-        m_Properties.Metallic = std::clamp(value, 0.0f, 1.0f);
+        m_Uniforms.Vec3Uniforms[name] = value;
     }
 
-    void Material::SetAO(const float value)
+    void Material::BindMat4Uniform(std::string name, glm::mat4 value)
     {
-        m_Properties.AO = std::clamp(value, 0.0f, 1.0f);
+        m_Uniforms.Mat4Uniforms[name] = value;
+    }
+
+    void Material::BindTextureSlot(std::string name, int slot)
+    {
+        m_Uniforms.TextureUniforms[name] = slot;
     }
 }
