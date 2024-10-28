@@ -117,9 +117,9 @@ namespace RenderingEngine
 
 		//TODO: batching
 		//Draw call for shadow map
-		for (auto& meshEntity : meshRenderers)
+		for (const auto& meshEntity : meshRenderers)
 		{
-			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 
 			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
 		}
