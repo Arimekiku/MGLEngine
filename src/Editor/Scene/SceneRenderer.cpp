@@ -104,7 +104,7 @@ namespace RenderingEngine
 
 	void SceneRenderer::DrawDepthBuffer()
 	{
-		auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, TransformComponent>();
+		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, TransformComponent>();
 
 		m_DepthMap.Bind();
 
@@ -139,7 +139,7 @@ namespace RenderingEngine
 		CameraComponent camera = cameraEntity.GetComponent<CameraComponent>();
         Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
-		auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
+		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
 
 		//TODO: batching
 		//Draw call for actual models
@@ -190,7 +190,7 @@ namespace RenderingEngine
 	{
 		ImGui::Begin("Scene");
 
-		auto& sceneEntities = m_Context->m_Entities.view<NameComponent>();
+		const auto& sceneEntities = m_Context->m_Entities.view<NameComponent>();
 
 		for (auto& entityID : sceneEntities)
 		{
