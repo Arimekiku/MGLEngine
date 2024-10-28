@@ -94,7 +94,7 @@ namespace RenderingEngine
 
                 if (ImGui::MenuItem("Open...", "Ctrl+O"))
                 {
-                    auto& file = pfd::open_file("Select Scene", pfd::path::home(), { "Scene File (*.scene)", "*.scene" }).result();
+                    const auto& file = pfd::open_file("Select Scene", pfd::path::home(), { "Scene File (*.scene)", "*.scene" }).result();
 
                     if (file.empty() == false)
                     {
@@ -108,7 +108,7 @@ namespace RenderingEngine
 
                 if (ImGui::MenuItem("Save As...", "Ctrs+Shift+S"))
                 {
-                    auto& file = pfd::save_file("Select Scene", pfd::path::home(), { "Scene File (*.scene)", "*.scene" }).result();
+                    const auto& file = pfd::save_file("Select Scene", pfd::path::home(), { "Scene File (*.scene)", "*.scene" }).result();
 
                     if (file.empty() == false)
                     {

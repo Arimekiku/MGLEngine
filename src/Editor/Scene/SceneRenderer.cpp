@@ -70,10 +70,13 @@ namespace RenderingEngine
 				
 		if (isOpened)
 		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
+
 			T& component = entity.GetComponent<T>();
 			func(component);
 
 			ImGui::TreePop();
+			ImGui::PopStyleVar();
 		}
 
 		if (removeRequested)
@@ -86,7 +89,9 @@ namespace RenderingEngine
 	static void DrawAddComponent(const char* label, Entity entity)
 	{
 		if (entity.HasComponent<T>() == true)
+		{
 			return;
+		}
 
 		if (ImGui::MenuItem(label))
 		{
@@ -112,9 +117,9 @@ namespace RenderingEngine
 
 		//TODO: batching
 		//Draw call for shadow map
-		for (auto& meshEntity : meshRenderers)
+		for (const auto& meshEntity : meshRenderers)
 		{
-			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 
 			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
 		}
@@ -143,7 +148,7 @@ namespace RenderingEngine
 
 		//TODO: batching
 		//Draw call for actual models
-		for (auto& meshEntity : meshRenderers)
+		for (const auto& meshEntity : meshRenderers)
 		{
 			Ref<Material> modelMat = meshRenderers.get<MaterialComponent>(meshEntity).SharedMat;
 
@@ -151,7 +156,7 @@ namespace RenderingEngine
 			//TODO: think about it
 			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
 
-			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
 		}
 
@@ -192,7 +197,7 @@ namespace RenderingEngine
 
 		const auto& sceneEntities = m_Context->m_Entities.view<NameComponent>();
 
-		for (auto& entityID : sceneEntities)
+		for (const auto& entityID : sceneEntities)
 		{
 			Entity entity = Entity(entityID, m_Context.get());
 			NameComponent entityName = sceneEntities.get<NameComponent>(entity);
@@ -322,8 +327,6 @@ namespace RenderingEngine
 
 			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component)
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-
 				ImGui::AlignTextToFramePadding();
 				DrawVector3Drag("Position", component.Position, 100.0f);
 
@@ -332,8 +335,6 @@ namespace RenderingEngine
 
 				ImGui::AlignTextToFramePadding();
 				DrawVector3Drag("Scale", component.Scale, 100.0f);
-
-				ImGui::PopStyleVar();
 			});
 
 			DrawComponent<MaterialComponent>("Material", m_SelectedEntity, [](MaterialComponent& component)
@@ -343,24 +344,16 @@ namespace RenderingEngine
 
 			DrawComponent<MeshComponent>("Mesh", m_SelectedEntity, [](MeshComponent& component)
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("%p\n", (void *) &component.SharedMesh);
-
-				ImGui::PopStyleVar();
 			});
 
 			DrawComponent<CameraComponent>("Camera", m_SelectedEntity, [](CameraComponent& component)
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-
 				ImGui::AlignTextToFramePadding();
 				DrawVector3Drag("Position", component.Position, 100.0f);
 
 				ImGui::Checkbox("Enabled", &component.Enabled);
-
-				ImGui::PopStyleVar();
 			});
 
 			if (ImGui::Button("Add Component"))
@@ -432,8 +425,7 @@ namespace RenderingEngine
 		TransformComponent& entityTransform = m_SelectedEntity.GetComponent<TransformComponent>();
 		glm::mat4 entityTRS = entityTransform.GetTRSMatrix();
 
-		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), 
-		(ImGuizmo::OPERATION)m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
+		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
 
 		if (ImGuizmo::IsUsing()) 
 		{
