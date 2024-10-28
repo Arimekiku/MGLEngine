@@ -148,7 +148,7 @@ namespace RenderingEngine
 
 		//TODO: batching
 		//Draw call for actual models
-		for (auto& meshEntity : meshRenderers)
+		for (const auto& meshEntity : meshRenderers)
 		{
 			Ref<Material> modelMat = meshRenderers.get<MaterialComponent>(meshEntity).SharedMat;
 
@@ -156,7 +156,7 @@ namespace RenderingEngine
 			//TODO: think about it
 			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
 
-			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
 		}
 
@@ -197,7 +197,7 @@ namespace RenderingEngine
 
 		const auto& sceneEntities = m_Context->m_Entities.view<NameComponent>();
 
-		for (auto& entityID : sceneEntities)
+		for (const auto& entityID : sceneEntities)
 		{
 			Entity entity = Entity(entityID, m_Context.get());
 			NameComponent entityName = sceneEntities.get<NameComponent>(entity);
