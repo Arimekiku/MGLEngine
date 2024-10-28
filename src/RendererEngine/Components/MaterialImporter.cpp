@@ -1,10 +1,22 @@
 #include "MaterialImporter.h"
+#include "RendererEngine/Core/Logger/Log.h"
 
 namespace RenderingEngine
 {
     static std::unordered_map<std::string, Ref<Material>> m_Materials;
 
-    const Ref<Material>& MaterialImporter::GetMaterial(const std::string& name, const std::string& vertPath, const std::string& fragPath)
+    const Ref<Material>& MaterialImporter::GetMaterial(const std::string& name)
+    {
+        if (m_Materials[name])
+        {
+            return m_Materials[name];
+        }
+
+        LOG_EDITOR_ERROR("Material {0} do not exists!", name);
+        throw std::exception();
+    }
+
+    const Ref<Material>& MaterialImporter::AddMaterial(const std::string& name, const std::string& vertPath, const std::string& fragPath)
     {
         if (m_Materials[name])
         {

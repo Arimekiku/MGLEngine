@@ -35,7 +35,18 @@ add_subdirectory("vendor" EXCLUDE_FROM_ALL)
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 
-target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${RESOURCE_DIR}")
+target_compile_definitions("${CMAKE_PROJECT_NAME}" 
+    PRIVATE
+        _CRT_SECURE_NO_WARNINGS
+        IMGUI_IMPL_OPENGL_LOADER_GLAD
+        GLFW_INCLUDE_NONE
+    PUBLIC
+        RESOURCES_PATH="${RESOURCE_DIR}"
+        $<$<CONFIG:Debug>:DEBUG>
+        $<$<CONFIG:RelWithDebInfo>:RELEASE>
+        $<$<CONFIG:Release>:RELEASE>
+        $<$<CONFIG:MinSizeRel>:RELEASE>)
+
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}")
 target_link_libraries(${PROJECT_NAME} PUBLIC libs PRIVATE ${CMAKE_DL_LIBS})
 

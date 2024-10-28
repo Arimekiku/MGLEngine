@@ -21,7 +21,6 @@ namespace RenderingEngine
 		void Destroy(Entity entity);
 
 		Entity GetActiveCameraEntity();
-		Entity GetDirectionalLightEntity();
 
 	private:
 		bool OnKeyPressedEvent(const KeyPressedEvent& e);

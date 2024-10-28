@@ -1,10 +1,10 @@
 #include "mxpch.h"
 #include "Bootstrapper.h"
-#include "chrono"
-
 #include "Logger/Log.h"
-
 #include "RendererEngine/Core/Layer/ImGui/GuiLayer.h"
+
+#include <chrono>
+#include <portable_file_dialogs.h>
 
 namespace RenderingEngine
 {
@@ -12,6 +12,8 @@ namespace RenderingEngine
 
 	Bootstrapper::Bootstrapper()
 	{
+		LOG_RENDERER_ASSERT(pfd::settings::available(), "Portable File Dialogs are not available on this platform.\n");
+
 		s_Instance = this;
 
 		m_LayerStack = LayerStack();
@@ -33,19 +35,25 @@ namespace RenderingEngine
 
 			m_Window->OnEveryUpdate();
 			if (m_Minimized)
+			{
 				continue;
+			}
 
             m_LastFrameTime = static_cast<float>(glfwGetTime());
 
 			const auto deltaTime = Time(m_LastFrameTime - startFrameTime);
 
 			for (const auto layer : m_LayerStack)
+			{
 				layer->OnEveryUpdate(deltaTime);
+			}
 
 			GuiLayer::Begin();
 
 			for (const auto layer : m_LayerStack)
+			{
 				layer->OnGuiUpdate();
+			}
 
 			GuiLayer::End();
         }
@@ -60,7 +68,9 @@ namespace RenderingEngine
 		for (const auto layer : m_LayerStack)
 		{
 			if (e.Active == false)
+			{
 				return;
+			}
 
 			layer->OnEvent(e);
 		}
@@ -75,7 +85,6 @@ namespace RenderingEngine
 	bool Bootstrapper::OnWindowCloseEvent(const WindowCloseEvent& e)
 	{
 		LOG_RENDERER_INFO("Shutdown");
-		LOG_RENDERER_INFO("{0}", e.ToString());
 
 		m_Running = false;
 		return false;

@@ -15,7 +15,7 @@ namespace RenderingEngine
         ~Framebuffer();
 
         void Bind() const;
-        static void Unbind();
+        void Unbind() const;
 
         [[nodiscard]] uint32_t GetAttachment(int16_t index);
         [[nodiscard]] int16_t GetWidth() const { return m_Width; }

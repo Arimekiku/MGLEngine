@@ -94,11 +94,21 @@ namespace RenderingEngine
 
     void Framebuffer::Bind() const
     {
+        if (m_Type == FramebufferType::DepthBuffer)
+        {
+            glCullFace(GL_FRONT);
+        }
+
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
     }
 
-    void Framebuffer::Unbind()
+    void Framebuffer::Unbind() const
     {
+        if (m_Type == FramebufferType::DepthBuffer)
+        {
+            glCullFace(GL_BACK);
+        }
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 

@@ -329,7 +329,7 @@ namespace RenderingEngine {
 					std::string fragPath = materialComponent["FragPath"].as<std::string>();
 					std::string name = materialComponent["Name"].as<std::string>();
 
-					Ref<Material> sharedMat = MaterialImporter::GetMaterial(name, vertPath, fragPath);
+					Ref<Material> sharedMat = MaterialImporter::AddMaterial(name, vertPath, fragPath);
 					auto& material = deserializedEntity.AddComponent<MaterialComponent>(sharedMat);
 				}
 			}

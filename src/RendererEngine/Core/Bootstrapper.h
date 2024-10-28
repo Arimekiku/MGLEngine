@@ -18,11 +18,12 @@ namespace RenderingEngine
 		~Bootstrapper() = default;
 
 		void Run();
+		void Abort() { m_Running = false; };
 
 		void OnEvent(Event& e);
 		void AddLayer(Layer* layer);
 
-		static const Bootstrapper& GetInstance() { return *s_Instance; }
+		static Bootstrapper& GetInstance() { return *s_Instance; }
 		[[nodiscard]] Window& GetWindow() const { return *m_Window; }
 
 	private:

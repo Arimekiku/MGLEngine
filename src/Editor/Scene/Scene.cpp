@@ -7,6 +7,14 @@
 
 namespace RenderingEngine
 {
+	static void OnDirectionalLightAdded(entt::registry& registry, entt::entity entity)
+	{
+		DirectLightComponent component = registry.get<DirectLightComponent>(entity);
+
+        const auto& defaultMaterial = MaterialImporter::GetMaterial("Default");
+		defaultMaterial->BindMat4Uniform("u_lightViewProj", component.GetDLMatrix());
+	}
+
 	void SetOrientation(CameraComponent& mainCamera, const float rotX, const float rotY)
     {
 		glm::vec3& cameraOrientation = mainCamera.Orientation;
@@ -52,7 +60,7 @@ namespace RenderingEngine
 
 	Scene::Scene()
 	{
-		
+		m_Entities.on_construct<DirectLightComponent>().connect<&OnDirectionalLightAdded>();
 	}
 
 	Entity Scene::Instantiate(const std::string& name)
@@ -87,19 +95,6 @@ namespace RenderingEngine
 		return Entity();
 	}
 
-	Entity Scene::GetDirectionalLightEntity()
-	{
-		auto view = m_Entities.view<DirectLightComponent>();
-		for (auto& lightEntity : view)
-		{
-			DirectLightComponent& light = view.get<DirectLightComponent>(lightEntity);
-
-			return Entity(lightEntity, this);
-		}
-
-		return Entity();
-	}
-
 	void Scene::OnEveryUpdate(Time deltaTime)
 	{
 		Entity mainCameraEntity = GetActiveCameraEntity();
@@ -122,8 +117,15 @@ namespace RenderingEngine
         if (e.GetRepeatCount() != 0)
             return true;
 
+
         if (e.GetKeyCode() == GLFW_KEY_C)
         {
+			Entity mainCameraEntity = GetActiveCameraEntity();
+			if (!mainCameraEntity)
+			{
+				return true;
+			}
+
             if (m_CameraEditorMode == false)
             {
                 m_CameraEditorMode = true;
@@ -133,7 +135,6 @@ namespace RenderingEngine
                 return true;
             }
 
-			Entity mainCameraEntity = GetActiveCameraEntity();
             const glm::vec2 rotationVector = Input::GetNormalizedCursor();
             SetOrientation(mainCameraEntity.GetComponent<CameraComponent>(), rotationVector.x, rotationVector.y);
 

@@ -9,18 +9,16 @@ namespace RenderingEngine
 {
 	struct WindowProperties
 	{
-		const char* Name;
-		uint16_t Width, Height;
-		bool VSync;
+		const char* Name = "Rendering Engine";
+		uint16_t Width = 1600, Height = 900;
+		bool VSync = true;
 
-		explicit WindowProperties(const char* name = "Rendering Engine",
-		                          const uint16_t width = 800,
-		                          const uint16_t height = 600)
+		WindowProperties() = default;
+		WindowProperties(const char* name, const uint16_t width, const uint16_t height)
 		{
 			Name = name;
 			Width = width;
 			Height = height;
-			VSync = true;
 		}
 	};
 
@@ -29,7 +27,7 @@ namespace RenderingEngine
 	public:
 		using EventCallbackFunc = std::function<void(Event&)>;
 
-		explicit Window(const WindowProperties& properties = WindowProperties());
+		Window(const WindowProperties& properties = WindowProperties());
 		~Window();
 
 		[[nodiscard]] uint16_t GetWidth() const { return m_Data.Properties.Width; }

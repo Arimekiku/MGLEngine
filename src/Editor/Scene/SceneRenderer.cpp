@@ -51,8 +51,8 @@ namespace RenderingEngine
 
 		bool isOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, label);
 
-		ImGui::SameLine();
-		if (ImGui::Button("::"))
+		ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
+		if (ImGui::Button("::", ImVec2(25, 20)))
 		{
 			ImGui::OpenPopup("parameters");
 		}
@@ -82,6 +82,19 @@ namespace RenderingEngine
 		}
 	}
 
+	template<typename T>
+	static void DrawAddComponent(const char* label, Entity entity)
+	{
+		if (entity.HasComponent<T>() == true)
+			return;
+
+		if (ImGui::MenuItem(label))
+		{
+			entity.AddComponent<T>();
+			ImGui::CloseCurrentPopup();
+		}
+	}
+
 	SceneRenderer::SceneRenderer()
 	{
 		m_ShadowMapShader = std::make_shared<Shader>(
@@ -93,12 +106,12 @@ namespace RenderingEngine
 	{
 		auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, TransformComponent>();
 
-		glCullFace(GL_FRONT);
 		m_DepthMap.Bind();
 
-		//Draw call for shadow map
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
 
+		//TODO: batching
+		//Draw call for shadow map
 		for (auto& meshEntity : meshRenderers)
 		{
 			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
@@ -106,42 +119,43 @@ namespace RenderingEngine
 			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
 		}
 
-		Framebuffer::Unbind();
-		glCullFace(GL_BACK);
+		m_DepthMap.Unbind();
 	}
 
 	void SceneRenderer::DrawTextureBuffer()
 	{
 		Entity cameraEntity = m_Context->GetActiveCameraEntity();
+
+		m_Viewport.Bind();
+
+        Renderer::Clear(glm::vec4(0, 0, 0, 1));
+
+		if (!cameraEntity)
+		{
+			m_Viewport.Unbind();
+			return;
+		}
+
 		CameraComponent camera = cameraEntity.GetComponent<CameraComponent>();
         Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
 		auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
 
-		m_Viewport.Bind();
-
+		//TODO: batching
 		//Draw call for actual models
-        Renderer::Clear(glm::vec4(0, 0, 0, 1));
-
-		Entity mainCameraEntity = m_Context->GetActiveCameraEntity();
-		if (!mainCameraEntity)
-		{
-			Framebuffer::Unbind();
-			return;
-		}
-
 		for (auto& meshEntity : meshRenderers)
 		{
 			Ref<Material> modelMat = meshRenderers.get<MaterialComponent>(meshEntity).SharedMat;
 
 			modelMat->Bind();
+			//TODO: think about it
 			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
 
 			auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
 		}
 
-		Framebuffer::Unbind();
+		m_Viewport.Unbind();
 	}
 
 	void SceneRenderer::DrawViewport()
@@ -227,7 +241,58 @@ namespace RenderingEngine
 			if (ImGui::MenuItem("Create Blank"))
 			{
 				m_Context->Instantiate("Blank");
-			}
+				ImGui::CloseCurrentPopup();
+			} 
+
+			if (ImGui::BeginMenu("Primitives"))
+            {
+				if (ImGui::MenuItem("Create Plane"))
+				{
+					Entity entity = m_Context->Instantiate("Plane");
+					entity.AddComponent<TransformComponent>();
+
+					auto& material = MaterialImporter::GetMaterial("Default");
+					entity.AddComponent<MaterialComponent>(material);
+					
+					auto& mesh = MeshImporter::CreatePlane();
+					entity.AddComponent<MeshComponent>(mesh);
+
+					m_SelectedEntity = entity;
+					ImGui::CloseCurrentPopup();
+				}
+
+				if (ImGui::MenuItem("Create Cube"))
+				{
+					Entity entity = m_Context->Instantiate("Cube");
+					entity.AddComponent<TransformComponent>();
+
+					auto& material = MaterialImporter::GetMaterial("Default");
+					entity.AddComponent<MaterialComponent>(material);
+					
+					auto& mesh = MeshImporter::CreateCube();
+					entity.AddComponent<MeshComponent>(mesh);
+
+					m_SelectedEntity = entity;
+					ImGui::CloseCurrentPopup();
+				}
+
+				if (ImGui::MenuItem("Create Sphere"))
+				{
+					Entity entity = m_Context->Instantiate("Sphere");
+					entity.AddComponent<TransformComponent>();
+
+					auto& material = MaterialImporter::GetMaterial("Default");
+					entity.AddComponent<MaterialComponent>(material);
+					
+					auto& mesh = MeshImporter::CreateSphere();
+					entity.AddComponent<MeshComponent>(mesh);
+
+					m_SelectedEntity = entity;
+					ImGui::CloseCurrentPopup();
+				}
+
+                ImGui::EndMenu();
+            }
 
 			ImGui::EndPopup();
 		}
@@ -310,13 +375,14 @@ namespace RenderingEngine
 
 				if (entityHasCamera == false)
 				{
+					if (m_SelectedEntity.HasComponent<CameraComponent>() == false)
+					{
+						DrawAddComponent<TransformComponent>("Transform", m_SelectedEntity);
+					}
+
 					if (m_SelectedEntity.HasComponent<TransformComponent>() == false)
 					{
-						if (ImGui::MenuItem("Transform"))
-						{
-							m_SelectedEntity.AddComponent<TransformComponent>();
-							ImGui::CloseCurrentPopup();
-						}
+						DrawAddComponent<CameraComponent>("Camera", m_SelectedEntity);
 					}
 				}
 
