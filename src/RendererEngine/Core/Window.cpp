@@ -1,8 +1,6 @@
 #include "mxpch.h"
 #include "Window.h"
-
 #include "Logger/Log.h"
-
 #include "RendererEngine/Events/KeyEvent.h"
 #include "RendererEngine/Events/MouseEvent.h"
 #include "RendererEngine/Events/WindowEvent.h"

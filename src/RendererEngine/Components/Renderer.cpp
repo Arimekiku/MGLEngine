@@ -7,7 +7,7 @@ namespace RenderingEngine
 {
     glm::mat4 Renderer::m_ProjViewMat;
 
-    void Renderer::UpdateCameraMatrix(glm::mat4& cameraProjView)
+    void Renderer::UpdateCameraMatrix(const glm::mat4& cameraProjView)
     {
         m_ProjViewMat = cameraProjView;
     }

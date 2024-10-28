@@ -70,10 +70,13 @@ namespace RenderingEngine
 				
 		if (isOpened)
 		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
+
 			T& component = entity.GetComponent<T>();
 			func(component);
 
 			ImGui::TreePop();
+			ImGui::PopStyleVar();
 		}
 
 		if (removeRequested)
@@ -86,7 +89,9 @@ namespace RenderingEngine
 	static void DrawAddComponent(const char* label, Entity entity)
 	{
 		if (entity.HasComponent<T>() == true)
+		{
 			return;
+		}
 
 		if (ImGui::MenuItem(label))
 		{
@@ -322,8 +327,6 @@ namespace RenderingEngine
 
 			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component)
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-
 				ImGui::AlignTextToFramePadding();
 				DrawVector3Drag("Position", component.Position, 100.0f);
 
@@ -332,8 +335,6 @@ namespace RenderingEngine
 
 				ImGui::AlignTextToFramePadding();
 				DrawVector3Drag("Scale", component.Scale, 100.0f);
-
-				ImGui::PopStyleVar();
 			});
 
 			DrawComponent<MaterialComponent>("Material", m_SelectedEntity, [](MaterialComponent& component)
@@ -343,24 +344,16 @@ namespace RenderingEngine
 
 			DrawComponent<MeshComponent>("Mesh", m_SelectedEntity, [](MeshComponent& component)
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-
 				ImGui::AlignTextToFramePadding();
 				ImGui::Text("%p\n", (void *) &component.SharedMesh);
-
-				ImGui::PopStyleVar();
 			});
 
 			DrawComponent<CameraComponent>("Camera", m_SelectedEntity, [](CameraComponent& component)
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-
 				ImGui::AlignTextToFramePadding();
 				DrawVector3Drag("Position", component.Position, 100.0f);
 
 				ImGui::Checkbox("Enabled", &component.Enabled);
-
-				ImGui::PopStyleVar();
 			});
 
 			if (ImGui::Button("Add Component"))
@@ -432,8 +425,7 @@ namespace RenderingEngine
 		TransformComponent& entityTransform = m_SelectedEntity.GetComponent<TransformComponent>();
 		glm::mat4 entityTRS = entityTransform.GetTRSMatrix();
 
-		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), 
-		(ImGuizmo::OPERATION)m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
+		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
 
 		if (ImGuizmo::IsUsing()) 
 		{
