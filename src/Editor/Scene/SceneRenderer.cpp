@@ -49,7 +49,7 @@ namespace RenderingEngine
 		auto flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen
 				   | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap;
 
-		bool isOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, label);
+		bool isOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, "%s", label);
 
 		ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
 		if (ImGui::Button("::", ImVec2(25, 20)))

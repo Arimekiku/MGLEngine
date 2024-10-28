@@ -237,7 +237,7 @@ namespace RenderingEngine {
 		fout << out.c_str();
 	}
 
-	bool SceneSerializer::Deserialize(const std::string& filepath)
+	void SceneSerializer::Deserialize(const std::string& filepath)
 	{
 		YAML::Node data;
 		try
@@ -247,12 +247,12 @@ namespace RenderingEngine {
 		catch (YAML::ParserException e)
 		{
 			LOG_EDITOR_ERROR("Failed to load scene {0}\n{1}", filepath, e.what());
-			return false;
+			return;
 		}
 
 		if (!data["Scene"])
 		{
-			return false;
+			return;
 		}
 
 		std::string sceneName = data["Scene"].as<std::string>();
@@ -334,7 +334,5 @@ namespace RenderingEngine {
 				}
 			}
 		}
-
-		return true;
 	}
 }
