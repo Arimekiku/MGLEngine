@@ -27,7 +27,7 @@ namespace RenderingEngine
 		void UpdateCamera(CameraComponent& mainCamera, Time deltaTime);
 
 		entt::registry m_Entities;
-		bool m_CameraEditorMode = false;
+		bool m_CameraEditorMode = true;
 
 		friend class Entity;
 		friend class SceneRenderer;

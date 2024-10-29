@@ -1,4 +1,4 @@
-#version 410 core
+#version 450 core
 out vec4 color;
 
 uniform vec3 u_LightColor;

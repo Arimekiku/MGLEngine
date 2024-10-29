@@ -27,7 +27,7 @@ namespace RenderingEngine
         const auto window = static_cast<GLFWwindow*>(boot.GetWindow().GetNativeWindow());
 
         ImGui_ImplGlfw_InitForOpenGL(window, true);
-        ImGui_ImplOpenGL3_Init("#version 410");
+        ImGui_ImplOpenGL3_Init("#version 450");
     }
 
     void GuiLayer::Detach()

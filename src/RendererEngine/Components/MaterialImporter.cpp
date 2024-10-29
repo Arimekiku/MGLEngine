@@ -12,7 +12,7 @@ namespace RenderingEngine
             return m_Materials[name];
         }
 
-        LOG_EDITOR_ERROR("Material {0} do not exists!", name);
+        LOG_ERROR("Material {0} do not exists!", name);
         throw std::exception();
     }
 

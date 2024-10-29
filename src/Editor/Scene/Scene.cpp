@@ -1,7 +1,6 @@
 #include "Scene.h"
 #include "Entity.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/trigonometric.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
@@ -35,27 +34,39 @@ namespace RenderingEngine
 
 	void Scene::UpdateCamera(CameraComponent& mainCamera, Time deltaTime)
 	{
-		 if (m_CameraEditorMode == true)
-            return;
+		using namespace Input; 
 
-        Input::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-        const glm::vec2 rotationVector = Input::GetNormalizedCursor();
+		if (m_CameraEditorMode == true)
+		{
+            return;
+		}
+
+        Mouse::SetInputMode(Mouse::HIDDEN);
+        const glm::vec2 rotationVector = Mouse::GetNormalizedCursor();
         SetOrientation(mainCamera, rotationVector.x, rotationVector.y);
-        Input::SetCursorInCenterOfWindow();
+        Mouse::SetCursorInCenterOfWindow();
 
 		glm::vec3& cameraOrientation = mainCamera.Orientation;
 
-        if (Input::KeyPressed(GLFW_KEY_A))
+		if (Key::Pressed(Key::A))
+		{
             mainCamera.Position += deltaTime.GetSeconds() * -glm::normalize(glm::cross(cameraOrientation, {0, 1, 0}));
+		}
 
-        if (Input::KeyPressed(GLFW_KEY_D))
+		if (Key::Pressed(Key::D))
+		{
             mainCamera.Position += deltaTime.GetSeconds() * glm::normalize(glm::cross(cameraOrientation, {0, 1, 0}));
+		}
 
-        if (Input::KeyPressed(GLFW_KEY_W))
+		if (Key::Pressed(Key::W))
+		{
             mainCamera.Position += deltaTime.GetSeconds() * cameraOrientation;
+		}
 
-        if (Input::KeyPressed(GLFW_KEY_S))
+		if (Key::Pressed(Key::S))
+		{
             mainCamera.Position += deltaTime.GetSeconds() * -cameraOrientation;
+		}
 	}
 
 	Scene::Scene()
@@ -114,11 +125,12 @@ namespace RenderingEngine
 
 	bool Scene::OnKeyPressedEvent(const KeyPressedEvent& e)
     {
-        if (e.GetRepeatCount() != 0)
+		if (e.GetRepeatCount() != 0)
+		{
             return true;
+		}
 
-
-        if (e.GetKeyCode() == GLFW_KEY_C)
+        if (e.GetKeyCode() == Input::Key::C)
         {
 			Entity mainCameraEntity = GetActiveCameraEntity();
 			if (!mainCameraEntity)
@@ -129,19 +141,19 @@ namespace RenderingEngine
             if (m_CameraEditorMode == false)
             {
                 m_CameraEditorMode = true;
-                Input::SetInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+                Input::Mouse::SetInputMode(Input::Mouse::VISIBLE);
 
-                LOG_RENDERER_INFO("Switched to Editor Mode");
+                LOG_TRACE("Switched to Editor Mode");
                 return true;
             }
 
-            const glm::vec2 rotationVector = Input::GetNormalizedCursor();
+            const glm::vec2 rotationVector = Input::Mouse::GetNormalizedCursor();
             SetOrientation(mainCameraEntity.GetComponent<CameraComponent>(), rotationVector.x, rotationVector.y);
 
-            Input::SetCursorInCenterOfWindow();
+            Input::Mouse::SetCursorInCenterOfWindow();
 
             m_CameraEditorMode = false;
-            LOG_RENDERER_INFO("Switched to Camera Mode");
+            LOG_TRACE("Switched to Camera Mode");
         }
 
         return true;

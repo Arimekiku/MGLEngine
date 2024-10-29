@@ -7,13 +7,13 @@ namespace RenderingEngine
     class Texture
     {
     public:
-        explicit Texture(const std::string& path);
+        Texture(const std::string& path);
         ~Texture();
 
         void Bind(uint8_t slot = 0) const;
-        static void Unbind();
+        void Unbind() const;
 
-        [[nodiscard]] uint32_t GetRendererID() const { return m_RendererID; }
+        uint32_t GetRendererID() const { return m_RendererID; }
 
     private:
         std::string m_FilePath;

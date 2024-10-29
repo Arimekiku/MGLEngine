@@ -22,5 +22,4 @@
 
 #include "RendererEngine/Components/Material.h"
 #include "RendererEngine/Components/MeshImporter.h"
-#include "RendererEngine/Components/TextureImporter.h"
 #include "RendererEngine/Components/MaterialImporter.h"

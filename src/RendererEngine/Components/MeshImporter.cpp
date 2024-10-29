@@ -23,7 +23,7 @@ namespace RenderingEngine
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            LOG_RENDERER_ASSERT(false, "Could not load from path: {0} with message: {1}", resultPath.str().c_str(), importer.GetErrorString());
+            LOG_ASSERT(false, "Could not load from path: {0} with message: {1}", resultPath.str().c_str(), importer.GetErrorString());
         }
 
         aiMesh* mesh = scene->mMeshes[0];

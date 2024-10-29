@@ -9,7 +9,7 @@ namespace RenderingEngine
 {
     EditorLayer::EditorLayer()
     {
-        //ASSETS
+        //IMPORT ASSETS
 		const auto& lightMaterial = MaterialImporter::AddMaterial("Light", "Shaders/areaLight.vert", "Shaders/areaLight.frag");
         const auto& defaultMaterial = MaterialImporter::AddMaterial("Default", "Shaders/default.vert", "Shaders/default.frag");
 
@@ -20,6 +20,7 @@ namespace RenderingEngine
         MeshImporter::CreateCube();
         MeshImporter::CreateSphere();
 
+        //BIND ASSETS
         m_SceneRenderer.SetContext(m_Scene);
 
         lightMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
@@ -101,8 +102,7 @@ namespace RenderingEngine
                         m_Scene = std::make_shared<Scene>();
                         m_SceneRenderer.SetContext(m_Scene);
 
-                        SceneSerializer serializer = SceneSerializer(m_Scene);
-                        serializer.Deserialize(file[0]);
+                        SceneSerializer::Deserialize(m_Scene, file[0]);
                     }
                 }
 
@@ -112,8 +112,7 @@ namespace RenderingEngine
 
                     if (file.empty() == false)
                     {
-                        SceneSerializer serializer = SceneSerializer(m_Scene);
-                        serializer.Serialize(file);
+                        SceneSerializer::Serialize(m_Scene, file);
                     }
                 }
 
@@ -176,7 +175,6 @@ namespace RenderingEngine
 
     void EditorLayer::OnEvent(Event& event)
     {
-        m_SceneRenderer.OnEvent(event);
         m_Scene->OnEvent(event);
     }
 }

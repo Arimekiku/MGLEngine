@@ -7,12 +7,8 @@ namespace RenderingEngine
 	class SceneSerializer
 	{
 	public:
-		SceneSerializer(const Ref<Scene>& scene);
+		static void Serialize(const Ref<Scene>& scene, const std::string& filepath);
 
-		void Serialize(const std::string& filepath);
-
-		void Deserialize(const std::string& filepath);
-	private:
-		Ref<Scene> m_Scene;
+		static void Deserialize(const Ref<Scene>& scene, const std::string& filepath);
 	};
 }

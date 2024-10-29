@@ -21,15 +21,10 @@ namespace RenderingEngine
 		void DrawInspectorPanel();
 		void DrawGuizmos();
 
-		void OnEvent(Event& e);
-
 		void SetContext(Ref<Scene> context);
 
 	private:
-		void OnResizeEvent(WindowResizeEvent& e);
-
 		Framebuffer m_DepthMap = Framebuffer(1024, 1024, FramebufferType::DepthBuffer);
-		Framebuffer m_Viewport = Framebuffer(800, 600, FramebufferType::Viewport);
 
 		Ref<RenderCamera> m_ViewportCamera = std::make_shared<RenderCamera>();
 		Ref<Scene> m_Context = nullptr;

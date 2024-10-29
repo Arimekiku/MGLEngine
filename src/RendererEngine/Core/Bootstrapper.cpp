@@ -12,7 +12,7 @@ namespace RenderingEngine
 
 	Bootstrapper::Bootstrapper()
 	{
-		LOG_RENDERER_ASSERT(pfd::settings::available(), "Portable File Dialogs are not available on this platform.\n");
+		LOG_ASSERT(pfd::settings::available(), "Portable File Dialogs are not available on this platform.\n");
 
 		s_Instance = this;
 
@@ -84,7 +84,7 @@ namespace RenderingEngine
 
 	bool Bootstrapper::OnWindowCloseEvent(const WindowCloseEvent& e)
 	{
-		LOG_RENDERER_INFO("Shutdown");
+		LOG_WARN("Shutdown");
 
 		m_Running = false;
 		return false;
@@ -94,7 +94,7 @@ namespace RenderingEngine
 	{
 		if (e.GetKeyCode() == GLFW_KEY_ESCAPE)
 		{
-			LOG_RENDERER_INFO("Shutdown");
+			LOG_WARN("Shutdown");
 
 			m_Running = false;
 			return true;

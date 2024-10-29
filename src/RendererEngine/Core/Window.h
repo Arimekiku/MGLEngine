@@ -30,10 +30,10 @@ namespace RenderingEngine
 		Window(const WindowProperties& properties = WindowProperties());
 		~Window();
 
-		[[nodiscard]] uint16_t GetWidth() const { return m_Data.Properties.Width; }
-		[[nodiscard]] uint16_t GetHeight() const { return m_Data.Properties.Height; }
-		[[nodiscard]] bool VSyncEnabled() const { return m_Data.Properties.VSync; }
-		[[nodiscard]] GLFWwindow* const& GetNativeWindow() const { return m_Window; }
+		uint16_t GetWidth() const { return m_Data.Properties.Width; }
+		uint16_t GetHeight() const { return m_Data.Properties.Height; }
+		bool VSyncEnabled() const { return m_Data.Properties.VSync; }
+		GLFWwindow* const& GetNativeWindow() const { return m_Window; }
 
 		void OnEveryUpdate() const;
 		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.Callback = callback; }

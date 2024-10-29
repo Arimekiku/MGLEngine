@@ -2,7 +2,6 @@
 
 #include "RendererEngine.h"
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <glm/fwd.hpp>
 
@@ -26,7 +25,7 @@ namespace RenderingEngine
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
 		TransformComponent(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) 
-			: Position(position), Rotation(rotation), Scale(scale) {}
+			: Position(position), Rotation(rotation), Scale(scale) { }
 
 		glm::mat4 GetTRSMatrix() const
 		{
@@ -44,7 +43,7 @@ namespace RenderingEngine
 
 		MeshComponent() = default;
 		MeshComponent(const MeshComponent&) = default;
-		MeshComponent(const Ref<Mesh>& mesh) : SharedMesh(mesh) {}
+		MeshComponent(const Ref<Mesh>& mesh) : SharedMesh(mesh) { }
 	};
 
 	struct MaterialComponent
@@ -53,7 +52,7 @@ namespace RenderingEngine
 
 		MaterialComponent() = default;
 		MaterialComponent(const MaterialComponent&) = default;
-		MaterialComponent(const Ref<Material>& material) : SharedMat(material) {}
+		MaterialComponent(const Ref<Material>& material) : SharedMat(material) { }
 	};
 
 	struct DirectLightComponent
@@ -93,6 +92,6 @@ namespace RenderingEngine
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
-		CameraComponent(const bool enabled) : Enabled(enabled) {}
+		CameraComponent(const bool enabled) : Enabled(enabled) { }
 	};
 }

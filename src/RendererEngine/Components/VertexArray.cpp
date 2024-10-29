@@ -1,4 +1,3 @@
-#include "mxpch.h"
 #include "VertexArray.h"
 
 #include <glad/glad.h>
@@ -23,7 +22,7 @@ namespace RenderingEngine
             default: ;
         }
 
-        LOG_RENDERER_ASSERT(false, "Can't get shader data type");
+        LOG_ASSERT(false, "Can't get shader data type");
         return 0;
     }
 
@@ -42,14 +41,14 @@ namespace RenderingEngine
         glBindVertexArray(m_RendererID);
     }
 
-    void VertexArray::Unbind()
+    void VertexArray::Unbind() const
     {
         glBindVertexArray(0);
     }
 
     void VertexArray::SetVertexBuffer(const Ref<VertexBuffer>& buffer)
     {
-        LOG_RENDERER_ASSERT(buffer->GetLayout().GetElements().size(), "Layout was not setted properly!")
+        LOG_ASSERT(buffer->GetLayout().GetElements().size(), "Layout was not setted properly!")
 
         glBindVertexArray(m_RendererID);
         buffer->Bind();
@@ -64,7 +63,7 @@ namespace RenderingEngine
                                   ShaderDataTypeToGLenum(attr.Type),
                                   attr.Normalized ? GL_TRUE : GL_FALSE,
                                   layout.GetStride(),
-                                  reinterpret_cast<const void*>(attr.Offset));
+                                  (const void*)attr.Offset);
             index++;
         }
         m_VertexBuffer = buffer;

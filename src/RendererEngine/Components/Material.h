@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory>
-#include <glm/gtc/type_ptr.hpp>
-
 #include "Shader.h"
 #include "Texture.h"
 #include "RendererEngine/Core.h"

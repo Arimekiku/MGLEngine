@@ -9,10 +9,21 @@ namespace RenderingEngine
     enum class ShaderDataType : uint8_t
     {
         None = 0,
+
         Bool,
-        Int, Int2, Int3, Int4,
-        Float, Float2, Float3, Float4,
-        Mat3x3, Mat4x4,
+
+        Int, 
+        Int2,
+        Int3, 
+        Int4,
+
+        Float, 
+        Float2, 
+        Float3, 
+        Float4,
+
+        Mat3x3, 
+        Mat4x4,
     };
 
     static int32_t GetShaderDataTypeSize(const ShaderDataType dataType)
@@ -30,10 +41,10 @@ namespace RenderingEngine
             case ShaderDataType::Float4: return sizeof(float) * 4;
             case ShaderDataType::Mat3x3: return sizeof(float) * 3 * 3;
             case ShaderDataType::Mat4x4: return sizeof(float) * 4 * 4;
-            default: LOG_RENDERER_ASSERT(false, "None buffer type requested");
+            default: LOG_ASSERT(false, "None buffer type requested");
         }
 
-        LOG_RENDERER_ASSERT(false, "Can't get shader data type");
+        LOG_ASSERT(false, "Can't get shader data type");
         throw std::exception();
     }
 
@@ -46,10 +57,7 @@ namespace RenderingEngine
         int32_t Size = 0;
 
         BufferAttribute() = default;
-
-        BufferAttribute(const ShaderDataType type,
-                        const std::string& name,
-                        const bool normalized = false)
+        BufferAttribute(const ShaderDataType type, const std::string& name, const bool normalized = false)
         {
             Name = name;
             Type = type;
@@ -57,7 +65,7 @@ namespace RenderingEngine
             Size = GetShaderDataTypeSize(type);
         }
 
-        [[nodiscard]] int32_t GetElementCount() const
+        int32_t GetElementCount() const
         {
             switch (Type)
             {
@@ -72,10 +80,10 @@ namespace RenderingEngine
                 case ShaderDataType::Float4: return 4;
                 case ShaderDataType::Mat3x3: return 3 * 3;
                 case ShaderDataType::Mat4x4: return 4 * 4;
-                default: LOG_RENDERER_ASSERT(false, "None buffer type requested");
+                default: LOG_ASSERT(false, "None buffer type requested");
             }
 
-            LOG_RENDERER_ASSERT(false, "Can't get shader data type");
+            LOG_ASSERT(false, "Can't get shader data type");
             throw std::exception();
         }
     };
@@ -91,13 +99,13 @@ namespace RenderingEngine
             CalculateShaderDataOffset();
         }
 
-        [[nodiscard]] const std::vector<BufferAttribute>& GetElements() const { return m_Elements; }
-        [[nodiscard]] const int32_t& GetStride() const { return m_Stride; }
+        const std::vector<BufferAttribute>& GetElements() const { return m_Elements; }
+        const int32_t& GetStride() const { return m_Stride; }
 
         std::vector<BufferAttribute>::iterator begin() { return m_Elements.begin(); }
         std::vector<BufferAttribute>::iterator end() { return m_Elements.end(); }
-        [[nodiscard]] std::vector<BufferAttribute>::const_iterator begin() const { return m_Elements.begin(); }
-        [[nodiscard]] std::vector<BufferAttribute>::const_iterator end() const { return m_Elements.end(); }
+        std::vector<BufferAttribute>::const_iterator begin() const { return m_Elements.begin(); }
+        std::vector<BufferAttribute>::const_iterator end() const { return m_Elements.end(); }
 
     private:
         void CalculateShaderDataOffset()
@@ -132,7 +140,7 @@ namespace RenderingEngine
         void SetLayout(const RenderBufferLayout& layout) { m_Layout = layout; }
 
         void Bind() const;
-        static void Unbind();
+        void Unbind() const;
 
     private:
         uint32_t m_RendererID = 0;
@@ -146,9 +154,9 @@ namespace RenderingEngine
         ~IndexBuffer();
 
         void Bind() const;
-        static void Unbind();
+        void Unbind() const;
 
-        [[nodiscard]] int32_t GetIndexCount() const { return m_IndexCount; }
+        int32_t GetIndexCount() const { return m_IndexCount; }
 
     private:
         uint32_t m_RendererID = 0;

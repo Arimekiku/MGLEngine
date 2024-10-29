@@ -1,11 +1,8 @@
 #pragma once
 
 #include "Window.h"
-
 #include "Layer/LayerStack.h"
 #include "RendererEngine/Core.h"
-#include "RendererEngine/Core/Time.h"
-
 #include "RendererEngine/Events/WindowEvent.h"
 #include "RendererEngine/Events/KeyEvent.h"
 
@@ -24,7 +21,7 @@ namespace RenderingEngine
 		void AddLayer(Layer* layer);
 
 		static Bootstrapper& GetInstance() { return *s_Instance; }
-		[[nodiscard]] Window& GetWindow() const { return *m_Window; }
+		Window& GetWindow() const { return *m_Window; }
 
 	private:
 		bool OnWindowCloseEvent(const WindowCloseEvent& e);

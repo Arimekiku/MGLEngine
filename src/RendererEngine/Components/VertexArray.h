@@ -12,13 +12,13 @@ namespace RenderingEngine
         ~VertexArray();
 
         void Bind() const;
-        static void Unbind();
+        void Unbind() const;
 
         void SetVertexBuffer(const Ref<VertexBuffer>& buffer);
         void SetIndexBuffer(const Ref<IndexBuffer>& buffer);
 
-        [[nodiscard]] const Ref<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
-        [[nodiscard]] const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
+        const Ref<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
+        const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 
     private:
         uint32_t m_RendererID = 0;

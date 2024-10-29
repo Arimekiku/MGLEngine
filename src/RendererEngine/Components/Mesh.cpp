@@ -1,4 +1,3 @@
-#include "mxpch.h"
 #include "Mesh.h"
 
 #include <memory>

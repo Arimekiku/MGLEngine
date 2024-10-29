@@ -1,8 +1,6 @@
 #include "mxpch.h"
 #include "Material.h"
 
-#include <imgui.h>
-
 namespace RenderingEngine
 {
     Material::Material(const std::string& vertPath, const std::string& fragPath)

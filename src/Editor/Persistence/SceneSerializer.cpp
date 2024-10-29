@@ -54,33 +54,6 @@ namespace YAML {
 			return true;
 		}
 	};
-
-	template<>
-	struct convert<glm::vec4>
-	{
-		static Node encode(const glm::vec4& rhs)
-		{
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			node.push_back(rhs.w);
-			node.SetStyle(EmitterStyle::Flow);
-			return node;
-		}
-
-		static bool decode(const Node& node, glm::vec4& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 4)
-				return false;
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			rhs.w = node[3].as<float>();
-			return true;
-		}
-	};
 }
 
 namespace RenderingEngine {
@@ -96,18 +69,6 @@ namespace RenderingEngine {
 		out << YAML::Flow;
 		out << YAML::BeginSeq << value.x << value.y << value.z << YAML::EndSeq;
 		return out;
-	}
-
-	static YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& value)
-	{
-		out << YAML::Flow;
-		out << YAML::BeginSeq << value.x << value.y << value.z << value.w << YAML::EndSeq;
-		return out;
-	}
-
-	SceneSerializer::SceneSerializer(const Ref<Scene>& scene) : m_Scene(scene)
-	{
-
 	}
 
 	static void SerializeEntity(YAML::Emitter& out, Entity entity)
@@ -211,16 +172,16 @@ namespace RenderingEngine {
 		out << YAML::EndMap;
 	}
 
-	void SceneSerializer::Serialize(const std::string& filepath)
+	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::string& filepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
 		out << YAML::Key << "Scene" << YAML::Value << "SampleScene";
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-		for (auto entityID : m_Scene->m_Entities.view<entt::entity>())
+		for (auto entityID : scene->m_Entities.view<entt::entity>())
 		{
-			Entity entity = Entity(entityID, m_Scene.get());
+			Entity entity = Entity(entityID, scene.get());
 
 			if (!entity)
 			{
@@ -237,7 +198,7 @@ namespace RenderingEngine {
 		fout << out.c_str();
 	}
 
-	void SceneSerializer::Deserialize(const std::string& filepath)
+	void SceneSerializer::Deserialize(const Ref<Scene>& scene, const std::string& filepath)
 	{
 		YAML::Node data;
 		try
@@ -246,17 +207,18 @@ namespace RenderingEngine {
 		}
 		catch (YAML::ParserException e)
 		{
-			LOG_EDITOR_ERROR("Failed to load scene {0}\n{1}", filepath, e.what());
+			LOG_ERROR("Failed to load scene {0}\n{1}", filepath, e.what());
 			return;
 		}
 
 		if (!data["Scene"])
 		{
+			LOG_ERROR("Failed to get scene object from {0}\n", filepath);
 			return;
 		}
 
 		std::string sceneName = data["Scene"].as<std::string>();
-		LOG_EDITOR_TRACE("Deserializing scene {0}", sceneName);
+		LOG_TRACE("Loading scene {0}...", sceneName);
 
 		auto entities = data["Entities"];
 		if (entities)
@@ -270,9 +232,9 @@ namespace RenderingEngine {
 					name = tagComponent["Name"].as<std::string>();
 				}
 
-				LOG_EDITOR_TRACE("Deserialized entity {1}", name);
+				LOG_TRACE("Loading entity {0}...", name);
 
-				Entity deserializedEntity = m_Scene->Instantiate(name);
+				Entity deserializedEntity = scene->Instantiate(name);
 
 				auto transformComponent = entity["TransformComponent"];
 				if (transformComponent)
@@ -334,5 +296,7 @@ namespace RenderingEngine {
 				}
 			}
 		}
+
+		LOG_TRACE("Scene {0} successfully loaded!\n", sceneName);
 	}
 }

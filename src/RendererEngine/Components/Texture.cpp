@@ -1,10 +1,7 @@
 #include "Texture.h"
-
 #include "RendererEngine/Core/Logger/Log.h"
 
 #include <glad/glad.h>
-
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 namespace RenderingEngine
@@ -14,7 +11,7 @@ namespace RenderingEngine
         m_FilePath = path;
 
         m_Buffer = stbi_load(path.c_str(), &m_Size.x, &m_Size.y, &m_BPP, 0);
-        LOG_RENDERER_ASSERT(m_Buffer != nullptr, "Can't load texture from path");
+        LOG_ASSERT(m_Buffer != nullptr, "Can't load texture from path");
 
         glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
         glTextureStorage2D(m_RendererID, 1, GL_RGBA8, m_Size.x, m_Size.y);
@@ -41,7 +38,7 @@ namespace RenderingEngine
         glBindTextureUnit(slot, m_RendererID);
     }
 
-    void Texture::Unbind()
+    void Texture::Unbind() const
     {
         glBindTextureUnit(GL_TEXTURE_2D, 0);
     }

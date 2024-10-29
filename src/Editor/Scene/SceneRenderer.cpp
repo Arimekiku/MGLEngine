@@ -2,6 +2,8 @@
 #include "ComponentRegistry.h"
 #include "RendererEngine/Core/Math.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace RenderingEngine
 {
 	static void DrawVector3Drag(const char* label, glm::vec3& vector, float panelWidth)
@@ -129,15 +131,16 @@ namespace RenderingEngine
 
 	void SceneRenderer::DrawTextureBuffer()
 	{
+		const Framebuffer& cameraBuffer = m_ViewportCamera->GetFramebuffer();
 		Entity cameraEntity = m_Context->GetActiveCameraEntity();
 
-		m_Viewport.Bind();
+		cameraBuffer.Bind();
 
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
 
 		if (!cameraEntity)
 		{
-			m_Viewport.Unbind();
+			cameraBuffer.Unbind();
 			return;
 		}
 
@@ -160,7 +163,7 @@ namespace RenderingEngine
 			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
 		}
 
-		m_Viewport.Unbind();
+		cameraBuffer.Unbind();
 	}
 
 	void SceneRenderer::DrawViewport()
@@ -168,18 +171,17 @@ namespace RenderingEngine
 		ImGui::Begin("Viewport");
 
         const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        const auto castSize = glm::i16vec2(viewportSize.x, viewportSize.y);
+        const auto castSize = glm::vec2(viewportSize.x, viewportSize.y);
 
         if (castSize.x != 0 && castSize.y != 0)
         {
-            if (glm::i16vec2(m_Viewport.GetWidth(), m_Viewport.GetHeight()) != castSize)
+            if (m_ViewportCamera->GetSize() != castSize)
             {
 				m_ViewportCamera->Resize(castSize.x, castSize.y);
-				m_Viewport.Resize(castSize.x, castSize.y);
 				m_DepthMap.Resize(castSize.x, castSize.y);
             }
 
-            uint32_t m_Texture = m_Viewport.GetAttachment(0);
+            uint32_t m_Texture = m_ViewportCamera->GetFramebuffer().GetAttachment(0);
             ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
         }
 
@@ -395,17 +397,17 @@ namespace RenderingEngine
 			return;
 		}
 
-		if (Input::KeyPressed(GLFW_KEY_F1))
+		if (Input::Key::Pressed(Input::Key::F1))
 		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 		}
 
-		if (Input::KeyPressed(GLFW_KEY_F2))
+		if (Input::Key::Pressed(Input::Key::F2))
 		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::ROTATE;
 		}
 
-		if (Input::KeyPressed(GLFW_KEY_F3))
+		if (Input::Key::Pressed(Input::Key::F3))
 		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::SCALE;
 		}
@@ -445,23 +447,9 @@ namespace RenderingEngine
 		}
 	}
 
-	void SceneRenderer::OnEvent(Event& e)
-	{
-		m_ViewportCamera->OnEvent(e);
-	}
-
 	void SceneRenderer::SetContext(Ref<Scene> context)
 	{
 		m_Context = context;
 		m_SelectedEntity = Entity();
-	}
-
-	void SceneRenderer::OnResizeEvent(WindowResizeEvent& e)
-	{
-		glm::vec2 size = glm::vec2(e.GetWidth(), e.GetHeight());
-
-		m_ViewportCamera->Resize(size.x, size.y);
-		m_Viewport.Resize(size.x, size.y);
-		m_DepthMap.Resize(size.x, size.y);
 	}
 }

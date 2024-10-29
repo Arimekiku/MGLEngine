@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Core/Logger/Log.h"
+#include "Core/Time.h"
+
 #define BIT(x) (1 << (x))
 #define NAME_OF(x) (#x)
 

@@ -9,10 +9,21 @@ namespace RenderingEngine
 {
 	enum class EventType
 	{
-		Null = 0,
-		WindowClose, WindowResize, WindowFocus, WindowRender,
-		KeyPressed, KeyReleased, KeyTyped,
-		MousePressed, MouseReleased, MouseMoved, MouseScrolled
+		Null,
+
+		WindowClose, 
+		WindowResize, 
+		WindowFocus, 
+		WindowRender,
+
+		KeyPressed, 
+		KeyReleased, 
+		KeyTyped,
+
+		MousePressed, 
+		MouseReleased, 
+		MouseMoved, 
+		MouseScrolled
 	};
 
 	enum EventCategory
@@ -30,12 +41,12 @@ namespace RenderingEngine
 	public:
 		virtual ~Event() = default;
 
-		[[nodiscard]] virtual EventType GetEventType() const = 0;
-		[[nodiscard]] virtual int GetCategory() const = 0;
+		virtual EventType GetEventType() const = 0;
+		virtual int GetCategory() const = 0;
 
-		[[nodiscard]] virtual std::string ToString() const { return "Event"; }
+		virtual std::string ToString() const { return "Event"; }
 
-		[[nodiscard]] bool InCategory(const EventCategory category) const { return GetCategory() & category; }
+		bool InCategory(const EventCategory category) const { return GetCategory() & category; }
 		bool Active = true;
 	};
 
@@ -45,9 +56,7 @@ namespace RenderingEngine
 		using EventFunc = std::function<bool(TEvent&)>;
 
 	public:
-		explicit EventDispatcher(Event& event): m_Event(event)
-		{
-		}
+		EventDispatcher(Event& event): m_Event(event) { }
 
 		template <typename TEvent>
 		bool Dispatch(EventFunc<TEvent> func)
