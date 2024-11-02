@@ -11,7 +11,7 @@ namespace RenderingEngine
     class Framebuffer 
     {
     public:
-        Framebuffer() = default;
+        Framebuffer() { Resize(m_Width, m_Height); };
         Framebuffer(int16_t width, int16_t height, FramebufferType type);
         ~Framebuffer();
 

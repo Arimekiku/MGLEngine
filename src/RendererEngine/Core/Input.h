@@ -57,6 +57,8 @@ namespace RenderingEngine
             static bool Pressed(const KeyCode code);
             static bool Held(const KeyCode code);
             static bool Released(const KeyCode code);
+
+            static int GetAxisValue(const KeyCode positiveKey, const KeyCode negativeKey);
         };
     }
 }

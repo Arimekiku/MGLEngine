@@ -6,14 +6,6 @@
 
 namespace RenderingEngine
 {
-	static void OnDirectionalLightAdded(entt::registry& registry, entt::entity entity)
-	{
-		DirectLightComponent component = registry.get<DirectLightComponent>(entity);
-
-        const auto& defaultMaterial = MaterialImporter::GetMaterial("Default");
-		defaultMaterial->BindMat4Uniform("u_lightViewProj", component.GetDLMatrix());
-	}
-
 	void SetOrientation(CameraComponent& mainCamera, const float rotX, const float rotY)
     {
 		glm::vec3& cameraOrientation = mainCamera.Orientation;
@@ -48,30 +40,11 @@ namespace RenderingEngine
 
 		glm::vec3& cameraOrientation = mainCamera.Orientation;
 
-		if (Key::Pressed(Key::A))
-		{
-            mainCamera.Position += deltaTime.GetSeconds() * -glm::normalize(glm::cross(cameraOrientation, {0, 1, 0}));
-		}
+		int horizontalAxis = Key::GetAxisValue(Key::D, Key::A);
+        mainCamera.Position += horizontalAxis * deltaTime.GetSeconds() * glm::normalize(glm::cross(cameraOrientation, Vector3::Up()));
 
-		if (Key::Pressed(Key::D))
-		{
-            mainCamera.Position += deltaTime.GetSeconds() * glm::normalize(glm::cross(cameraOrientation, {0, 1, 0}));
-		}
-
-		if (Key::Pressed(Key::W))
-		{
-            mainCamera.Position += deltaTime.GetSeconds() * cameraOrientation;
-		}
-
-		if (Key::Pressed(Key::S))
-		{
-            mainCamera.Position += deltaTime.GetSeconds() * -cameraOrientation;
-		}
-	}
-
-	Scene::Scene()
-	{
-		m_Entities.on_construct<DirectLightComponent>().connect<&OnDirectionalLightAdded>();
+		int verticalAxis = Key::GetAxisValue(Key::W, Key::S);
+        mainCamera.Position += verticalAxis * deltaTime.GetSeconds() * cameraOrientation;
 	}
 
 	Entity Scene::Instantiate(const std::string& name)

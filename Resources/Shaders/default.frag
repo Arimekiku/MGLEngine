@@ -7,8 +7,8 @@ in vec3 v_Normal;
 in vec3 v_CamPos;
 in vec4 v_FragPosLight;
 
-uniform sampler2D u_Texture;
-uniform sampler2D u_DepthMap;
+layout (binding = 0) uniform sampler2D u_Texture;
+layout (binding = 1) uniform sampler2D u_DepthMap;
 
 uniform vec3 u_LightPos;
 uniform vec3 u_LightColor;
@@ -65,12 +65,12 @@ vec4 directLight()
     vec3 ambient = 0.2f * u_LightColor;
 
     // Diffuse
-    vec3 lightDir = normalize(u_LightPos - v_FragPosLight.xyz);
+    vec3 lightDir = normalize(u_LightPos - v_Position);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * u_LightColor;
 
     // Specular
-    vec3 viewDir = normalize(v_CamPos - v_FragPosLight.xyz);
+    vec3 viewDir = normalize(v_CamPos - v_Position);
     vec3 halfwayDir = normalize(lightDir + viewDir);
     float specAmount = pow(max(dot(normal, halfwayDir), 0.0), 16.0);
     vec3 specular = specAmount * u_LightColor;    

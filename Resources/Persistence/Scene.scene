@@ -2,75 +2,15 @@ Scene: SampleScene
 Entities:
   - Entity: 7
     NameComponent:
-      Name: Sphere
-    TransformComponent:
-      Position: [0, 0, 5]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      Path: Sphere
-    MaterialComponent:
-      Name: Default
-      VertPath: Shaders/default.vert
-      FragPath: Shaders/default.frag
+      Name: Camera
+    CameraComponent:
+      Position: [-9.05214787, 0.365086317, 4.5099926]
+      Orientation: [0.99783802, -0.0538609996, 0.0376786329]
+      FOV: 45
+      MinRenderDist: 0.00999999978
+      MaxRenderDist: 100
+      Enabled: true
   - Entity: 6
-    NameComponent:
-      Name: Cube
-    TransformComponent:
-      Position: [0, 0, 2]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      Path: Cube
-    MaterialComponent:
-      Name: Default
-      VertPath: Shaders/default.vert
-      FragPath: Shaders/default.frag
-  - Entity: 5
-    NameComponent:
-      Name: Plane
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      Path: Plane
-    MaterialComponent:
-      Name: Default
-      VertPath: Shaders/default.vert
-      FragPath: Shaders/default.frag
-  - Entity: 4
-    NameComponent:
-      Name: Bat
-    TransformComponent:
-      Position: [10, 6, 3]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      Path: Models/baseballbat_mesh.fbx
-    MaterialComponent:
-      Name: Default
-      VertPath: Shaders/default.vert
-      FragPath: Shaders/default.frag
-  - Entity: 3
-    NameComponent:
-      Name: Ground
-    TransformComponent:
-      Position: [0, -10, 0]
-      Rotation: [-90, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponent:
-      Path: Plane
-    MaterialComponent:
-      Name: Default
-      VertPath: Shaders/default.vert
-      FragPath: Shaders/default.frag
-  - Entity: 2
-    NameComponent:
-      Name: DirectLight
-    DirectLightComponent:
-      Color: [1, 1, 1]
-  - Entity: 1
     NameComponent:
       Name: AreaLight
     TransformComponent:
@@ -86,13 +26,77 @@ Entities:
     AreaLightComponent:
       Color: [1, 1, 1]
       Intensity: 1
+  - Entity: 5
+    NameComponent:
+      Name: DirectLight
+    TransformComponent:
+      Position: [1, 5, -5]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    DirectLightComponent:
+      Color: [1, 1, 1]
+  - Entity: 4
+    NameComponent:
+      Name: Ground
+    TransformComponent:
+      Position: [0, -10, 0]
+      Rotation: [-90, 0, 0]
+      Scale: [50, 50, 1]
+    MeshComponent:
+      Path: Plane
+    MaterialComponent:
+      Name: Default
+      VertPath: Shaders/default.vert
+      FragPath: Shaders/default.frag
+  - Entity: 3
+    NameComponent:
+      Name: Bat
+    TransformComponent:
+      Position: [10, 6, 3]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      Path: Models/baseballbat_mesh.fbx
+    MaterialComponent:
+      Name: Default
+      VertPath: Shaders/default.vert
+      FragPath: Shaders/default.frag
+  - Entity: 2
+    NameComponent:
+      Name: Plane
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      Path: Plane
+    MaterialComponent:
+      Name: Default
+      VertPath: Shaders/default.vert
+      FragPath: Shaders/default.frag
+  - Entity: 1
+    NameComponent:
+      Name: Cube
+    TransformComponent:
+      Position: [0, 0, 2]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      Path: Cube
+    MaterialComponent:
+      Name: Default
+      VertPath: Shaders/default.vert
+      FragPath: Shaders/default.frag
   - Entity: 0
     NameComponent:
-      Name: Camera
-    CameraComponent:
-      Position: [0, 0, 10]
-      Orientation: [0, 0, -1]
-      FOV: 45
-      MinRenderDist: 0.00999999978
-      MaxRenderDist: 100
-      Enabled: true
+      Name: Sphere
+    TransformComponent:
+      Position: [0, 0, 5]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponent:
+      Path: Sphere
+    MaterialComponent:
+      Name: Default
+      VertPath: Shaders/default.vert
+      FragPath: Shaders/default.frag

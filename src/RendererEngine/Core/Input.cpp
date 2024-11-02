@@ -24,6 +24,11 @@ namespace RenderingEngine
         return pressed == GLFW_RELEASE;
     }
 
+    int Input::Key::GetAxisValue(const KeyCode positiveKey, const KeyCode negativeKey)
+    {
+        return Pressed(positiveKey) - Pressed(negativeKey);
+    }
+
     bool Input::Mouse::ButtonPressed(const int code)
     {
         auto& window = Bootstrapper::GetInstance().GetWindow().GetNativeWindow();

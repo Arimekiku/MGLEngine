@@ -11,7 +11,7 @@ namespace RenderingEngine
 	class Scene
 	{
 	public: 
-		Scene();
+		Scene() = default;
 		~Scene() = default;
 
 		void OnEveryUpdate(Time deltaTime);

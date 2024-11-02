@@ -30,7 +30,7 @@ namespace RenderingEngine
 		Ref<Scene> m_Context = nullptr;
 		Ref<Shader> m_ShadowMapShader;
 
-		Entity m_SelectedEntity = {};
+		Entity m_SelectedEntity = Entity();
 
 		ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	};

@@ -57,18 +57,18 @@ namespace RenderingEngine
 
 	struct DirectLightComponent
 	{
+		Framebuffer DepthBuffer = Framebuffer(1024, 1024, FramebufferType::DepthBuffer);
 		glm::vec3 Color = glm::vec3(1, 1, 1);
 
 		DirectLightComponent() = default;
 		DirectLightComponent(const DirectLightComponent&) = default;
 
-		glm::mat4 GetDLMatrix() const
+		glm::mat4 GetProjection() const
 		{
 			const glm::mat4 ortho = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 0.01f, 100.0f);
-			const glm::mat4 view = glm::lookAt(glm::vec3(1.0f, 5.0f, -5.0f), glm::vec3(0), glm::vec3(0, 1, 0));
 			const glm::mat4 model = glm::mat4(1.0f);
 
-			return ortho * view * model;
+			return ortho * model;
 		}
 	};
 

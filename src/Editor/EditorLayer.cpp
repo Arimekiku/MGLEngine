@@ -3,7 +3,7 @@
 #include "Persistence/SceneSerializer.h"
 
 #include <imgui.h>
-#include <portable_file_dialogs.h>
+#include <portable_file_dialogs.h> 
 
 namespace RenderingEngine
 {
@@ -26,11 +26,11 @@ namespace RenderingEngine
         lightMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
 
         defaultMaterial->AddTexture(houseTexture);
-        defaultMaterial->BindTextureSlot("u_Texture", 0);
-		defaultMaterial->BindTextureSlot("u_DepthMap", 1);
         defaultMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
         defaultMaterial->BindVec3Uniform("u_LightPos", {0, 5, 5});
 		defaultMaterial->BindMat4Uniform("u_lightViewProj", glm::mat4(1.0f));
+
+        SceneSerializer::Deserialize(m_Scene, RESOURCES_PATH "Persistence/Scene.scene");
     }
 
     void EditorLayer::OnEveryUpdate(const Time deltaTime)

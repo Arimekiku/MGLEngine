@@ -1,6 +1,7 @@
 #include "mxpch.h"
 #include "Framebuffer.h"
 #include "Renderer.h"
+#include "RendererEngine/Core/Bootstrapper.h"
 
 #include <glad/glad.h>
 
@@ -35,7 +36,6 @@ namespace RenderingEngine
 
     void Framebuffer::CreateAsViewport()
     {
-        glViewport(0, 0, m_Width, m_Height);
         Clear();
 
         glCreateFramebuffers(1, &m_RendererID);
@@ -66,7 +66,6 @@ namespace RenderingEngine
 
     void Framebuffer::CreateAsDepthBuffer()
     {
-        glViewport(0, 0, m_Width, m_Height);
         Clear();
 
         glCreateFramebuffers(1, &m_RendererID);
@@ -99,24 +98,25 @@ namespace RenderingEngine
             glCullFace(GL_FRONT);
         }
 
+        glViewport(0, 0, m_Width, m_Height);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
     }
 
     void Framebuffer::Unbind() const
     {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
         if (m_Type == FramebufferType::DepthBuffer)
         {
             glCullFace(GL_BACK);
         }
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     uint32_t Framebuffer::GetAttachment(int16_t index)
     {
         if (index > m_Attachments.capacity())
         {
-            LOG_WARN("Can't get attachment from FBO with index: %d", index);
+            LOG_ERROR("Can't get attachment from FBO with index: %d", index);
             return 0;
         }
 

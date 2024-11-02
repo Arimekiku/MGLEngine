@@ -112,21 +112,31 @@ namespace RenderingEngine
 	void SceneRenderer::DrawDepthBuffer()
 	{
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, TransformComponent>();
+		const auto& lights = m_Context->m_Entities.view<DirectLightComponent, TransformComponent>();
 
-		m_DepthMap.Bind();
-
-        Renderer::Clear(glm::vec4(0, 0, 0, 1));
-
-		//TODO: batching
-		//Draw call for shadow map
-		for (const auto& meshEntity : meshRenderers)
+		for (const auto& lightEntity : lights)
 		{
-			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+			const auto& [lightComponent, lightTransform] = lights.get<DirectLightComponent, TransformComponent>(lightEntity);
 
-			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
+			lightComponent.DepthBuffer.Bind();
+
+			Renderer::Clear(glm::vec4(0, 0, 0, 1));
+
+			const glm::mat4 view = glm::lookAt(lightTransform.Position, glm::vec3(0), glm::vec3(0, 1, 0));
+			m_ShadowMapShader->Bind();
+			m_ShadowMapShader->BindUniformMat4("u_lightViewProj", lightComponent.GetProjection() * view);
+
+			//TODO: batching
+			//Draw call for shadow map
+			for (const auto& meshEntity : meshRenderers)
+			{
+				const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+
+				Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
+			}
+
+			lightComponent.DepthBuffer.Unbind();
 		}
-
-		m_DepthMap.Unbind();
 	}
 
 	void SceneRenderer::DrawTextureBuffer()
@@ -148,19 +158,32 @@ namespace RenderingEngine
         Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
+		const auto& lights = m_Context->m_Entities.view<DirectLightComponent, TransformComponent>();
 
 		//TODO: batching
 		//Draw call for actual models
-		for (const auto& meshEntity : meshRenderers)
+		for (const auto& lightEntity : lights)
 		{
-			Ref<Material> modelMat = meshRenderers.get<MaterialComponent>(meshEntity).SharedMat;
+			DirectLightComponent& lightComponent = lights.get<DirectLightComponent>(lightEntity);
+			TransformComponent& lightTransform = lights.get<TransformComponent>(lightEntity);
 
-			modelMat->Bind();
-			//TODO: think about it
-			glBindTextureUnit(1, m_DepthMap.GetAttachment(0));
+			//TODO: batching
+			//Draw call for shadow map
+			for (const auto& meshEntity : meshRenderers)
+			{
+				Ref<Material>& modelMat = meshRenderers.get<MaterialComponent>(meshEntity).SharedMat;
+				modelMat->Bind();
+				modelMat->GetShader()->BindUniformFloat3("u_LightColor", lightComponent.Color);
+				modelMat->GetShader()->BindUniformFloat3("u_LightPos", lightTransform.Position);
 
-			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
-			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
+				const glm::mat4 view = glm::lookAt(lightTransform.Position, glm::vec3(0), glm::vec3(0, 1, 0));
+				modelMat->GetShader()->BindUniformMat4("u_lightViewProj", lightComponent.GetProjection() * view);
+				//TODO: think about it
+				glBindTextureUnit(1, lightComponent.DepthBuffer.GetAttachment(0));
+
+				const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+				Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
+			}
 		}
 
 		cameraBuffer.Unbind();
@@ -356,6 +379,14 @@ namespace RenderingEngine
 				DrawVector3Drag("Position", component.Position, 100.0f);
 
 				ImGui::Checkbox("Enabled", &component.Enabled);
+			});
+
+			DrawComponent<DirectLightComponent>("Direct Light", m_SelectedEntity, [](DirectLightComponent& component)
+			{
+				ImGui::ColorEdit3("Color", glm::value_ptr(component.Color));
+
+				uint32_t m_Texture = component.DepthBuffer.GetAttachment(0);
+				ImGui::Image((void*)m_Texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
 			});
 
 			if (ImGui::Button("Add Component"))
