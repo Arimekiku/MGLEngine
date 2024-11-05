@@ -14,12 +14,12 @@ namespace RenderingEngine
     {
         const auto& m_VertexBuffer = std::make_shared<VertexBuffer>(vertices, size);
 
-        const RenderBufferLayout cubeLayout = {
+        const RenderBufferLayout layout = {
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float3, "a_Normals"},
             {ShaderDataType::Float2, "a_TexCoord"},
         };
-        m_VertexBuffer->SetLayout(cubeLayout);
+        m_VertexBuffer->SetLayout(layout);
         m_VertexArray->SetVertexBuffer(m_VertexBuffer);
     }
 

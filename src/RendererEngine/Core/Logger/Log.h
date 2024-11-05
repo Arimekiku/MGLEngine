@@ -2,7 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #define debugbreak() __debugbreak()
 #else
 #include <signal.h>

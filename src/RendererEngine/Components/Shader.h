@@ -7,6 +7,7 @@ namespace RenderingEngine
     class Shader
     {
     public:
+        Shader() = default;
         Shader(const std::string& vertPath, const std::string& fragPath);
         ~Shader();
 
@@ -29,6 +30,6 @@ namespace RenderingEngine
     private:
         static std::string GetContent(const std::string& path);
 
-        uint32_t m_RendererID;
+        uint32_t m_RendererID = 0;
     };
 }

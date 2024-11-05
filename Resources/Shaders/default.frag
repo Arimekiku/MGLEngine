@@ -81,7 +81,7 @@ vec4 directLight()
     float closestDepth = texture(u_DepthMap, projCoords.xy).r; 
     float currentDepth = projCoords.z;
 
-    float biasAmount = 0.001f;
+    float biasAmount = 0.0005f;
     float shadow = currentDepth > closestDepth + biasAmount ? 1.0 : 0.0;     
 
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texture(u_Texture, v_TexCoord).rgb;    

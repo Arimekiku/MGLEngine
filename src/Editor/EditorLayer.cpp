@@ -1,5 +1,4 @@
 #include "EditorLayer.h"
-#include "Scene/ComponentRegistry.h"
 #include "Persistence/SceneSerializer.h"
 
 #include <imgui.h>
@@ -31,6 +30,7 @@ namespace RenderingEngine
 		defaultMaterial->BindMat4Uniform("u_lightViewProj", glm::mat4(1.0f));
 
         SceneSerializer::Deserialize(m_Scene, RESOURCES_PATH "Persistence/Scene.scene");
+        Renderer::Initialize();
     }
 
     void EditorLayer::OnEveryUpdate(const Time deltaTime)

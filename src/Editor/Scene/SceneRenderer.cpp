@@ -147,7 +147,6 @@ namespace RenderingEngine
 		cameraBuffer.Bind();
 
         Renderer::Clear(glm::vec4(0, 0, 0, 1));
-
 		if (!cameraEntity)
 		{
 			cameraBuffer.Unbind();
@@ -155,6 +154,7 @@ namespace RenderingEngine
 		}
 
 		CameraComponent camera = cameraEntity.GetComponent<CameraComponent>();
+
         Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
@@ -185,6 +185,11 @@ namespace RenderingEngine
 				Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
 			}
 		}
+
+		//Draw call for skybox
+		//glm::mat4 view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up())));
+        //Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * view);
+		//Renderer::RenderSkybox(m_Context->m_Cubemap);
 
 		cameraBuffer.Unbind();
 	}

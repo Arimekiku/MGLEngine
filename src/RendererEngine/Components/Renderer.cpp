@@ -1,11 +1,21 @@
 #include "mxpch.h"
 #include "Renderer.h"
 
-#include <glad/glad.h>
-
 namespace RenderingEngine
 {
     glm::mat4 Renderer::m_ProjViewMat;
+    RendererData Renderer::m_Data;
+    Shader Renderer::m_SkyboxShader;
+
+    void Renderer::Initialize()
+    {
+        m_SkyboxShader = Shader(RESOURCES_PATH "Shaders/skybox.vert", RESOURCES_PATH "Shaders/skybox.frag");
+        m_SkyboxShader.Bind();
+        m_SkyboxShader.BindUniformInt1("u_Skybox", 0);
+
+        glGenVertexArrays(1, &m_Data.vao);
+        glBindVertexArray(0);
+    }
 
     void Renderer::UpdateCameraMatrix(const glm::mat4& cameraProjView)
     {
@@ -18,6 +28,18 @@ namespace RenderingEngine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    void Renderer::RenderSkybox(const Cubemap& cubemap)
+    {
+        glDisable(GL_DEPTH_TEST);
+
+        m_SkyboxShader.Bind();
+        m_SkyboxShader.BindUniformMat4("u_camMatrix", m_ProjViewMat);
+        cubemap.Bind();
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glEnable(GL_DEPTH_TEST);
+    }
+
     void Renderer::RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& TRSMatrix)
     {
         shader->Bind();
@@ -26,7 +48,6 @@ namespace RenderingEngine
 
         const auto& vertexArray = mesh->GetVertexArray();
         vertexArray->Bind();
-
         glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
     }
 
