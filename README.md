@@ -4,7 +4,7 @@ My C++ render engine
 
 # Build
 
-There's 320 building steps and pretty big libraries so building may take some time.
+Engine was tested on Fedora & Nix Linux and Windows
 
 ## Windows
 
@@ -35,3 +35,14 @@ make
 ```
 
 Compile time dependencies for Ubuntu roughly specified in the [workflow](./.github/workflows/build-check-x86_64-linux.yaml).
+
+# Features
+
+* Simple windowing
+* VBO, VAO, EBO
+* Mesh, Sprite, Shader importer
+* TRS Guizmos
+* Scene system
+* Basic ECS
+* Directional and Point lights
+* Directional light shadow maps
