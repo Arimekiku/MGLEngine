@@ -1,6 +1,6 @@
 # RenderingEngine
 
-My C++ render engine
+My C++ render engine. Was implemented in order to learn Graphics Programming, OpenGL and GLSL language, as well as GPUs working cycle
 
 # Build
 
