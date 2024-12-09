@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ComponentRegistry.h"
-#include "RendererEngine/Components/Texture.h"
 
 #include <entt/entt.hpp>
 
@@ -12,7 +11,7 @@ namespace RenderingEngine
 	class Scene
 	{
 	public: 
-		Scene();
+		Scene() = default;
 		~Scene() = default;
 
 		void OnEveryUpdate(Time deltaTime);
@@ -28,7 +27,6 @@ namespace RenderingEngine
 		void UpdateCamera(CameraComponent& mainCamera, Time deltaTime);
 
 		entt::registry m_Entities;
-		Cubemap m_Cubemap;
 		bool m_CameraEditorMode = true;
 
 		friend class Entity;

@@ -28,18 +28,6 @@ namespace RenderingEngine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void Renderer::RenderSkybox(const Cubemap& cubemap)
-    {
-        glDisable(GL_DEPTH_TEST);
-
-        m_SkyboxShader.Bind();
-        m_SkyboxShader.BindUniformMat4("u_camMatrix", m_ProjViewMat);
-        cubemap.Bind();
-
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glEnable(GL_DEPTH_TEST);
-    }
-
     void Renderer::RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& TRSMatrix)
     {
         shader->Bind();

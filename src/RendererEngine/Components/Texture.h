@@ -1,26 +1,9 @@
 #pragma once
 
-#include "RendererEngine/Core.h"
-
 #include <glm/glm.hpp>
 
 namespace RenderingEngine
 {
-    class Cubemap
-	{
-	public:
-		Cubemap() = default;
-		Cubemap(std::vector<std::string>& faces);
-		~Cubemap();
-
-		void Bind(const uint32_t slot = 0) const;
-		void Unbind() const;
-
-	private:
-		std::vector<std::string> m_Textures;
-		uint32_t m_RendererID = 0;
-	};
-
     class Texture
     {
     public:

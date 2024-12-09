@@ -210,7 +210,7 @@ namespace RenderingEngine
             }
 
             uint32_t m_Texture = m_ViewportCamera->GetFramebuffer().GetAttachment(0);
-            ImGui::Image((void*)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
+            ImGui::Image(m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
         }
 
 		if (m_SelectedEntity)
@@ -391,7 +391,7 @@ namespace RenderingEngine
 				ImGui::ColorEdit3("Color", glm::value_ptr(component.Color));
 
 				uint32_t m_Texture = component.DepthBuffer.GetAttachment(0);
-				ImGui::Image((void*)m_Texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
+				ImGui::Image(m_Texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
 			});
 
 			if (ImGui::Button("Add Component"))

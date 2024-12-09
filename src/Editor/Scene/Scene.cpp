@@ -47,20 +47,6 @@ namespace RenderingEngine
         mainCamera.Position += verticalAxis * deltaTime.GetSeconds() * cameraOrientation;
 	}
 
-	Scene::Scene()
-	{
-		std::vector<std::string> faces
-		{
-			std::string(RESOURCES_PATH "Images/Cubemap/px.png"),
-			std::string(RESOURCES_PATH "Images/Cubemap/nx.png"),
-			std::string(RESOURCES_PATH "Images/Cubemap/py.png"),
-			std::string(RESOURCES_PATH "Images/Cubemap/ny.png"),
-			std::string(RESOURCES_PATH "Images/Cubemap/pz.png"),
-			std::string(RESOURCES_PATH "Images/Cubemap/nz.png")
-		};
-		m_Cubemap = Cubemap(faces);
-	}
-
 	Entity Scene::Instantiate(const std::string& name)
 	{
 		Entity entity = Entity(m_Entities.create(), this);
