@@ -38,6 +38,14 @@ Compile time dependencies for Ubuntu roughly specified in the [workflow](./.gith
 
 # Features
 
+## Preview
+
+![image info](./Resources/preview.png)
+
+## Brief
+
+Engine was written fully in C++ as an educational project and has several features:
+
 * Simple windowing
 * VBO, VAO, EBO
 * Mesh, Sprite, Shader importer
