@@ -52,5 +52,4 @@ target_compile_definitions("${CMAKE_PROJECT_NAME}"
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}")
 target_link_libraries(${PROJECT_NAME} PUBLIC libs PRIVATE ${CMAKE_DL_LIBS})
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/mxpch.h)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})

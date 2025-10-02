@@ -2,9 +2,9 @@
 
 namespace RenderingEngine 
 {
-	Entity::Entity(entt::entity handle, Scene* parent) 
+	Entity::Entity(const entt::entity handle, Scene* parent) 
 	{
-		m_EntityID = handle;
+		m_EntityId = handle;
 		m_Scene = parent;
 	}
 }

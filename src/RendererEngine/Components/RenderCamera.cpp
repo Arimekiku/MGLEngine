@@ -15,17 +15,17 @@ namespace RenderingEngine
     {
         m_Aspect = (float)width / (float)height;
 
-        m_Proj = glm::perspective(glm::radians(m_FOV), m_Aspect, m_MinRenderDist, m_MaxRenderDist);
+        m_Proj = glm::perspective(glm::radians(m_Fov), m_Aspect, m_MinRenderDist, m_MaxRenderDist);
         m_Framebuffer.Resize(width, height);
     }
 
-    glm::mat4& RenderCamera::SetPerspective(float fov, float minDist, float maxDist)
+    glm::mat4& RenderCamera::SetPerspective(const float fov, const float minDist, const float maxDist)
     {
-        m_FOV = fov;
+        m_Fov = fov;
         m_MinRenderDist = minDist;
         m_MaxRenderDist = maxDist;
 
-        m_Proj = glm::perspective(glm::radians(m_FOV), m_Aspect, m_MinRenderDist, m_MaxRenderDist);
+        m_Proj = glm::perspective(glm::radians(m_Fov), m_Aspect, m_MinRenderDist, m_MaxRenderDist);
 
         return m_Proj;
     }

@@ -63,24 +63,20 @@ namespace RenderingEngine
         }
 
         if (dockFlags & ImGuiDockNodeFlags_PassthruCentralNode)
-        {
             windowFlags |= ImGuiWindowFlags_NoBackground;
-        }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::Begin("Renderer", &docking, windowFlags);
         ImGui::PopStyleVar();
 
         if (optFullscreen)
-        {
             ImGui::PopStyleVar(2);
-        }
 
         const ImGuiIO& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
-            const ImGuiID dockID = ImGui::GetID("DockSpace");
-            ImGui::DockSpace(dockID, ImVec2(0, 0), dockFlags);
+            const ImGuiID dockId = ImGui::GetID("DockSpace");
+            ImGui::DockSpace(dockId, ImVec2(0, 0), dockFlags);
         }
 
         if (ImGui::BeginMenuBar())
@@ -111,9 +107,7 @@ namespace RenderingEngine
                     const auto& file = pfd::save_file("Select Scene", pfd::path::home(), { "Scene File (*.scene)", "*.scene" }).result();
 
                     if (file.empty() == false)
-                    {
                         SceneSerializer::Serialize(m_Scene, file);
-                    }
                 }
 
                 if (ImGui::MenuItem("Close"))
@@ -144,30 +138,22 @@ namespace RenderingEngine
         ImGui::Begin("Parameters");
 
         ImGui::Text("DeltaTime: %.3f (%.0fmil)", m_LastTime.GetSeconds(), m_LastTime.GetMilliseconds());
+		ImGui::Text("FPS: %.1f", 1.0f / m_LastTime.GetSeconds());
 
         ImGui::End();
 
         if (m_IsViewportPanel)
-        {
             m_SceneRenderer.DrawViewport();
-        }
 
         if (m_IsScenePanel)
-        {
             m_SceneRenderer.DrawScenePanel();
-        }
 
         if (m_IsInspectorPanel)
-        {
             m_SceneRenderer.DrawInspectorPanel();
-            m_SceneRenderer.DrawGuizmos();
-        }
 
 #ifdef DEBUG
         if (m_IsImGuiDemoPanel)
-        {
             ImGui::ShowDemoWindow();
-        }
 #endif
 
         ImGui::End();

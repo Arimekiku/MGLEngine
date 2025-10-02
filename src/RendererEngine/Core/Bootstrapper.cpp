@@ -1,9 +1,7 @@
-#include "mxpch.h"
 #include "Bootstrapper.h"
 #include "Logger/Log.h"
 #include "RendererEngine/Core/Layer/ImGui/GuiLayer.h"
 
-#include <chrono>
 #include <portable_file_dialogs.h>
 
 namespace RenderingEngine
@@ -30,30 +28,24 @@ namespace RenderingEngine
 
 		while (m_Running)
         {
-            auto startFrameTime = static_cast<float>(glfwGetTime());
-            for (; static_cast<float>(glfwGetTime()) - startFrameTime <= 0.02f;){}
+            const auto startFrameTime = static_cast<float>(glfwGetTime());
+            while (static_cast<float>(glfwGetTime()) - startFrameTime <= 0.0167f){}
 
 			m_Window->OnEveryUpdate();
 			if (m_Minimized)
-			{
 				continue;
-			}
 
             m_LastFrameTime = static_cast<float>(glfwGetTime());
 
 			const auto deltaTime = Time(m_LastFrameTime - startFrameTime);
 
 			for (const auto layer : m_LayerStack)
-			{
 				layer->OnEveryUpdate(deltaTime);
-			}
 
 			GuiLayer::Begin();
 
 			for (const auto layer : m_LayerStack)
-			{
 				layer->OnGuiUpdate();
-			}
 
 			GuiLayer::End();
         }
@@ -68,9 +60,7 @@ namespace RenderingEngine
 		for (const auto layer : m_LayerStack)
 		{
 			if (e.Active == false)
-			{
 				return;
-			}
 
 			layer->OnEvent(e);
 		}

@@ -3,6 +3,7 @@
 #include "RendererEngine/Core/Math.h"
 
 #include <glm/gtc/type_ptr.hpp>
+#include <utility>
 
 namespace RenderingEngine
 {
@@ -44,9 +45,7 @@ namespace RenderingEngine
 	static void DrawComponent(const char* label, Entity entity, Func func)
 	{
 		if (entity.HasComponent<T>() == false)
-		{
 			return;
-		}
 
 		auto flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen
 				   | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap;
@@ -55,17 +54,13 @@ namespace RenderingEngine
 
 		ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
 		if (ImGui::Button("::", ImVec2(25, 20)))
-		{
 			ImGui::OpenPopup("parameters");
-		}
 
 		bool removeRequested = false;
 		if (ImGui::BeginPopup("parameters")) 
 		{
 			if (ImGui::MenuItem("Remove Component"))
-			{
 				removeRequested = true;
-			}
 
 			ImGui::EndPopup();
 		}
@@ -82,18 +77,14 @@ namespace RenderingEngine
 		}
 
 		if (removeRequested)
-		{
 			entity.RemoveComponent<T>();
-		}
 	}
 
 	template<typename T>
 	static void DrawAddComponent(const char* label, Entity entity)
 	{
 		if (entity.HasComponent<T>() == true)
-		{
 			return;
-		}
 
 		if (ImGui::MenuItem(label))
 		{
@@ -109,7 +100,7 @@ namespace RenderingEngine
 				RESOURCES_PATH "Shaders/shadowMap.frag");
 	}
 
-	void SceneRenderer::DrawDepthBuffer()
+	void SceneRenderer::DrawDepthBuffer() const
 	{
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, TransformComponent>();
 		const auto& lights = m_Context->m_Entities.view<DirectLightComponent, TransformComponent>();
@@ -132,14 +123,14 @@ namespace RenderingEngine
 			{
 				const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 
-				Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTRSMatrix());
+				Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTrsMatrix());
 			}
 
 			lightComponent.DepthBuffer.Unbind();
 		}
 	}
 
-	void SceneRenderer::DrawTextureBuffer()
+	void SceneRenderer::DrawTextureBuffer() const
 	{
 		const Framebuffer& cameraBuffer = m_ViewportCamera->GetFramebuffer();
 		Entity cameraEntity = m_Context->GetActiveCameraEntity();
@@ -153,8 +144,7 @@ namespace RenderingEngine
 			return;
 		}
 
-		CameraComponent camera = cameraEntity.GetComponent<CameraComponent>();
-
+		const auto camera = cameraEntity.GetComponent<CameraComponent>();
         Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
@@ -171,7 +161,7 @@ namespace RenderingEngine
 			//Draw call for shadow map
 			for (const auto& meshEntity : meshRenderers)
 			{
-				Ref<Material>& modelMat = meshRenderers.get<MaterialComponent>(meshEntity).SharedMat;
+				const auto& modelMat = meshRenderers.get<MaterialComponent>(meshEntity).Shared;
 				modelMat->Bind();
 				modelMat->GetShader()->BindUniformFloat3("u_LightColor", lightComponent.Color);
 				modelMat->GetShader()->BindUniformFloat3("u_LightPos", lightTransform.Position);
@@ -182,7 +172,7 @@ namespace RenderingEngine
 				glBindTextureUnit(1, lightComponent.DepthBuffer.GetAttachment(0));
 
 				const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
-				Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTRSMatrix());
+				Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTrsMatrix());
 			}
 		}
 
@@ -196,26 +186,25 @@ namespace RenderingEngine
 
 	void SceneRenderer::DrawViewport()
 	{
-		ImGui::Begin("Viewport");
-
-        const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-        const auto castSize = glm::vec2(viewportSize.x, viewportSize.y);
-
-        if (castSize.x != 0 && castSize.y != 0)
-        {
-            if (m_ViewportCamera->GetSize() != castSize)
-            {
-				m_ViewportCamera->Resize(castSize.x, castSize.y);
-				m_DepthMap.Resize(castSize.x, castSize.y);
-            }
-
-            uint32_t m_Texture = m_ViewportCamera->GetFramebuffer().GetAttachment(0);
-            ImGui::Image((ImTextureID)m_Texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
-        }
-
-		if (m_SelectedEntity)
+		if (ImGui::Begin("Viewport"))
 		{
-			DrawGuizmos();
+			const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+			const auto castSize = glm::ivec2(viewportSize.x, viewportSize.y);
+
+			if (castSize.x != 0 && castSize.y != 0)
+			{
+				if (m_ViewportCamera->GetSize() != castSize)
+				{
+					m_ViewportCamera->Resize(castSize.x, castSize.y);
+					m_DepthMap.Resize(castSize.x, castSize.y);
+				}
+
+				const uint32_t texture = m_ViewportCamera->GetFramebuffer().GetAttachment(0);
+				ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
+			}
+
+			if (m_SelectedEntity)
+				DrawGuizmos();
 		}
 
         ImGui::End();
@@ -227,15 +216,15 @@ namespace RenderingEngine
 
 		const auto& sceneEntities = m_Context->m_Entities.view<NameComponent>();
 
-		for (const auto& entityID : sceneEntities)
+		for (const auto& entityId : sceneEntities)
 		{
-			Entity entity = Entity(entityID, m_Context.get());
-			NameComponent entityName = sceneEntities.get<NameComponent>(entity);
+			auto entity = Entity(entityId, m_Context.get());
+			auto entityName = sceneEntities.get<NameComponent>(entity);
 
 			ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0 | ImGuiTreeNodeFlags_OpenOnArrow
 									 | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-			bool isOpened = ImGui::TreeNodeEx((void*)entityID, flags, "%s", entityName.Name.c_str());
+			const bool isOpened = ImGui::TreeNodeEx((void*)entityId, flags, "%s", entityName.Name.c_str());
 
 			if (ImGui::IsItemClicked(0))
 			{
@@ -246,9 +235,7 @@ namespace RenderingEngine
 			if (ImGui::BeginPopupContextItem())
 			{
 				if (ImGui::MenuItem("Destroy"))
-				{
 					deleteRequested = true;
-				}
 
 				ImGui::EndPopup();
 			}
@@ -263,15 +250,13 @@ namespace RenderingEngine
 			if (deleteRequested)
 			{
 				if (m_SelectedEntity == entity)
-				{
 					m_SelectedEntity = Entity();
-				}
 
 				m_Context->Destroy(entity);
 			}
 		}
 
-		if (ImGui::BeginPopupContextWindow(0, 1 | ImGuiPopupFlags_NoOpenOverItems))
+		if (ImGui::BeginPopupContextWindow(nullptr, 1 | ImGuiPopupFlags_NoOpenOverItems))
 		{
 			if (ImGui::MenuItem("Create Blank"))
 			{
@@ -345,14 +330,11 @@ namespace RenderingEngine
 			{
 				NameComponent& nameComponent = m_SelectedEntity.GetComponent<NameComponent>();
 
-				char buf[256];
-				memset(buf, 0, 256);
+				char buf[256] = {};
 				strcpy(buf, nameComponent.Name.c_str());
 
 				if (ImGui::InputText("Name", buf, sizeof(buf)))
-				{
 					nameComponent.Name = buf;
-				}
 			}
 
 			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component)
@@ -369,7 +351,7 @@ namespace RenderingEngine
 
 			DrawComponent<MaterialComponent>("Material", m_SelectedEntity, [](MaterialComponent& component)
 			{
-				auto& material = component.SharedMat;
+				auto& material = component.Shared;
 			});
 
 			DrawComponent<MeshComponent>("Mesh", m_SelectedEntity, [](MeshComponent& component)
@@ -390,8 +372,8 @@ namespace RenderingEngine
 			{
 				ImGui::ColorEdit3("Color", glm::value_ptr(component.Color));
 
-				uint32_t m_Texture = component.DepthBuffer.GetAttachment(0);
-				ImGui::Image((ImTextureID)m_Texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
+				const uint32_t texture = component.DepthBuffer.GetAttachment(0);
+				ImGui::Image((ImTextureID)texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
 			});
 
 			if (ImGui::Button("Add Component"))
@@ -407,14 +389,10 @@ namespace RenderingEngine
 				if (entityHasCamera == false)
 				{
 					if (m_SelectedEntity.HasComponent<CameraComponent>() == false)
-					{
 						DrawAddComponent<TransformComponent>("Transform", m_SelectedEntity);
-					}
 
 					if (m_SelectedEntity.HasComponent<TransformComponent>() == false)
-					{
 						DrawAddComponent<CameraComponent>("Camera", m_SelectedEntity);
-					}
 				}
 
 				ImGui::EndPopup();
@@ -429,54 +407,43 @@ namespace RenderingEngine
 		Entity cameraEntity = m_Context->GetActiveCameraEntity();
 
 		if (!m_SelectedEntity || !cameraEntity || m_SelectedEntity.HasComponent<TransformComponent>() == false)
-		{
 			return;
-		}
 
 		if (Input::Key::Pressed(Input::Key::F1))
-		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-		}
 
 		if (Input::Key::Pressed(Input::Key::F2))
-		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::ROTATE;
-		}
 
 		if (Input::Key::Pressed(Input::Key::F3))
-		{
 			m_GuizmoOperation = ImGuizmo::OPERATION::SCALE;
-		}
 
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist();
 
-		float width = ImGui::GetWindowWidth();
-		float height = ImGui::GetWindowHeight();
-		ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
+		auto pos = ImGui::GetWindowPos();
+		auto size = ImGui::GetWindowSize();
+		ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
 
-		CameraComponent camera = cameraEntity.GetComponent<CameraComponent>();
-
+		const auto camera = cameraEntity.GetComponent<CameraComponent>();
 		glm::mat4 cameraView = glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up());
 		glm::mat4 cameraProj = m_ViewportCamera->GetProjMat();
 
-		TransformComponent& entityTransform = m_SelectedEntity.GetComponent<TransformComponent>();
-		glm::mat4 entityTRS = entityTransform.GetTRSMatrix();
+		auto& entityTransform = m_SelectedEntity.GetComponent<TransformComponent>();
+		glm::mat4 entityTrs = entityTransform.GetTrsMatrix();
 
-		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTRS));
+		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTrs));
 
 		if (ImGuizmo::IsUsing()) 
 		{
 			glm::vec3 position, rotation, scale;
 
-			if (Math::Decompose(entityTRS, position, rotation, scale) == false) 
-			{
+			if (Math::Decompose(entityTrs, position, rotation, scale) == false) 
 				return;
-			}
 
 			entityTransform.Position = position;
 
-			glm::vec3 deltaRot = rotation - glm::radians(entityTransform.Rotation);
+			const glm::vec3 deltaRot = rotation - glm::radians(entityTransform.Rotation);
 			entityTransform.Rotation += glm::degrees(deltaRot);
 
 			entityTransform.Scale = scale;
@@ -485,7 +452,7 @@ namespace RenderingEngine
 
 	void SceneRenderer::SetContext(Ref<Scene> context)
 	{
-		m_Context = context;
+		m_Context = std::move(context);
 		m_SelectedEntity = Entity();
 	}
 }

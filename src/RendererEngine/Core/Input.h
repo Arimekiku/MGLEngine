@@ -12,14 +12,14 @@ namespace RenderingEngine
         public:
             enum MouseMode
             {
-                VISIBLE = GLFW_CURSOR_NORMAL,
-                HIDDEN = GLFW_CURSOR_HIDDEN,
+                Visible = GLFW_CURSOR_NORMAL,
+                Hidden = GLFW_CURSOR_HIDDEN,
             };
 
-            static bool ButtonPressed(const int code);
-            static bool ButtonReleased(const int code);
+            static bool ButtonPressed(int code);
+            static bool ButtonReleased(int code);
 
-            static void SetInputMode(const MouseMode mode);
+            static void SetInputMode(MouseMode mode);
 
             static glm::vec2 GetCursorPosition();
             static glm::vec2 GetNormalizedCursor();
@@ -47,18 +47,18 @@ namespace RenderingEngine
                 F1 = GLFW_KEY_F1,
                 F2 = GLFW_KEY_F2,
                 F3 = GLFW_KEY_F3,
-                LEFT_SHIFT = GLFW_KEY_LEFT_SHIFT,
-                RIGHT_SHIFT = GLFW_KEY_RIGHT_SHIFT,
-                LEFT_CTRL = GLFW_KEY_LEFT_CONTROL,
-                RIGHT_CTRL = GLFW_KEY_RIGHT_CONTROL,
-                SPACE = GLFW_KEY_SPACE,
+                LeftShift = GLFW_KEY_LEFT_SHIFT,
+                RightShift = GLFW_KEY_RIGHT_SHIFT,
+                LeftCtrl = GLFW_KEY_LEFT_CONTROL,
+                RightCtrl = GLFW_KEY_RIGHT_CONTROL,
+                Space = GLFW_KEY_SPACE,
             };
 
-            static bool Pressed(const KeyCode code);
-            static bool Held(const KeyCode code);
-            static bool Released(const KeyCode code);
+            static bool Pressed(KeyCode code);
+            static bool Held(KeyCode code);
+            static bool Released(KeyCode code);
 
-            static int GetAxisValue(const KeyCode positiveKey, const KeyCode negativeKey);
+            static int GetAxisValue(KeyCode positiveKey, KeyCode negativeKey);
         };
     }
 }

@@ -6,12 +6,12 @@
 #include <fstream>
 #include <yaml-cpp/yaml.h>
 
-namespace YAML {
-
+namespace YAML
+{
 	template<>
 	struct convert<glm::vec2>
 	{
-		static Node encode(const glm::vec2& rhs)
+		static Node Encode(const glm::vec2& rhs)
 		{
 			Node node;
 			node.push_back(rhs.x);
@@ -19,7 +19,7 @@ namespace YAML {
 			return node;
 		}
 
-		static bool decode(const Node& node, glm::vec2& rhs)
+		static bool Decode(const Node& node, glm::vec2& rhs)
 		{
 			if (!node.IsSequence() || node.size() != 2)
 				return false;
@@ -33,7 +33,7 @@ namespace YAML {
 	template<>
 	struct convert<glm::vec3>
 	{
-		static Node encode(const glm::vec3& rhs)
+		static Node Encode(const glm::vec3& rhs)
 		{
 			Node node;
 			node.push_back(rhs.x);
@@ -43,7 +43,7 @@ namespace YAML {
 			return node;
 		}
 
-		static bool decode(const Node& node, glm::vec3& rhs)
+		static bool Decode(const Node& node, glm::vec3& rhs)
 		{
 			if (!node.IsSequence() || node.size() != 3)
 				return false;
@@ -56,7 +56,8 @@ namespace YAML {
 	};
 }
 
-namespace RenderingEngine {
+namespace RenderingEngine
+{
 	static YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& value)
 	{
 		out << YAML::Flow;
@@ -81,7 +82,7 @@ namespace RenderingEngine {
 			out << YAML::Key << "NameComponent";
 			out << YAML::BeginMap;
 
-			auto& name = entity.GetComponent<NameComponent>().Name;
+			const auto& name = entity.GetComponent<NameComponent>().Name;
 			out << YAML::Key << "Name" << YAML::Value << name;
 
 			out << YAML::EndMap;
@@ -92,7 +93,7 @@ namespace RenderingEngine {
 			out << YAML::Key << "TransformComponent";
 			out << YAML::BeginMap;
 
-			auto& transform = entity.GetComponent<TransformComponent>();
+			const auto& transform = entity.GetComponent<TransformComponent>();
 			out << YAML::Key << "Position" << YAML::Value << transform.Position;
 			out << YAML::Key << "Rotation" << YAML::Value << transform.Rotation;
 			out << YAML::Key << "Scale" << YAML::Value << transform.Scale;
@@ -105,11 +106,11 @@ namespace RenderingEngine {
 			out << YAML::Key << "CameraComponent";
 			out << YAML::BeginMap;
 
-			auto& cameraComponent = entity.GetComponent<CameraComponent>();
+			const auto& cameraComponent = entity.GetComponent<CameraComponent>();
 
 			out << YAML::Key << "Position" << YAML::Value << cameraComponent.Position;
 			out << YAML::Key << "Orientation" << YAML::Value << cameraComponent.Orientation;
-			out << YAML::Key << "FOV" << YAML::Value << cameraComponent.FOV;
+			out << YAML::Key << "FOV" << YAML::Value << cameraComponent.Fov;
 			out << YAML::Key << "MinRenderDist" << YAML::Value << cameraComponent.MinRenderDist;
 			out << YAML::Key << "MaxRenderDist" << YAML::Value << cameraComponent.MaxRenderDist;
 			out << YAML::Key << "Enabled" << YAML::Value << cameraComponent.Enabled;
@@ -122,7 +123,7 @@ namespace RenderingEngine {
 			out << YAML::Key << "MeshComponent";
 			out << YAML::BeginMap;
 
-			auto& meshComponent = entity.GetComponent<MeshComponent>();
+			const auto& meshComponent = entity.GetComponent<MeshComponent>();
 
 			out << YAML::Key << "Path" << YAML::Value << meshComponent.SharedMesh->GetPath();
 
@@ -134,8 +135,8 @@ namespace RenderingEngine {
 			out << YAML::Key << "MaterialComponent";
 			out << YAML::BeginMap;
 
-			auto& materialComponent = entity.GetComponent<MaterialComponent>();
-			auto& material = materialComponent.SharedMat;
+			const auto& materialComponent = entity.GetComponent<MaterialComponent>();
+			auto& material = materialComponent.Shared;
 
 			out << YAML::Key << "Name" << YAML::Value << material->GetName();
 			out << YAML::Key << "VertPath" << YAML::Value << material->GetVertPath();
@@ -179,14 +180,11 @@ namespace RenderingEngine {
 		out << YAML::Key << "Scene" << YAML::Value << "SampleScene";
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-		for (auto entityID : scene->m_Entities.view<entt::entity>())
+		for (const auto entityId : scene->m_Entities.view<entt::entity>())
 		{
-			Entity entity = Entity(entityID, scene.get());
-
+			const auto entity = Entity(entityId, scene.get());
 			if (!entity)
-			{
 				return;
-			}
 
 			SerializeEntity(out, entity);
 		}
@@ -217,7 +215,7 @@ namespace RenderingEngine {
 			return;
 		}
 
-		std::string sceneName = data["Scene"].as<std::string>();
+		auto sceneName = data["Scene"].as<std::string>();
 		LOG_TRACE("Loading scene {0}...", sceneName);
 
 		auto entities = data["Entities"];
@@ -228,9 +226,7 @@ namespace RenderingEngine {
 				std::string name;
 				auto tagComponent = entity["NameComponent"];
 				if (tagComponent)
-				{
 					name = tagComponent["Name"].as<std::string>();
-				}
 
 				LOG_TRACE("Loading entity {0}...", name);
 
@@ -253,7 +249,7 @@ namespace RenderingEngine {
 
 					camera.Position = cameraComponent["Position"].as<glm::vec3>();
 					camera.Orientation = cameraComponent["Orientation"].as<glm::vec3>();
-					camera.FOV = cameraComponent["FOV"].as<float>();
+					camera.Fov = cameraComponent["FOV"].as<float>();
 					camera.MinRenderDist = cameraComponent["MinRenderDist"].as<float>();
 					camera.MaxRenderDist = cameraComponent["MaxRenderDist"].as<float>();
 					camera.Enabled = cameraComponent["Enabled"].as<bool>();
@@ -287,11 +283,11 @@ namespace RenderingEngine {
 				auto materialComponent = entity["MaterialComponent"];
 				if (materialComponent)
 				{
-					std::string vertPath = materialComponent["VertPath"].as<std::string>();
-					std::string fragPath = materialComponent["FragPath"].as<std::string>();
-					std::string name = materialComponent["Name"].as<std::string>();
+					auto vertPath = materialComponent["VertPath"].as<std::string>();
+					auto fragPath = materialComponent["FragPath"].as<std::string>();
+					auto matName = materialComponent["Name"].as<std::string>();
 
-					Ref<Material> sharedMat = MaterialImporter::AddMaterial(name, vertPath, fragPath);
+					Ref<Material> sharedMat = MaterialImporter::AddMaterial(matName, vertPath, fragPath);
 					auto& material = deserializedEntity.AddComponent<MaterialComponent>(sharedMat);
 				}
 			}

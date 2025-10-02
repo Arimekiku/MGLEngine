@@ -1,5 +1,6 @@
-#include "mxpch.h"
 #include "Material.h"
+
+#include <sstream>
 
 namespace RenderingEngine
 {

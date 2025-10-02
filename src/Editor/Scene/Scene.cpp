@@ -16,9 +16,7 @@ namespace RenderingEngine
 
         // Decides whether or not the next vertical Orientation is legal or not
         if (std::abs(glm::angle(newOrientation, Vector3::Up()) - glm::radians(90.0f)) <= glm::radians(85.0f))
-        {
             cameraOrientation = newOrientation;
-        }
 
         // Rotates the Orientation left and right
         cameraOrientation = glm::rotate(cameraOrientation, glm::radians(-rotY), Vector3::Up());
@@ -26,31 +24,28 @@ namespace RenderingEngine
 
 	void Scene::UpdateCamera(CameraComponent& mainCamera, Time deltaTime)
 	{
-		using namespace Input; 
+		using namespace Input;
 
 		if (m_CameraEditorMode == true)
-		{
             return;
-		}
 
-        Mouse::SetInputMode(Mouse::HIDDEN);
+        Mouse::SetInputMode(Mouse::Hidden);
         const glm::vec2 rotationVector = Mouse::GetNormalizedCursor();
         SetOrientation(mainCamera, rotationVector.x, rotationVector.y);
         Mouse::SetCursorInCenterOfWindow();
 
-		glm::vec3& cameraOrientation = mainCamera.Orientation;
+		const auto& cameraOrientation = mainCamera.Orientation;
 
-		int horizontalAxis = Key::GetAxisValue(Key::D, Key::A);
+		const int horizontalAxis = Key::GetAxisValue(Key::D, Key::A);
         mainCamera.Position += horizontalAxis * deltaTime.GetSeconds() * glm::normalize(glm::cross(cameraOrientation, Vector3::Up()));
 
-		int verticalAxis = Key::GetAxisValue(Key::W, Key::S);
+		const int verticalAxis = Key::GetAxisValue(Key::W, Key::S);
         mainCamera.Position += verticalAxis * deltaTime.GetSeconds() * cameraOrientation;
 	}
 
 	Entity Scene::Instantiate(const std::string& name)
 	{
-		Entity entity = Entity(m_Entities.create(), this);
-
+		auto entity = Entity(m_Entities.create(), this);
 		entity.AddComponent<NameComponent>(name.empty() ? "Entity" : name);
 
 		return entity;
@@ -66,12 +61,9 @@ namespace RenderingEngine
 		auto view = m_Entities.view<CameraComponent>();
 		for (auto& cameraEntity : view)
 		{
-			CameraComponent& camera = view.get<CameraComponent>(cameraEntity);
-
+			auto& camera = view.get<CameraComponent>(cameraEntity);
 			if (camera.Enabled == false)
-			{
 				continue;
-			}
 
 			return Entity(cameraEntity, this);
 		}
@@ -83,9 +75,7 @@ namespace RenderingEngine
 	{
 		Entity mainCameraEntity = GetActiveCameraEntity();
 		if (!mainCameraEntity)
-		{
 			return;
-		}
 
 		UpdateCamera(mainCameraEntity.GetComponent<CameraComponent>(), deltaTime);
 	}
@@ -99,22 +89,18 @@ namespace RenderingEngine
 	bool Scene::OnKeyPressedEvent(const KeyPressedEvent& e)
     {
 		if (e.GetRepeatCount() != 0)
-		{
             return true;
-		}
 
         if (e.GetKeyCode() == Input::Key::C)
         {
 			Entity mainCameraEntity = GetActiveCameraEntity();
 			if (!mainCameraEntity)
-			{
 				return true;
-			}
 
             if (m_CameraEditorMode == false)
             {
                 m_CameraEditorMode = true;
-                Input::Mouse::SetInputMode(Input::Mouse::VISIBLE);
+                Input::Mouse::SetInputMode(Input::Mouse::Visible);
 
                 LOG_TRACE("Switched to Editor Mode");
                 return true;

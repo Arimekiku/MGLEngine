@@ -13,7 +13,7 @@ namespace RenderingEngine
 
 		NameComponent() = default;
 		NameComponent(const NameComponent&) = default;
-		NameComponent(const std::string& name) : Name(name) {}
+		NameComponent(std::string name) : Name(std::move(name)) {}
 	};
 
 	struct TransformComponent
@@ -27,7 +27,7 @@ namespace RenderingEngine
 		TransformComponent(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale) 
 			: Position(position), Rotation(rotation), Scale(scale) { }
 
-		glm::mat4 GetTRSMatrix() const
+		glm::mat4 GetTrsMatrix() const
 		{
 			const glm::mat4 translation = glm::translate(glm::mat4(1.0f), Position);
 			const glm::mat4 rotation = glm::toMat4(glm::quat(glm::radians(Rotation)));
@@ -48,11 +48,11 @@ namespace RenderingEngine
 
 	struct MaterialComponent
 	{
-		Ref<Material> SharedMat;
+		Ref<Material> Shared;
 
 		MaterialComponent() = default;
 		MaterialComponent(const MaterialComponent&) = default;
-		MaterialComponent(const Ref<Material>& material) : SharedMat(material) { }
+		MaterialComponent(const Ref<Material>& material) : Shared(material) { }
 	};
 
 	struct DirectLightComponent
@@ -65,8 +65,8 @@ namespace RenderingEngine
 
 		glm::mat4 GetProjection() const
 		{
-			const glm::mat4 ortho = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 0.01f, 100.0f);
-			const glm::mat4 model = glm::mat4(1.0f);
+			const auto ortho = glm::ortho(-30.0f, 30.0f, -30.0f, 30.0f, 0.01f, 100.0f);
+			const auto model = glm::mat4(1.0f);
 
 			return ortho * model;
 		}
@@ -85,9 +85,9 @@ namespace RenderingEngine
 	{
 		glm::vec3 Orientation = glm::vec3(0, 0, -1);
 		glm::vec3 Position = glm::vec3(0);
-		float MinRenderDist = 0.01;
+		float MinRenderDist = 0.01f;
 		float MaxRenderDist = 100.0f;
-		float FOV = 45.0f;
+		float Fov = 45.0f;
 		bool Enabled = false;
 
 		CameraComponent() = default;

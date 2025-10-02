@@ -1,4 +1,3 @@
-#include "mxpch.h"
 #include "Renderer.h"
 
 namespace RenderingEngine

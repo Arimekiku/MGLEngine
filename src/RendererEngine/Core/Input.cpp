@@ -33,7 +33,7 @@ namespace RenderingEngine
     {
         auto& window = Bootstrapper::GetInstance().GetWindow().GetNativeWindow();
         const auto pressed = glfwGetMouseButton(window, code);
-          return pressed == GLFW_PRESS;
+    	return pressed == GLFW_PRESS;
     }
 
     bool Input::Mouse::ButtonReleased(const int code)

@@ -13,8 +13,8 @@ namespace RenderingEngine
 	public:
 		SceneRenderer();
 
-		void DrawDepthBuffer();
-		void DrawTextureBuffer();
+		void DrawDepthBuffer() const;
+		void DrawTextureBuffer() const;
 
 		void DrawViewport();
 		void DrawScenePanel();

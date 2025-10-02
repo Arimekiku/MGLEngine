@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <glm/fwd.hpp>
 
 namespace RenderingEngine
@@ -25,11 +26,11 @@ namespace RenderingEngine
         void BindUniformInt2(const std::string& name, const glm::i32vec2& vec) const;
         void BindUniformInt1(const std::string& name, const int& val) const;
 
-        [[nodiscard]] const uint32_t& GetRendererID() const { return m_RendererID; }
+        const uint32_t& GetRendererId() const { return m_RendererId; }
 
     private:
         static std::string GetContent(const std::string& path);
 
-        uint32_t m_RendererID = 0;
+        uint32_t m_RendererId = 0;
     };
 }

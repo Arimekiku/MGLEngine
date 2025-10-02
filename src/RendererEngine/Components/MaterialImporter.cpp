@@ -1,6 +1,8 @@
 #include "MaterialImporter.h"
 #include "RendererEngine/Core/Logger/Log.h"
 
+#include <sstream>
+
 namespace RenderingEngine
 {
     static std::unordered_map<std::string, Ref<Material>> m_Materials;

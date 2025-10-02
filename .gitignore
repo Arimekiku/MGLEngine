@@ -1,4 +1,5 @@
 # Visual Studio
+**.DotSettings
 .cache/
 .vs/
 .vscode/

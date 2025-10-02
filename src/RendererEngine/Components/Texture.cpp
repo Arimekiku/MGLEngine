@@ -10,18 +10,18 @@ namespace RenderingEngine
     {
         m_FilePath = path;
 
-        m_Buffer = stbi_load(path.c_str(), &m_Size.x, &m_Size.y, &m_BPP, 0);
-        LOG_ASSERT(m_Buffer != nullptr, "Can't load texture from path");
+        m_Buffer = stbi_load(path.c_str(), &m_Size.x, &m_Size.y, &m_Bpp, 0);
+        LOG_ASSERT((m_Buffer != nullptr), "Can't load texture from path");
 
-        glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-        glTextureStorage2D(m_RendererID, 1, GL_RGBA8, m_Size.x, m_Size.y);
+        glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
+        glTextureStorage2D(m_RendererId, 1, GL_RGBA8, m_Size.x, m_Size.y);
 
         glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Size.x, m_Size.y, GL_RGBA, GL_UNSIGNED_BYTE, m_Buffer);
+        glTextureSubImage2D(m_RendererId, 0, 0, 0, m_Size.x, m_Size.y, GL_RGBA, GL_UNSIGNED_BYTE, m_Buffer);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -30,12 +30,12 @@ namespace RenderingEngine
 
     Texture::~Texture()
     {
-        glDeleteTextures(1, &m_RendererID);
+        glDeleteTextures(1, &m_RendererId);
     }
 
     void Texture::Bind(const uint8_t slot) const
     {
-        glBindTextureUnit(slot, m_RendererID);
+        glBindTextureUnit(slot, m_RendererId);
     }
 
     void Texture::Unbind() const
