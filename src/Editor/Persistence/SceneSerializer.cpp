@@ -11,7 +11,7 @@ namespace YAML
 	template<>
 	struct convert<glm::vec2>
 	{
-		static Node Encode(const glm::vec2& rhs)
+		static Node encode(const glm::vec2& rhs)
 		{
 			Node node;
 			node.push_back(rhs.x);
@@ -19,7 +19,7 @@ namespace YAML
 			return node;
 		}
 
-		static bool Decode(const Node& node, glm::vec2& rhs)
+		static bool decode(const Node& node, glm::vec2& rhs)
 		{
 			if (!node.IsSequence() || node.size() != 2)
 				return false;
@@ -33,7 +33,7 @@ namespace YAML
 	template<>
 	struct convert<glm::vec3>
 	{
-		static Node Encode(const glm::vec3& rhs)
+		static Node encode(const glm::vec3& rhs)
 		{
 			Node node;
 			node.push_back(rhs.x);
@@ -43,7 +43,7 @@ namespace YAML
 			return node;
 		}
 
-		static bool Decode(const Node& node, glm::vec3& rhs)
+		static bool decode(const Node& node, glm::vec3& rhs)
 		{
 			if (!node.IsSequence() || node.size() != 3)
 				return false;
