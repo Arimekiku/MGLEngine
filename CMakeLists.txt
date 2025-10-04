@@ -1,55 +1,18 @@
-cmake_minimum_required(VERSION 3.9.1)
+cmake_minimum_required(VERSION 3.15)
 
-project(RenderingEngine)
+project(MGLEngine)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# hot reload for MSVC compilers if supported
-if (MSVC)
-    set(CMAKE_CXX_FLAGS "/Zi /EHsc")
+set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/Resources/")
+set(ENGINE_SRC "${CMAKE_SOURCE_DIR}/Engine/src")
+set(EDITOR_SRC "${CMAKE_SOURCE_DIR}/Editor/src")
 
-    if (POLICY CMP0141)
-      cmake_policy(SET CMP0141 NEW)
-      set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-    endif()
-endif()
+add_subdirectory(vendor)
 
-set(PROJECT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/build")
-set(PROJECT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
-set(RESOURCE_DIR "./Resources/")
+add_subdirectory(Engine)
+add_subdirectory(Editor)
 
-# define headers
-file(GLOB_RECURSE HEADER_FILES ${PROJECT_SOURCE_DIR}/**.h)
-
-# define source
-file(GLOB_RECURSE SOURCE_FILES ${PROJECT_SOURCE_DIR}/**.cpp)
-
-# define resources in binaries
-file(COPY ${RESOURCE_DIR} DESTINATION "${CMAKE_BINARY_DIR}/Resources/")
-
-add_subdirectory("vendor" EXCLUDE_FROM_ALL)
-
-################################# Executable ####################################
-
-add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
-
-target_compile_definitions("${CMAKE_PROJECT_NAME}" 
-    PRIVATE
-        _CRT_SECURE_NO_WARNINGS
-        IMGUI_IMPL_OPENGL_LOADER_GLAD
-        GLFW_INCLUDE_NONE
-        GLM_ENABLE_EXPERIMENTAL
-        STB_IMAGE_IMPLEMENTATION
-    PUBLIC
-        RESOURCES_PATH="${RESOURCE_DIR}"
-        $<$<CONFIG:Debug>:DEBUG>
-        $<$<CONFIG:RelWithDebInfo>:RELEASE>
-        $<$<CONFIG:Release>:RELEASE>
-        $<$<CONFIG:MinSizeRel>:RELEASE>)
-
-target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}")
-target_link_libraries(${PROJECT_NAME} PUBLIC libs PRIVATE ${CMAKE_DL_LIBS})
-
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
+add_subdirectory(Application)

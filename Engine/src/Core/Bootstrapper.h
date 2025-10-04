@@ -1,0 +1,36 @@
+#pragma once
+
+#include "Window.h"
+#include "Layer/LayerStack.h"
+#include "Core.h"
+#include "Events/WindowEvent.h"
+#include "Events/KeyEvent.h"
+
+namespace Engine
+{
+	class Bootstrapper
+	{
+	public:
+		Bootstrapper();
+		~Bootstrapper() = default;
+
+		void Run();
+		void Abort() { m_Running = false; };
+
+		void OnEvent(Event& e);
+		void AddLayer(Layer* layer);
+
+		static Bootstrapper& GetInstance() { return *s_Instance; }
+		Window& GetWindow() const { return *m_Window; }
+
+	private:
+		bool OnWindowCloseEvent(const WindowCloseEvent& e);
+		bool OnKeyPressedEvent(const KeyPressedEvent& e);
+
+		static Bootstrapper* s_Instance;
+		Scope<Window> m_Window;
+		LayerStack m_LayerStack;
+		bool m_Running = true, m_Minimized = false;
+		float m_LastFrameTime = 0;
+	};
+}
