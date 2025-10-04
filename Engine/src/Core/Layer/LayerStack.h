@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core.h"
 #include "Layer.h"
 
 namespace Engine
@@ -10,14 +11,14 @@ namespace Engine
         LayerStack() = default;
         ~LayerStack();
 
-        void Push(Layer* layer);
-        void Pop(const Layer* layer);
+        void Push(const Ref<Layer>& layer);
+        void Pop(const Ref<Layer>& layer);
 
-        std::vector<Layer*>::iterator begin() { return m_Layers.begin(); }
-        std::vector<Layer*>::iterator end() { return m_Layers.end(); }
+        std::vector<Ref<Layer>>::iterator begin() { return m_Layers.begin(); }
+        std::vector<Ref<Layer>>::iterator end() { return m_Layers.end(); }
 
     private:
-        std::vector<Layer*> m_Layers;
+        std::vector<Ref<Layer>> m_Layers;
     };
 }
 

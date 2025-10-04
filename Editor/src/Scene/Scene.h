@@ -2,7 +2,6 @@
 
 #include "Core/Time.h"
 #include "Events/Event.h"
-#include "Events/KeyEvent.h"
 #include "ComponentRegistry.h"
 
 #include <entt/entt.hpp>
@@ -14,11 +13,10 @@ namespace Engine
 	class Scene
 	{
 	public: 
-		Scene() = default;
+		Scene();
 		~Scene() = default;
 
 		void OnEveryUpdate(Time deltaTime);
-		void OnEvent(Event& e);
 
 		Entity Instantiate(const std::string& name = std::string());
 		void Destroy(Entity entity);
@@ -26,7 +24,7 @@ namespace Engine
 		Entity GetActiveCameraEntity();
 
 	private:
-		bool OnKeyPressedEvent(const KeyPressedEvent& e);
+		void OnKeyPressedEvent(const KeyPressedEvent& e);
 		void UpdateCamera(CameraComponent& mainCamera, Time deltaTime);
 
 		entt::registry m_Entities;

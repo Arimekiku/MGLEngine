@@ -1,6 +1,7 @@
 #include "Bootstrapper.h"
-#include "Logger/Log.h"
 #include "Core/Layer/ImGui/GuiLayer.h"
+#include "Events/EventDispatcher.h"
+#include "Logger/Log.h"
 
 #include <portable_file_dialogs.h>
 
@@ -13,11 +14,12 @@ namespace Engine
 		LOG_ASSERT(pfd::settings::available(), "Portable File Dialogs are not available on this platform.\n");
 
 		s_Instance = this;
-
 		m_LayerStack = LayerStack();
-
 		m_Window = std::make_unique<Window>();
-		m_Window->SetEventCallback(BIND_FUNC(OnEvent));
+
+		auto& dispatcher = m_Window->GetEventDispatcher();
+		dispatcher.Subscribe<WindowCloseEvent>(BIND_FUNC(OnWindowCloseEvent));
+		dispatcher.Subscribe<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
 	}
 
 	void Bootstrapper::Run()
@@ -39,57 +41,37 @@ namespace Engine
 
 			const auto deltaTime = Time(m_LastFrameTime - startFrameTime);
 
-			for (const auto layer : m_LayerStack)
+			for (const auto& layer : m_LayerStack)
 				layer->OnEveryUpdate(deltaTime);
 
 			GuiLayer::Begin();
 
-			for (const auto layer : m_LayerStack)
+			for (const auto& layer : m_LayerStack)
 				layer->OnGuiUpdate();
 
 			GuiLayer::End();
         }
 	}
 
-	void Bootstrapper::OnEvent(Event& e)
-	{
-		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_FUNC(OnWindowCloseEvent));
-		dispatcher.Dispatch<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
-
-		for (const auto layer : m_LayerStack)
-		{
-			if (e.Active == false)
-				return;
-
-			layer->OnEvent(e);
-		}
-	}
-
-	void Bootstrapper::AddLayer(Layer* layer)
+	void Bootstrapper::AddLayer(const Ref<Layer>& layer)
 	{
 		m_LayerStack.Push(layer);
 		layer->Attach();
 	}
 
-	bool Bootstrapper::OnWindowCloseEvent(const WindowCloseEvent& e)
+	void Bootstrapper::OnWindowCloseEvent(const WindowCloseEvent& e)
 	{
 		LOG_WARN("Shutdown");
 
 		m_Running = false;
-		return false;
 	}
 
-	bool Bootstrapper::OnKeyPressedEvent(const KeyPressedEvent& e)
+	void Bootstrapper::OnKeyPressedEvent(const KeyPressedEvent& e)
 	{
-		if (e.GetKeyCode() == GLFW_KEY_ESCAPE)
-		{
-			LOG_WARN("Shutdown");
+		if (e.KeyCode != GLFW_KEY_ESCAPE)
+			return;
 
-			m_Running = false;
-			return true;
-		}
-
-		return false;
+		LOG_WARN("Shutdown");
+		m_Running = false;
 	}
 }

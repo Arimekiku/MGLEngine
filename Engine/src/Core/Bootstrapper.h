@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Window.h"
-#include "Layer/LayerStack.h"
 #include "Core.h"
-#include "Events/WindowEvent.h"
-#include "Events/KeyEvent.h"
+#include "Window.h"
+#include "Events/Event.h"
+#include "Events/EventDispatcher.h"
+#include "Layer/LayerStack.h"
 
 namespace Engine
 {
@@ -15,17 +15,17 @@ namespace Engine
 		~Bootstrapper() = default;
 
 		void Run();
-		void Abort() { m_Running = false; };
+		void Abort() { m_Running = false; }
 
-		void OnEvent(Event& e);
-		void AddLayer(Layer* layer);
+		void AddLayer(const Ref<Layer>& layer);
 
 		static Bootstrapper& GetInstance() { return *s_Instance; }
+		EventDispatcher& GetEventDispatcher() { return m_Window->GetEventDispatcher(); }
 		Window& GetWindow() const { return *m_Window; }
 
 	private:
-		bool OnWindowCloseEvent(const WindowCloseEvent& e);
-		bool OnKeyPressedEvent(const KeyPressedEvent& e);
+		void OnWindowCloseEvent(const WindowCloseEvent& e);
+		void OnKeyPressedEvent(const KeyPressedEvent& e);
 
 		static Bootstrapper* s_Instance;
 		Scope<Window> m_Window;

@@ -2,80 +2,80 @@
 
 #include "Core.h"
 
-#include <string>
-#include <functional>
-
 namespace Engine
 {
-	enum class EventType
+	struct KeyPressedEvent
 	{
-		Null,
+		KeyPressedEvent(const uint32_t keycode, const int repeatCount)
+			: KeyCode(keycode), RepeatCount(repeatCount) { }
 
-		WindowClose, 
-		WindowResize, 
-		WindowFocus, 
-		WindowRender,
-
-		KeyPressed, 
-		KeyReleased, 
-		KeyTyped,
-
-		MousePressed, 
-		MouseReleased, 
-		MouseMoved, 
-		MouseScrolled
+		uint32_t KeyCode;
+		int RepeatCount;
 	};
 
-	enum EventCategory
+	struct KeyTypedEvent
 	{
-		None = 0,
-		EventApplication = BIT(0),
-		EventInput = BIT(1),
-		EventKeyboard = BIT(2),
-		EventMouse = BIT(3),
-		EventMouseButton = BIT(4)
+		KeyTypedEvent(const uint32_t keycode)
+			: KeyCode(keycode) { }
+
+		uint32_t KeyCode;
 	};
 
-	class Event
+	struct KeyReleasedEvent
 	{
-	public:
-		virtual ~Event() = default;
+		KeyReleasedEvent(const uint32_t keycode)
+			: KeyCode(keycode) { }
 
-		virtual EventType GetEventType() const = 0;
-		virtual int GetCategory() const = 0;
-
-		virtual std::string ToString() const { return "Event"; }
-
-		bool InCategory(const EventCategory category) const { return GetCategory() & category; }
-		bool Active = true;
+		uint32_t KeyCode;
 	};
 
-	class EventDispatcher
+	struct MousePressedEvent
 	{
-		template <typename TEvent>
-		using EventFunc = std::function<bool(TEvent&)>;
+		MousePressedEvent(const int button)
+			: MouseButton(button) { }
 
-	public:
-		EventDispatcher(Event& event): m_Event(event) { }
-
-		template <typename TEvent>
-		bool Dispatch(EventFunc<TEvent> func)
-		{
-			if (m_Event.GetEventType() == TEvent::GetStaticType())
-			{
-				m_Event.Active |= func(static_cast<TEvent&>(m_Event));
-				return true;
-			}
-
-			return false;
-		}
-
-	private:
-		Event& m_Event;
+		int MouseButton;
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, const Event& e)
+	struct MouseReleasedEvent
 	{
-		return os << e.ToString();
-	}
+		MouseReleasedEvent(const int button)
+			: MouseButton(button) { }
+
+		int MouseButton;
+	};
+
+	struct MouseMovedEvent
+	{
+		MouseMovedEvent(const float x, const float y)
+			: MouseX(x), MouseY(y) { }
+
+		float MouseX, MouseY;
+	};
+	 
+	struct MouseScrolledEvent
+	{
+		MouseScrolledEvent(const float offsetX, const float offsetY)
+			: OffsetX(offsetX), OffsetY(offsetY) { }
+
+		float OffsetX, OffsetY;
+	};
+
+	struct WindowCloseEvent
+	{
+		WindowCloseEvent() = default;
+	};
+
+	struct WindowResizeEvent
+	{
+		WindowResizeEvent(const int width, const int height)
+			: Width(width), Height(height) { }
+
+		int Width, Height;
+	};
+
+	struct WindowFocusEvent
+	{
+		WindowFocusEvent() = default;
+	};
 }

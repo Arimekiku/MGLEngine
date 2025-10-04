@@ -13,8 +13,6 @@ namespace Engine
         void OnEveryUpdate(Time deltaTime) override;
         void OnGuiUpdate() override;
 
-        void OnEvent(Event& event) override;
-
     private:
         Ref<Scene> m_Scene = std::make_shared<Scene>();
         bool m_IsScenePanel = true, m_IsViewportPanel = true, m_IsInspectorPanel = true, m_FirstClick = true;

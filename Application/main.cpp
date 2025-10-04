@@ -9,8 +9,8 @@ int main(int argc, char** argv)
 
     const auto app = new Engine::Bootstrapper;
 
-    app->AddLayer(new Engine::GuiLayer);
-    app->AddLayer(new Engine::EditorLayer);
+    app->AddLayer(std::make_shared<Engine::GuiLayer>());
+    app->AddLayer(std::make_shared<Engine::EditorLayer>());
     app->Run();
 
     delete app;

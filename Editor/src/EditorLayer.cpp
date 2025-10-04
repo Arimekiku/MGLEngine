@@ -137,7 +137,7 @@ namespace Engine
 
         ImGui::Begin("Parameters");
 
-        ImGui::Text("DeltaTime: %.3f (%.0fmil)", m_LastTime.GetSeconds(), m_LastTime.GetMilliseconds());
+        ImGui::Text("DeltaTime: %.3f (%.0f mil)", m_LastTime.GetSeconds(), m_LastTime.GetMilliseconds());
 		ImGui::Text("FPS: %.1f", 1.0f / m_LastTime.GetSeconds());
 
         ImGui::End();
@@ -157,10 +157,5 @@ namespace Engine
 #endif
 
         ImGui::End();
-    }
-
-    void EditorLayer::OnEvent(Event& event)
-    {
-        m_Scene->OnEvent(event);
     }
 }

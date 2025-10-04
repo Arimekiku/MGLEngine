@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Events/Event.h"
+#include "Events/EventDispatcher.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -10,11 +10,11 @@ namespace Engine
 	struct WindowProperties
 	{
 		const char* Name = "Rendering Engine";
-		uint16_t Width = 1600, Height = 900;
+		int Width = 1600, Height = 900;
 		bool VSync = true;
 
 		WindowProperties() = default;
-		WindowProperties(const char* name, const uint16_t width, const uint16_t height)
+		WindowProperties(const char* name, const int width, const int height)
 		{
 			Name = name;
 			Width = width;
@@ -25,29 +25,35 @@ namespace Engine
 	class Window
 	{
 	public:
-		using EventCallbackFunc = std::function<void(Event&)>;
-
 		Window(const WindowProperties& properties = WindowProperties());
 		~Window();
 
-		uint16_t GetWidth() const { return m_Data.Properties.Width; }
-		uint16_t GetHeight() const { return m_Data.Properties.Height; }
+		int GetWidth() const { return m_Data.Properties.Width; }
+		int GetHeight() const { return m_Data.Properties.Height; }
 		bool VSyncEnabled() const { return m_Data.Properties.VSync; }
 		GLFWwindow* const& GetNativeWindow() const { return m_Window; }
+		EventDispatcher& GetEventDispatcher() { return m_Dispatcher; }
 
 		void OnEveryUpdate() const;
-		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.Callback = callback; }
 		void SetVSync(bool isEnabled);
 
 	private:
+		void OnWindowSizeCallback(GLFWwindow* window, int width, int height) const;
+		void OnWindowCloseCallback() const;
+		void OnKeyCallback(int key, int action) const;
+		void OnCharCallback(uint32_t keycode) const;
+		void OnMouseButtonCallback(int button, int action) const;
+		void OnMouseScrollCallback(double xOffset, double yOffset) const;
+		void OnCursorPosCallback(double xPos, double yPos) const;
+
 		GLFWwindow* m_Window;
 
 		struct WindowData
 		{
 			WindowProperties Properties;
-
-			EventCallbackFunc Callback;
 		};
+
+		EventDispatcher m_Dispatcher;
 
 		WindowData m_Data;
 	};

@@ -10,9 +10,7 @@
 #include "Core/Logger/Log.h"
 
 // Events
-#include "Events/KeyEvent.h"
-#include "Events/MouseEvent.h"
-#include "Events/WindowEvent.h"
+#include "Events/Event.h"
 
 // Renderer
 #include "Components/Renderer.h"

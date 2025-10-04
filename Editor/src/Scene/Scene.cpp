@@ -7,40 +7,25 @@
 namespace Engine
 {
 	void SetOrientation(CameraComponent& mainCamera, const float rotX, const float rotY)
-    {
+	{
 		glm::vec3& cameraOrientation = mainCamera.Orientation;
 
-        // Calculates upcoming vertical change in the Orientation
-        const glm::vec3 newOrientation = glm::rotate(cameraOrientation, glm::radians(-rotX),
-                                                     glm::normalize(glm::cross(cameraOrientation, Vector3::Up())));
+		// Calculates upcoming vertical change in the Orientation
+		const glm::vec3 newOrientation = glm::rotate(cameraOrientation, glm::radians(-rotX),
+			glm::normalize(glm::cross(cameraOrientation, Vector3::Up())));
 
-        // Decides whether or not the next vertical Orientation is legal or not
-        if (std::abs(glm::angle(newOrientation, Vector3::Up()) - glm::radians(90.0f)) <= glm::radians(85.0f))
-            cameraOrientation = newOrientation;
+		// Decides whether or not the next vertical Orientation is legal or not
+		if (std::abs(glm::angle(newOrientation, Vector3::Up()) - glm::radians(90.0f)) <= glm::radians(85.0f))
+			cameraOrientation = newOrientation;
 
-        // Rotates the Orientation left and right
-        cameraOrientation = glm::rotate(cameraOrientation, glm::radians(-rotY), Vector3::Up());
-    }
+		// Rotates the Orientation left and right
+		cameraOrientation = glm::rotate(cameraOrientation, glm::radians(-rotY), Vector3::Up());
+	}
 
-	void Scene::UpdateCamera(CameraComponent& mainCamera, Time deltaTime)
+	Scene::Scene()
 	{
-		using namespace Input;
-
-		if (m_CameraEditorMode == true)
-            return;
-
-        Mouse::SetInputMode(Mouse::Hidden);
-        const glm::vec2 rotationVector = Mouse::GetNormalizedCursor();
-        SetOrientation(mainCamera, rotationVector.x, rotationVector.y);
-        Mouse::SetCursorInCenterOfWindow();
-
-		const auto& cameraOrientation = mainCamera.Orientation;
-
-		const int horizontalAxis = Key::GetAxisValue(Key::D, Key::A);
-        mainCamera.Position += horizontalAxis * deltaTime.GetSeconds() * glm::normalize(glm::cross(cameraOrientation, Vector3::Up()));
-
-		const int verticalAxis = Key::GetAxisValue(Key::W, Key::S);
-        mainCamera.Position += verticalAxis * deltaTime.GetSeconds() * cameraOrientation;
+		auto& dispatcher = Bootstrapper::GetInstance().GetEventDispatcher();
+		dispatcher.Subscribe<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
 	}
 
 	Entity Scene::Instantiate(const std::string& name)
@@ -80,41 +65,51 @@ namespace Engine
 		UpdateCamera(mainCameraEntity.GetComponent<CameraComponent>(), deltaTime);
 	}
 
-	void Scene::OnEvent(Event& e)
+	void Scene::UpdateCamera(CameraComponent& mainCamera, Time deltaTime)
 	{
-		EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
+		using namespace Input;
+
+		if (m_CameraEditorMode == true)
+			return;
+
+		Mouse::SetInputMode(Mouse::Hidden);
+		const glm::vec2 rotationVector = Mouse::GetNormalizedCursor();
+		SetOrientation(mainCamera, rotationVector.x, rotationVector.y);
+		Mouse::SetCursorInCenterOfWindow();
+
+		const auto& cameraOrientation = mainCamera.Orientation;
+
+		const int horizontalAxis = Key::GetAxisValue(Key::D, Key::A);
+		mainCamera.Position += horizontalAxis * deltaTime.GetSeconds() * glm::normalize(glm::cross(cameraOrientation, Vector3::Up()));
+
+		const int verticalAxis = Key::GetAxisValue(Key::W, Key::S);
+		mainCamera.Position += verticalAxis * deltaTime.GetSeconds() * cameraOrientation;
 	}
 
-	bool Scene::OnKeyPressedEvent(const KeyPressedEvent& e)
+	void Scene::OnKeyPressedEvent(const KeyPressedEvent& e)
     {
-		if (e.GetRepeatCount() != 0)
-            return true;
+		if (e.RepeatCount != 0 || e.KeyCode != Input::Key::C)
+            return;
 
-        if (e.GetKeyCode() == Input::Key::C)
+		Entity mainCameraEntity = GetActiveCameraEntity();
+		if (!mainCameraEntity)
+			return;
+
+        if (m_CameraEditorMode == false)
         {
-			Entity mainCameraEntity = GetActiveCameraEntity();
-			if (!mainCameraEntity)
-				return true;
+            m_CameraEditorMode = true;
+            Input::Mouse::SetInputMode(Input::Mouse::Visible);
 
-            if (m_CameraEditorMode == false)
-            {
-                m_CameraEditorMode = true;
-                Input::Mouse::SetInputMode(Input::Mouse::Visible);
-
-                LOG_TRACE("Switched to Editor Mode");
-                return true;
-            }
-
-            const glm::vec2 rotationVector = Input::Mouse::GetNormalizedCursor();
-            SetOrientation(mainCameraEntity.GetComponent<CameraComponent>(), rotationVector.x, rotationVector.y);
-
-            Input::Mouse::SetCursorInCenterOfWindow();
-
-            m_CameraEditorMode = false;
-            LOG_TRACE("Switched to Camera Mode");
+            LOG_TRACE("Switched to Editor Mode");
+            return;
         }
 
-        return true;
+        const glm::vec2 rotationVector = Input::Mouse::GetNormalizedCursor();
+        SetOrientation(mainCameraEntity.GetComponent<CameraComponent>(), rotationVector.x, rotationVector.y);
+
+        Input::Mouse::SetCursorInCenterOfWindow();
+
+        m_CameraEditorMode = false;
+        LOG_TRACE("Switched to Camera Mode");
     }
 }
