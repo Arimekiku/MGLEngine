@@ -21,7 +21,9 @@ namespace Engine
         void Bind() const;
         void Unbind() const;
 
-        uint32_t GetAttachment(size_t index) const;
+        uint32_t GetColorAttachment() const { return m_ColorAttachment; }
+		uint32_t GetDepthAttachment() const { return m_DepthAttachment; }
+
         int GetWidth() const { return m_Width; }
         int GetHeight() const { return m_Height; }
 
@@ -34,7 +36,8 @@ namespace Engine
 
         int m_Width = 800, m_Height = 600;
         uint32_t m_RendererId = 0;
-        std::vector<uint32_t> m_Attachments;
+        uint32_t m_ColorAttachment;
+		uint32_t m_DepthAttachment;
         FramebufferType m_Type = FramebufferType::Viewport;
     };
 }

@@ -25,37 +25,37 @@ namespace Engine
 
         glDeleteFramebuffers(1, &m_RendererId);
 
-        for (const uint32_t index : m_Attachments)
-            glDeleteTextures(1, &index);
-
-        m_Attachments.clear();
+        if (m_ColorAttachment) glDeleteTextures(1, &m_ColorAttachment);
+        if (m_DepthAttachment) glDeleteRenderbuffers(1, &m_DepthAttachment);
     }
 
     void Framebuffer::CreateAsViewport()
     {
         Clear();
 
-        glCreateFramebuffers(1, &m_RendererId);
+        glGenFramebuffers(1, &m_RendererId);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
 
         uint32_t textureMapId;
-        glCreateTextures(GL_TEXTURE_2D, 1, &textureMapId);
+        glGenTextures(1, &textureMapId);
         glBindTexture(GL_TEXTURE_2D, textureMapId);
-        glTextureStorage2D(textureMapId, 1, GL_RGBA8, m_Width, m_Height);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
-        glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+        glBindTexture(GL_TEXTURE_2D, 0);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureMapId, 0);
-        m_Attachments.push_back(textureMapId);
+		m_ColorAttachment = textureMapId;
 
         uint32_t depthMapId;
-        glCreateTextures(GL_TEXTURE_2D, 1, &depthMapId);
-        glBindTexture(GL_TEXTURE_2D, depthMapId);
-        glTextureStorage2D(depthMapId, 1, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+        glGenRenderbuffers(1, &depthMapId);
+        glBindRenderbuffer(GL_RENDERBUFFER, depthMapId);
+    	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_Width, m_Height);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthMapId, 0);
-        m_Attachments.push_back(depthMapId);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthMapId);
+		m_DepthAttachment = depthMapId;
 
         LOG_ASSERT((glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE), "Framebuffer is invalid!");
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -65,24 +65,25 @@ namespace Engine
     {
         Clear();
 
-        glCreateFramebuffers(1, &m_RendererId);
+        glGenFramebuffers(1, &m_RendererId);
         glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
 
         uint32_t depthMapId;
-        glCreateTextures(GL_TEXTURE_2D, 1, &depthMapId);
+        glGenTextures(1, &depthMapId);
         glBindTexture(GL_TEXTURE_2D, depthMapId);
-        glTextureStorage2D(depthMapId, 1, GL_DEPTH24_STENCIL8, m_Width, m_Height);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_Width, m_Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 
-        glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
         constexpr float clampColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        glTextureParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clampColor);
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, clampColor);
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, depthMapId, 0);
-        m_Attachments.push_back(depthMapId);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMapId, 0);
+		m_ColorAttachment = depthMapId;
 
         glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
 
         LOG_ASSERT((glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE), "Framebuffer is invalid!");
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -102,20 +103,7 @@ namespace Engine
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         if (m_Type == FramebufferType::DepthBuffer)
-        {
             glCullFace(GL_BACK);
-        }
-    }
-
-    uint32_t Framebuffer::GetAttachment(size_t index) const
-    {
-        if (index > m_Attachments.capacity())
-        {
-            LOG_ERROR("Can't get attachment from FBO with index: %d", index);
-            return 0;
-        }
-
-        return m_Attachments[index];
     }
 
     void Framebuffer::Resize(const int width, const int height)

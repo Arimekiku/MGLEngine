@@ -19,9 +19,7 @@ namespace Engine
     const Ptr<Material>& MaterialImporter::AddMaterial(const std::string& name, const std::string& vertPath, const std::string& fragPath)
     {
         if (m_Materials[name])
-        {
             return m_Materials[name];
-        }
 
         std::stringstream vertResult;
         vertResult << RESOURCES_PATH << vertPath;

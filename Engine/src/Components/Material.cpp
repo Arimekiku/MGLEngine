@@ -35,19 +35,24 @@ namespace Engine
 
     void Material::Bind() const
     {
+        m_Shader->Bind();
+
         for (auto& texture : m_Textures)
             texture->Bind();
-
-        m_Shader->Bind();
 
         for (auto& [name, value] : m_Uniforms.FloatUniforms)
             m_Shader->BindUniformFloat1(name, value);
 
         for (auto& [name, value] : m_Uniforms.Vec3Uniforms)
             m_Shader->BindUniformFloat3(name, value);
+    }
 
-        for (auto& texture : m_Textures)
+    void Material::Unbind()
+    {
+        for (const auto& texture : m_Textures)
             texture->Unbind();
+
+        m_Shader->Unbind();
     }
 
     void Material::BindFloatUniform(const std::string& name, float value)

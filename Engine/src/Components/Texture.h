@@ -5,6 +5,46 @@
 
 namespace Engine
 {
+    class Image
+    {
+    public:
+        Image(const std::string& fileName);
+        ~Image();
+
+        int GetWidth() const { return m_Width; }
+        int GetHeight() const { return m_Height; }
+        int GetChannels() const { return m_Channels; }
+
+        unsigned char* GetBuffer() const { return m_Buffer; }
+
+    private:
+        std::string m_FilePath;
+
+        int m_Width;
+        int m_Height;
+        int m_Channels;
+
+        unsigned char* m_Buffer;
+    };
+
+    class Cubemap
+    {
+    public:
+        Cubemap() = default;
+        Cubemap(const std::string& left, const std::string& right,
+            const std::string& bottom, const std::string& top,
+            const std::string& back, const std::string& front);
+        ~Cubemap();
+
+        void Bind(uint8_t slot = 0) const;
+        void Unbind() const;
+
+        uint32_t GetRendererId() const { return m_RendererId; }
+
+    private:
+        uint32_t m_RendererId = 0;
+    };
+
     class Texture
     {
     public:
@@ -17,10 +57,6 @@ namespace Engine
         uint32_t GetRendererId() const { return m_RendererId; }
 
     private:
-        std::string m_FilePath;
         uint32_t m_RendererId = 0;
-        unsigned char* m_Buffer = nullptr;
-        glm::i32vec2 m_Size = glm::i32vec2(0, 0);
-        int m_Bpp = 0;
     };
 }

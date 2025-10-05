@@ -4,8 +4,6 @@
 
 #include "EditorLayer.h"
 #include "Core/Layer/GuiLayer/GuiLayer.h"
-#include "Events/EventDispatcher.h"
-#include "Logger/Log.h"
 
 namespace Engine
 {
@@ -42,7 +40,6 @@ namespace Engine
             const auto startFrameTime = static_cast<float>(glfwGetTime());
             while (static_cast<float>(glfwGetTime()) - startFrameTime <= 0.0167f){}
 
-			m_Window->OnEveryUpdate();
 			if (m_Minimized)
 				continue;
 
@@ -50,16 +47,18 @@ namespace Engine
 
 			const auto deltaTime = Time(m_LastFrameTime - startFrameTime);
 
-			for (const auto& layer : m_LayerStack | std::views::values)
-				layer->OnEveryUpdate(deltaTime);
-
 			const auto& guiLayer = m_LayerStack.Get<GuiLayer>();
 			guiLayer->Begin();
 
 			for (const auto& layer : m_LayerStack | std::views::values)
 				layer->OnGuiUpdate();
-
+			
 			guiLayer->End();
+
+			for (const auto& layer : m_LayerStack | std::views::values)
+				layer->OnEveryUpdate(deltaTime);
+
+			m_Window->OnEveryUpdate();
         }
 	}
 

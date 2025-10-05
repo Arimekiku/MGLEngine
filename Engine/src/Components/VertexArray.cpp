@@ -28,7 +28,7 @@ namespace Engine
 
     VertexArray::VertexArray()
     {
-        glCreateVertexArrays(1, &m_RendererId);
+        glGenVertexArrays(1, &m_RendererId);
     }
 
     VertexArray::~VertexArray()
@@ -57,13 +57,14 @@ namespace Engine
         const auto& layout = buffer->GetLayout();
         for (const auto& attr : layout)
         {
-            glEnableVertexAttribArray(index);
             glVertexAttribPointer(index,
                                   attr.GetElementCount(),
                                   ShaderDataTypeToGLenum(attr.Type),
                                   attr.Normalized ? GL_TRUE : GL_FALSE,
                                   layout.GetStride(),
                                   (const void*)attr.Offset);
+            glEnableVertexAttribArray(index);
+
             index++;
         }
         m_VertexBuffer = buffer;

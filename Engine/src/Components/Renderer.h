@@ -2,19 +2,12 @@
 
 #include "Core.h"
 #include "Mesh.h"
-#include "Shader.h"
 #include "RenderCamera.h"
-
-#include <glad/glad.h>
+#include "Shader.h"
+#include "Texture.h"
 
 namespace Engine
 {
-    struct RendererData
-    {
-        GLuint Vbo;
-        GLuint Vao;
-    };
-
     class Renderer
     {
     public:
@@ -24,12 +17,11 @@ namespace Engine
         static void Clear(glm::vec4 color);
 
         static void RenderMesh(const Ptr<Mesh>& mesh, const Ptr<Shader>& shader, const glm::mat4& trsMatrix);
+		static void RenderCubeMap(const Ptr<Mesh>& mesh, const Ptr<Shader>& shader, const Ptr<Cubemap>& cubemap, const glm::mat4& trsMatrix);
 
         static void SetViewport(int16_t x, int16_t y, int16_t width, int16_t height);
 
     private:
         static glm::mat4 m_ProjViewMat;
-        static RendererData m_Data;
-        static Shader m_SkyboxShader;
     };
 }

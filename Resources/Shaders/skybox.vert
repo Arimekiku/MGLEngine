@@ -1,21 +1,16 @@
 #version 450 core
-out vec3 v_TexCoords;
 
-const vec2[6] positions = vec2[](
-    vec2(1.0, 1.0),
-    vec2(-1.0, 1.0),
-    vec2(-1.0, -1.0),
-    vec2(-1.0, -1.0),
-    vec2(1.0, -1.0),
-    vec2(1.0, 1.0)
-);
+layout (location = 0) in vec3 a_Position;
+layout (location = 1) in vec3 a_Normal;
+layout (location = 2) in vec2 a_TexCoord;
+
+out vec3 v_TexCoords;
 
 uniform mat4 u_camMatrix;
 
 void main()
 {
-    vec2 vertexPos = positions[gl_VertexID];
-    v_TexCoords = normalize(vec3(0, 0, 1) + vertexPos.x * vec3(1, 0, 0) + vertexPos.y * vec3(0, 1, 0));
+    v_TexCoords = a_Position;
 
-    gl_Position = vec4(vertexPos, 1.0, 1.0);
+    gl_Position = u_camMatrix * vec4(a_Position, 1.0);
 } 

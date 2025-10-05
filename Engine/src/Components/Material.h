@@ -28,6 +28,8 @@ namespace Engine
         void BindMat4Uniform(const std::string& name, glm::mat4 value);
         void BindTextureSlot(const std::string& name, int slot);
 
+        void Unbind();
+
         void SetName(const std::string& name) { m_Name = name; }
         std::string& GetName() { return m_Name; }
 

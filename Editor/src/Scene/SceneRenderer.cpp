@@ -1,4 +1,7 @@
 #include "SceneRenderer.h"
+
+#include <iostream>
+
 #include "ComponentRegistry.h"
 #include "Core/Math.h"
 
@@ -110,8 +113,7 @@ namespace Engine
 			const auto& [lightComponent, lightTransform] = lights.get<DirectLightComponent, TransformComponent>(lightEntity);
 
 			lightComponent.DepthBuffer.Bind();
-
-			Renderer::Clear(glm::vec4(0, 0, 0, 1));
+			glClear(GL_DEPTH_BUFFER_BIT);
 
 			const glm::mat4 view = glm::lookAt(lightTransform.Position, glm::vec3(0), glm::vec3(0, 1, 0));
 			m_ShadowMapShader->Bind();
@@ -137,7 +139,9 @@ namespace Engine
 
 		cameraBuffer.Bind();
 
-        Renderer::Clear(glm::vec4(0, 0, 0, 1));
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		if (!cameraEntity)
 		{
 			cameraBuffer.Unbind();
@@ -147,11 +151,20 @@ namespace Engine
 		const auto camera = cameraEntity.GetComponent<CameraComponent>();
         Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
+		//Draw call for skybox
+		auto mesh = m_Context->GetSkyMesh();
+		auto transform = m_Context->GetSkyTransform();
+		transform->Position = camera.Position;
+		auto mat = m_Context->GetSkyMaterial();
+		const auto cubemap = m_Context->GetCubemap();
+		mat->Bind();
+		Renderer::RenderCubeMap(mesh->SharedMesh, mat->GetShader(), cubemap, transform->GetTrsMatrix());
+
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
 		const auto& lights = m_Context->m_Entities.view<DirectLightComponent, TransformComponent>();
 
-		//TODO: batching
-		//Draw call for actual models
+		/*TODO: batching
+		Draw call for actual models*/
 		for (const auto& lightEntity : lights)
 		{
 			DirectLightComponent& lightComponent = lights.get<DirectLightComponent>(lightEntity);
@@ -169,17 +182,14 @@ namespace Engine
 				const glm::mat4 view = glm::lookAt(lightTransform.Position, glm::vec3(0), glm::vec3(0, 1, 0));
 				modelMat->GetShader()->BindUniformMat4("u_lightViewProj", lightComponent.GetProjection() * view);
 				//TODO: think about it
-				glBindTextureUnit(1, lightComponent.DepthBuffer.GetAttachment(0));
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, lightComponent.DepthBuffer.GetColorAttachment());
 
 				const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 				Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTrsMatrix());
+				modelMat->Unbind();
 			}
 		}
-
-		//Draw call for skybox
-		//glm::mat4 view = glm::mat4(glm::mat3(glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up())));
-        //Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * view);
-		//Renderer::RenderSkybox(m_Context->m_Cubemap);
 
 		cameraBuffer.Unbind();
 	}
@@ -199,7 +209,7 @@ namespace Engine
 					m_DepthMap.Resize(castSize.x, castSize.y);
 				}
 
-				const uint32_t texture = m_ViewportCamera->GetFramebuffer().GetAttachment(0);
+				const uint32_t texture = m_ViewportCamera->GetFramebuffer().GetColorAttachment();
 				ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
 			}
 
@@ -369,7 +379,7 @@ namespace Engine
 			{
 				ImGui::ColorEdit3("Color", glm::value_ptr(component.Color));
 
-				const uint32_t texture = component.DepthBuffer.GetAttachment(0);
+				const uint32_t texture = component.DepthBuffer.GetColorAttachment();
 				ImGui::Image((ImTextureID)texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
 			});
 

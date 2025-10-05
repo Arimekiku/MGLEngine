@@ -228,8 +228,6 @@ namespace Engine
 				if (tagComponent)
 					name = tagComponent["Name"].as<std::string>();
 
-				LOG_TRACE("Loading entity {0}...", name);
-
 				Entity deserializedEntity = scene->Instantiate(name);
 
 				auto transformComponent = entity["TransformComponent"];
@@ -292,7 +290,5 @@ namespace Engine
 				}
 			}
 		}
-
-		LOG_TRACE("Scene {0} successfully loaded!", sceneName);
 	}
 }

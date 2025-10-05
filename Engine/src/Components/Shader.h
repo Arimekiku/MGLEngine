@@ -13,7 +13,7 @@ namespace Engine
         ~Shader();
 
         void Bind() const;
-        static void Unbind();
+    	void Unbind();
 
         void BindUniformMat4(const std::string& name, const glm::mat4& mat) const;
         void BindUniformMat3(const std::string& name, const glm::mat3& mat) const;

@@ -6,7 +6,7 @@ namespace Engine
 {
     VertexBuffer::VertexBuffer(const float* vertices, const int32_t size)
     {
-        glCreateBuffers(1, &m_RendererID);
+        glGenBuffers(1, &m_RendererID);
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
     }
@@ -28,7 +28,7 @@ namespace Engine
 
     IndexBuffer::IndexBuffer(const uint32_t* indices, const int32_t count)
     {
-        glCreateBuffers(1, &m_RendererID);
+        glGenBuffers(1, &m_RendererID);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(float), indices, GL_STATIC_DRAW);
 

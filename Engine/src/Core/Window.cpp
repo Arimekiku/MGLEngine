@@ -7,6 +7,11 @@ namespace Engine
 {
 	static bool s_GLFWInit = false;
 
+	void OnGlDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+	{
+		LOG_ERROR("GLFW Debug message: {0}, {1}", id, message);
+	}
+
 	Window::Window(const WindowProperties& properties)
 	{
 		m_Data = properties;
@@ -18,6 +23,11 @@ namespace Engine
 			const int isInitialized = glfwInit();
 			LOG_ASSERT(isInitialized, "GLFW initialize failed")
 
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 			s_GLFWInit = true;
 		}
 
@@ -25,8 +35,23 @@ namespace Engine
 		glfwMakeContextCurrent(m_Window);
 		glfwSetWindowUserPointer(m_Window, this);
 
-		const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		const int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		LOG_ASSERT(status, "GLAD initialize failed")
+
+		int contextFlags = 0;
+		glGetIntegerv(GL_CONTEXT_FLAGS, &contextFlags);
+		if (contextFlags & GL_CONTEXT_FLAG_DEBUG_BIT)
+		{
+			LOG_INFO("Debug context initialized properly");
+
+			glEnable(GL_DEBUG_OUTPUT);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+			glDebugMessageCallback(OnGlDebugOutput, nullptr);
+
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_FALSE);
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_HIGH, 0, nullptr, GL_TRUE);
+			glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_MEDIUM, 0, nullptr, GL_TRUE);
+		}
 
 		glViewport(0, 0, m_Data.Width, m_Data.Height);
 
@@ -101,8 +126,8 @@ namespace Engine
 
 	void Window::OnEveryUpdate() const
 	{
-		glfwSwapBuffers(m_Window);
 		glfwPollEvents();
+		glfwSwapBuffers(m_Window);
 	}
 
 	void Window::SetVSync(const bool isEnabled)

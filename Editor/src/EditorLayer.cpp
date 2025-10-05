@@ -18,11 +18,12 @@ namespace Engine
         const auto& houseTexture = Ptr<Texture>::Create(RESOURCES_PATH "Images/house.png");
 
         MeshImporter::CreatePlane();
-        MeshImporter::CreateCube();
+        const auto cube = MeshImporter::CreateCube();
         MeshImporter::CreateSphere();
 
         //BIND ASSETS
         m_Scene = Ptr<Scene>::Create(m_Parent->GetEventDispatcher());
+        m_Scene->SetSkyMesh(cube);
         m_SceneRenderer.SetContext(m_Scene);
 
         lightMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
