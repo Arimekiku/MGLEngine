@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-    static GLenum ShaderDataTypeToGLenum(ShaderDataType type)
+    static GLenum ShaderDataTypeToGLenum(const ShaderDataType type)
     {
         switch (type)
         {
@@ -28,17 +28,17 @@ namespace Engine
 
     VertexArray::VertexArray()
     {
-        glCreateVertexArrays(1, &m_RendererID);
+        glCreateVertexArrays(1, &m_RendererId);
     }
 
     VertexArray::~VertexArray()
     {
-        glDeleteVertexArrays(1, &m_RendererID);
+        glDeleteVertexArrays(1, &m_RendererId);
     }
 
     void VertexArray::Bind() const
     {
-        glBindVertexArray(m_RendererID);
+        glBindVertexArray(m_RendererId);
     }
 
     void VertexArray::Unbind() const
@@ -48,9 +48,9 @@ namespace Engine
 
     void VertexArray::SetVertexBuffer(const Ref<VertexBuffer>& buffer)
     {
-        LOG_ASSERT(buffer->GetLayout().GetElements().size(), "Layout was not setted properly!")
+        LOG_ASSERT(buffer->GetLayout().GetElements().size(), "Layout wasn't set properly!")
 
-        glBindVertexArray(m_RendererID);
+        glBindVertexArray(m_RendererId);
         buffer->Bind();
 
         uint32_t index = 0;
@@ -71,7 +71,7 @@ namespace Engine
 
     void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& buffer)
     {
-        glBindVertexArray(m_RendererID);
+        glBindVertexArray(m_RendererId);
 
         m_IndexBuffer = buffer;
     }

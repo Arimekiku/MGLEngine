@@ -6,8 +6,10 @@
 
 namespace Engine
 {
-    EditorLayer::EditorLayer()
+    EditorLayer::EditorLayer(const Ref<Window>& window)
     {
+		m_Parent = window;
+
         //IMPORT ASSETS
 		const auto& lightMaterial = MaterialImporter::AddMaterial("Light", "Shaders/areaLight.vert", "Shaders/areaLight.frag");
         const auto& defaultMaterial = MaterialImporter::AddMaterial("Default", "Shaders/default.vert", "Shaders/default.frag");
@@ -20,6 +22,7 @@ namespace Engine
         MeshImporter::CreateSphere();
 
         //BIND ASSETS
+        m_Scene = std::make_shared<Scene>(m_Parent->GetEventDispatcher());
         m_SceneRenderer.SetContext(m_Scene);
 
         lightMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
@@ -85,7 +88,7 @@ namespace Engine
             {
                 if (ImGui::MenuItem("New", "Ctrl+N"))
                 {
-                    m_Scene = std::make_shared<Scene>();
+                    m_Scene = std::make_shared<Scene>(m_Parent->GetEventDispatcher());
                     m_SceneRenderer.SetContext(m_Scene);
                 }
 
@@ -95,7 +98,7 @@ namespace Engine
 
                     if (file.empty() == false)
                     {
-                        m_Scene = std::make_shared<Scene>();
+                        m_Scene = std::make_shared<Scene>(m_Parent->GetEventDispatcher());
                         m_SceneRenderer.SetContext(m_Scene);
 
                         SceneSerializer::Deserialize(m_Scene, file[0]);

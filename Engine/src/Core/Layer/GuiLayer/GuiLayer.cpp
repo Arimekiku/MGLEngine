@@ -7,7 +7,7 @@
 
 namespace Engine
 {
-    void GuiLayer::Attach()
+    GuiLayer::GuiLayer(const Ref<Window>& window)
     {
         ImGui::CreateContext();
 
@@ -23,21 +23,19 @@ namespace Engine
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
 
-        const Bootstrapper& boot = Bootstrapper::GetInstance();
-        const auto window = static_cast<GLFWwindow*>(boot.GetWindow().GetNativeWindow());
-
-        ImGui_ImplGlfw_InitForOpenGL(window, true);
+        ImGui_ImplGlfw_InitForOpenGL(window->GetNativeWindow(), true);
         ImGui_ImplOpenGL3_Init("#version 450");
+        m_Parent = window;
     }
 
-    void GuiLayer::Detach()
-    {
+	GuiLayer::~GuiLayer()
+	{
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
-    }
+	}
 
-    void GuiLayer::Begin()
+    void GuiLayer::Begin() const
     {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -45,11 +43,10 @@ namespace Engine
         ImGuizmo::BeginFrame();
     }
 
-    void GuiLayer::End()
+    void GuiLayer::End() const
     {
         ImGuiIO& io = ImGui::GetIO();
-        const Bootstrapper& boot = Bootstrapper::GetInstance();
-        io.DisplaySize = ImVec2(boot.GetWindow().GetWidth(), boot.GetWindow().GetHeight());
+        io.DisplaySize = ImVec2(m_Parent->GetWidth(), m_Parent->GetHeight());
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

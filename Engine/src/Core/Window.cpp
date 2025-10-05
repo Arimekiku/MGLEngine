@@ -1,4 +1,5 @@
 #include "Window.h"
+
 #include "Events/Event.h"
 #include "Logger/Log.h"
 

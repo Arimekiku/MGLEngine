@@ -4,7 +4,7 @@
 #include "Window.h"
 #include "Events/Event.h"
 #include "Events/EventDispatcher.h"
-#include "Layer/LayerStack.h"
+#include "Layer/LayerMap.h"
 
 namespace Engine
 {
@@ -17,8 +17,6 @@ namespace Engine
 		void Run();
 		void Abort() { m_Running = false; }
 
-		void AddLayer(const Ref<Layer>& layer);
-
 		static Bootstrapper& GetInstance() { return *s_Instance; }
 		EventDispatcher& GetEventDispatcher() { return m_Window->GetEventDispatcher(); }
 		Window& GetWindow() const { return *m_Window; }
@@ -28,8 +26,8 @@ namespace Engine
 		void OnKeyPressedEvent(const KeyPressedEvent& e);
 
 		static Bootstrapper* s_Instance;
-		Scope<Window> m_Window;
-		LayerStack m_LayerStack;
+		Ref<Window> m_Window;
+		LayerMap m_LayerStack;
 		bool m_Running = true, m_Minimized = false;
 		float m_LastFrameTime = 0;
 	};

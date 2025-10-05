@@ -377,9 +377,7 @@ namespace Engine
 			});
 
 			if (ImGui::Button("Add Component"))
-			{
 				ImGui::OpenPopup("addcomponent");
-			}
 
 			if (ImGui::BeginPopup("addcomponent"))
 			{

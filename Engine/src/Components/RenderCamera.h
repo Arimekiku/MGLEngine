@@ -9,10 +9,10 @@ namespace Engine
     class RenderCamera
     {
     public:
-        RenderCamera();
+        RenderCamera(int width = 1280, int height = 1024);
         ~RenderCamera() = default;
 
-        void Resize(const uint16_t width, const uint16_t height);
+        void Resize(int width, int height);
 
         glm::mat4& SetPerspective(float fov, float minDist, float maxDist);
 

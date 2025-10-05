@@ -6,7 +6,7 @@
 
 namespace Engine 
 {
-    Framebuffer::Framebuffer(const int16_t width, const int16_t height, const FramebufferType type)
+    Framebuffer::Framebuffer(const int width, const int height, const FramebufferType type)
     {
         m_Type = type;
 
@@ -107,7 +107,7 @@ namespace Engine
         }
     }
 
-    uint32_t Framebuffer::GetAttachment(int16_t index) const
+    uint32_t Framebuffer::GetAttachment(size_t index) const
     {
         if (index > m_Attachments.capacity())
         {
@@ -118,7 +118,7 @@ namespace Engine
         return m_Attachments[index];
     }
 
-    void Framebuffer::Resize(const int16_t width, const int16_t height)
+    void Framebuffer::Resize(const int width, const int height)
     {
         m_Width = width; m_Height = height;
 

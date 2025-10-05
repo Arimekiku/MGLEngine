@@ -1,6 +1,7 @@
 #include "Input.h"
 #include "Bootstrapper.h"
 
+//TODO: this is bad, completely revamp input system
 namespace Engine
 {
     bool Input::Key::Pressed(const KeyCode code)
@@ -70,8 +71,8 @@ namespace Engine
         const float height = window.GetHeight();
 
         return {
-                10.0f * (mousePos.y - height / 2) / width,
-                10.0f * (mousePos.x - width / 2) / width
+            10.0f * (mousePos.y - height / 2) / width,
+            10.0f * (mousePos.x - width / 2) / width
         };
     }
 

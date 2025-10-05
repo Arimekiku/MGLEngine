@@ -133,7 +133,7 @@ namespace Engine
     class VertexBuffer
     {
     public:
-        VertexBuffer(const float* vertices, size_t size);
+        VertexBuffer(const float* vertices, int32_t size);
         ~VertexBuffer();
 
         const RenderBufferLayout& GetLayout() { return m_Layout; }

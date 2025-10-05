@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Time.h"
-#include "Events/Event.h"
 
 namespace Engine
 {
@@ -11,11 +10,7 @@ namespace Engine
         Layer() = default;
         virtual ~Layer() = default;
 
-        virtual void Attach() { }
-        virtual void Detach() { }
         virtual void OnEveryUpdate(Time deltaTime) { }
         virtual void OnGuiUpdate() { }
-
-        virtual void OnEvent(Event& event) { }
     };
 }

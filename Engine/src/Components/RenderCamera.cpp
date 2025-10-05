@@ -1,17 +1,16 @@
 #include "RenderCamera.h"
-#include "RendererEngine.h"
+#include "Engine.h"
 
 #include <glm/gtx/vector_angle.hpp>
 
 namespace Engine
 {
-    RenderCamera::RenderCamera()
+    RenderCamera::RenderCamera(const int width, const int height)
     {
-        const auto& window = Bootstrapper::GetInstance().GetWindow();
-        Resize(window.GetWidth(), window.GetHeight());
+        Resize(width, height);
     }
 
-    void RenderCamera::Resize(const uint16_t width, const uint16_t height)
+    void RenderCamera::Resize(const int width, const int height)
     {
         m_Aspect = (float)width / (float)height;
 

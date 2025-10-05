@@ -13,7 +13,8 @@ namespace Engine
 	class Scene
 	{
 	public: 
-		Scene();
+		Scene() = delete;
+		Scene(EventDispatcher& dispatcher);
 		~Scene() = default;
 
 		void OnEveryUpdate(Time deltaTime);

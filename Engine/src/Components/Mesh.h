@@ -19,7 +19,7 @@ namespace Engine
         void SetPath(const std::string& path) { m_Path = path; }
         const std::string& GetPath() { return m_Path; }
 
-        inline const Ref<VertexArray>& GetVertexArray() { return m_VertexArray; }
+        const Ref<VertexArray>& GetVertexArray() { return m_VertexArray; }
 
     private:
         std::string m_Path = std::string();

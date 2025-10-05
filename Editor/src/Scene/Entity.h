@@ -18,7 +18,6 @@ namespace Engine
 			LOG_ASSERT(this->HasComponent<T>() == false, "Entity %d already has component!", (int32_t)m_EntityId);
 
 			T& component = m_Scene->m_Entities.emplace<T>(m_EntityId, std::forward<Args>(args)...);
-
 			return component;
 		}
 
@@ -44,7 +43,6 @@ namespace Engine
 			LOG_ASSERT(this->HasComponent<T>(), "Entity does not have component!");
 
 			T& component = m_Scene->m_Entities.get<T>(m_EntityId);
-
 			return component;
 		}
 

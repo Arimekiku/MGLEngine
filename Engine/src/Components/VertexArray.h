@@ -21,7 +21,7 @@ namespace Engine
         const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 
     private:
-        uint32_t m_RendererID = 0;
+        uint32_t m_RendererId = 0;
 
         Ref<VertexBuffer> m_VertexBuffer;
         Ref<IndexBuffer> m_IndexBuffer;

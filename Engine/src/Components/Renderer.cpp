@@ -12,7 +12,7 @@ namespace Engine
         m_SkyboxShader.Bind();
         m_SkyboxShader.BindUniformInt1("u_Skybox", 0);
 
-        glGenVertexArrays(1, &m_Data.vao);
+        glGenVertexArrays(1, &m_Data.Vao);
         glBindVertexArray(0);
     }
 
@@ -27,11 +27,11 @@ namespace Engine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void Renderer::RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& TRSMatrix)
+    void Renderer::RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& trsMatrix)
     {
         shader->Bind();
         shader->BindUniformMat4("u_camMatrix", m_ProjViewMat);
-        shader->BindUniformMat4("u_trsMatrix", TRSMatrix);
+        shader->BindUniformMat4("u_trsMatrix", trsMatrix);
 
         const auto& vertexArray = mesh->GetVertexArray();
         vertexArray->Bind();

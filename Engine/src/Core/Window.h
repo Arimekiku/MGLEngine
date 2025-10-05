@@ -9,8 +9,8 @@ namespace Engine
 {
 	struct WindowProperties
 	{
-		const char* Name = "Rendering Engine";
-		int Width = 1600, Height = 900;
+		const char* Name = "Renderer";
+		int Width = 1280, Height = 1024;
 		bool VSync = true;
 
 		WindowProperties() = default;
@@ -28,9 +28,9 @@ namespace Engine
 		Window(const WindowProperties& properties = WindowProperties());
 		~Window();
 
-		int GetWidth() const { return m_Data.Properties.Width; }
-		int GetHeight() const { return m_Data.Properties.Height; }
-		bool VSyncEnabled() const { return m_Data.Properties.VSync; }
+		int GetWidth() const { return m_Data.Width; }
+		int GetHeight() const { return m_Data.Height; }
+		bool VSyncEnabled() const { return m_Data.VSync; }
 		GLFWwindow* const& GetNativeWindow() const { return m_Window; }
 		EventDispatcher& GetEventDispatcher() { return m_Dispatcher; }
 
@@ -48,13 +48,7 @@ namespace Engine
 
 		GLFWwindow* m_Window;
 
-		struct WindowData
-		{
-			WindowProperties Properties;
-		};
-
 		EventDispatcher m_Dispatcher;
-
-		WindowData m_Data;
+		WindowProperties m_Data;
 	};
 }

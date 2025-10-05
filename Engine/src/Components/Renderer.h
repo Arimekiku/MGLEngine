@@ -11,8 +11,8 @@ namespace Engine
 {
     struct RendererData
     {
-        GLuint vbo;
-        GLuint vao;
+        GLuint Vbo;
+        GLuint Vao;
     };
 
     class Renderer
@@ -23,7 +23,7 @@ namespace Engine
         static void UpdateCameraMatrix(const glm::mat4& cameraProjView);
         static void Clear(glm::vec4 color);
 
-        static void RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& TRSMatrix);
+        static void RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& trsMatrix);
 
         static void SetViewport(int16_t x, int16_t y, int16_t width, int16_t height);
 

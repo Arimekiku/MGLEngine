@@ -12,9 +12,7 @@ namespace Engine
     const Ref<Mesh>& MeshImporter::CreateMesh(const std::string& path)
     {
         if (m_Meshes[path])
-        {
             return m_Meshes[path];
-        }
 
         Assimp::Importer importer;
 
@@ -23,9 +21,7 @@ namespace Engine
         const aiScene* scene = importer.ReadFile(resultPath.str().c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-        {
             LOG_ASSERT(false, "Could not load from path: {0} with message: {1}", resultPath.str().c_str(), importer.GetErrorString());
-        }
 
         aiMesh* mesh = scene->mMeshes[0];
 
@@ -59,9 +55,7 @@ namespace Engine
             aiFace face = mesh->mFaces[i];
 
             for (uint32_t j = 0; j < face.mNumIndices; j++)
-            {
                 indices.push_back(face.mIndices[j]);
-            }
         }
 
         m_Meshes[path] = std::make_shared<Mesh>(vertices, indices);
@@ -72,9 +66,7 @@ namespace Engine
     const Ref<Mesh>& MeshImporter::CreatePlane()
     {
         if (m_Meshes["Plane"])
-        {
             return m_Meshes["Plane"];
-        }
 
         auto vertices = std::vector<Vertex>(4);
         vertices[0].Position = glm::vec3(-0.5f, 0.5f, 0.0f);
@@ -90,9 +82,7 @@ namespace Engine
         vertices[3].TexCoord = glm::vec2(0.0f, 0.0f);
 
         for (auto& vertex : vertices)
-        {
             vertex.Normal = glm::vec3(0.0f, 0.0f, 1.0f);
-        }
 
         std::vector<uint32_t> indices = { 0, 1, 2, 0, 2, 3, };
 
@@ -104,9 +94,7 @@ namespace Engine
     const Ref<Mesh>& MeshImporter::CreateCube()
     {
         if (m_Meshes["Cube"])
-        {
             return m_Meshes["Cube"];
-        }
 
         auto vertices = std::vector<Vertex>(8);
         vertices[0].Position = glm::vec3(-0.5f, -0.5f, 0.5f);
@@ -145,9 +133,7 @@ namespace Engine
     const Ref<Mesh>& MeshImporter::CreateSphere()
     {
         if (m_Meshes["Sphere"])
-        {
             return m_Meshes["Sphere"];
-        }
 
         const float radius = 1.0f;
         const float pi = 3.14f;

@@ -8,13 +8,15 @@ namespace Engine
     class EditorLayer final : public Layer
     {
     public:
-        EditorLayer();
+        EditorLayer(const Ref<Window>& window);
 
         void OnEveryUpdate(Time deltaTime) override;
         void OnGuiUpdate() override;
 
     private:
-        Ref<Scene> m_Scene = std::make_shared<Scene>();
+		Ref<Window> m_Parent = nullptr;
+
+        Ref<Scene> m_Scene = nullptr;
         bool m_IsScenePanel = true, m_IsViewportPanel = true, m_IsInspectorPanel = true, m_FirstClick = true;
         Time m_LastTime = Time(0);
 

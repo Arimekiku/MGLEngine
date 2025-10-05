@@ -1,9 +1,11 @@
 #include "Bootstrapper.h"
-#include "Core/Layer/ImGui/GuiLayer.h"
-#include "Events/EventDispatcher.h"
-#include "Logger/Log.h"
 
 #include <portable_file_dialogs.h>
+
+#include "EditorLayer.h"
+#include "Core/Layer/GuiLayer/GuiLayer.h"
+#include "Events/EventDispatcher.h"
+#include "Logger/Log.h"
 
 namespace Engine
 {
@@ -14,8 +16,15 @@ namespace Engine
 		LOG_ASSERT(pfd::settings::available(), "Portable File Dialogs are not available on this platform.\n");
 
 		s_Instance = this;
-		m_LayerStack = LayerStack();
-		m_Window = std::make_unique<Window>();
+
+		m_Window = std::make_shared<Window>();
+		m_LayerStack = LayerMap();
+
+		const auto guiLayer = std::make_shared<GuiLayer>(m_Window);
+		m_LayerStack.Push(guiLayer);
+
+		const auto editorLayer = std::make_shared<EditorLayer>(m_Window);
+		m_LayerStack.Push(editorLayer);
 
 		auto& dispatcher = m_Window->GetEventDispatcher();
 		dispatcher.Subscribe<WindowCloseEvent>(BIND_FUNC(OnWindowCloseEvent));
@@ -41,22 +50,17 @@ namespace Engine
 
 			const auto deltaTime = Time(m_LastFrameTime - startFrameTime);
 
-			for (const auto& layer : m_LayerStack)
+			for (const auto& layer : m_LayerStack | std::views::values)
 				layer->OnEveryUpdate(deltaTime);
 
-			GuiLayer::Begin();
+			const auto& guiLayer = m_LayerStack.Get<GuiLayer>();
+			guiLayer->Begin();
 
-			for (const auto& layer : m_LayerStack)
+			for (const auto& layer : m_LayerStack | std::views::values)
 				layer->OnGuiUpdate();
 
-			GuiLayer::End();
+			guiLayer->End();
         }
-	}
-
-	void Bootstrapper::AddLayer(const Ref<Layer>& layer)
-	{
-		m_LayerStack.Push(layer);
-		layer->Attach();
 	}
 
 	void Bootstrapper::OnWindowCloseEvent(const WindowCloseEvent& e)

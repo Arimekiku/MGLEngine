@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-    VertexBuffer::VertexBuffer(const float* vertices, size_t size)
+    VertexBuffer::VertexBuffer(const float* vertices, const int32_t size)
     {
         glCreateBuffers(1, &m_RendererID);
         glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);

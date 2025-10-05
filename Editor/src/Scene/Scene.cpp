@@ -22,9 +22,8 @@ namespace Engine
 		cameraOrientation = glm::rotate(cameraOrientation, glm::radians(-rotY), Vector3::Up());
 	}
 
-	Scene::Scene()
+	Scene::Scene(EventDispatcher& dispatcher)
 	{
-		auto& dispatcher = Bootstrapper::GetInstance().GetEventDispatcher();
 		dispatcher.Subscribe<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
 	}
 
