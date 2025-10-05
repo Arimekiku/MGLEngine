@@ -8,7 +8,7 @@ namespace Engine
     class GuiLayer final : public Layer
     {
     public:
-        GuiLayer(const Ref<Window>& window);
+        GuiLayer(const Ptr<Window>& window);
         ~GuiLayer() override;
 
     	void Begin() const;
@@ -18,7 +18,7 @@ namespace Engine
         void LoadLayout();
 		void SaveLayout();
 
-        Ref<Window> m_Parent = nullptr;
+        Ptr<Window> m_Parent = nullptr;
 
         float m_Time = 1 / 60.f;
     };

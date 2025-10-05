@@ -7,9 +7,9 @@
 
 namespace Engine
 {
-    static std::unordered_map<std::string, Ref<Mesh>> m_Meshes;
+    static std::unordered_map<std::string, Ptr<Mesh>> m_Meshes;
 
-    const Ref<Mesh>& MeshImporter::CreateMesh(const std::string& path)
+    const Ptr<Mesh>& MeshImporter::CreateMesh(const std::string& path)
     {
         if (m_Meshes[path])
             return m_Meshes[path];
@@ -58,12 +58,12 @@ namespace Engine
                 indices.push_back(face.mIndices[j]);
         }
 
-        m_Meshes[path] = std::make_shared<Mesh>(vertices, indices);
+        m_Meshes[path] = Ptr<Mesh>::Create(vertices, indices);
         m_Meshes[path]->SetPath(path);
         return m_Meshes[path];
     }
 
-    const Ref<Mesh>& MeshImporter::CreatePlane()
+    const Ptr<Mesh>& MeshImporter::CreatePlane()
     {
         if (m_Meshes["Plane"])
             return m_Meshes["Plane"];
@@ -86,12 +86,12 @@ namespace Engine
 
         std::vector<uint32_t> indices = { 0, 1, 2, 0, 2, 3, };
 
-        m_Meshes["Plane"] = std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Plane"] = Ptr<Mesh>::Create(vertices, indices);
         m_Meshes["Plane"]->SetPath("Plane");
         return m_Meshes["Plane"];
     }
 
-    const Ref<Mesh>& MeshImporter::CreateCube()
+    const Ptr<Mesh>& MeshImporter::CreateCube()
     {
         if (m_Meshes["Cube"])
             return m_Meshes["Cube"];
@@ -125,12 +125,12 @@ namespace Engine
             3, 2, 6, 6, 7, 3,
         };
         
-        m_Meshes["Cube"] = std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Cube"] = Ptr<Mesh>::Create(vertices, indices);
         m_Meshes["Cube"]->SetPath("Cube");
         return m_Meshes["Cube"];
     }
 
-    const Ref<Mesh>& MeshImporter::CreateSphere()
+    const Ptr<Mesh>& MeshImporter::CreateSphere()
     {
         if (m_Meshes["Sphere"])
             return m_Meshes["Sphere"];
@@ -178,7 +178,7 @@ namespace Engine
 			}
 		}
 
-        m_Meshes["Sphere"] = std::make_shared<Mesh>(vertices, indices);
+        m_Meshes["Sphere"] = Ptr<Mesh>::Create(vertices, indices);
         m_Meshes["Sphere"]->SetPath("Sphere");
         return m_Meshes["Sphere"];
     }

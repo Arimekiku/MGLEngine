@@ -6,7 +6,7 @@
 
 namespace Engine
 {
-    EditorLayer::EditorLayer(const Ref<Window>& window)
+    EditorLayer::EditorLayer(const Ptr<Window>& window)
     {
 		m_Parent = window;
 
@@ -14,15 +14,15 @@ namespace Engine
 		const auto& lightMaterial = MaterialImporter::AddMaterial("Light", "Shaders/areaLight.vert", "Shaders/areaLight.frag");
         const auto& defaultMaterial = MaterialImporter::AddMaterial("Default", "Shaders/default.vert", "Shaders/default.frag");
 
-        const auto& faceTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/face.png");
-        const auto& houseTexture = std::make_shared<Texture>(RESOURCES_PATH "Images/house.png");
+        const auto& faceTexture = Ptr<Texture>::Create(RESOURCES_PATH "Images/face.png");
+        const auto& houseTexture = Ptr<Texture>::Create(RESOURCES_PATH "Images/house.png");
 
         MeshImporter::CreatePlane();
         MeshImporter::CreateCube();
         MeshImporter::CreateSphere();
 
         //BIND ASSETS
-        m_Scene = std::make_shared<Scene>(m_Parent->GetEventDispatcher());
+        m_Scene = Ptr<Scene>::Create(m_Parent->GetEventDispatcher());
         m_SceneRenderer.SetContext(m_Scene);
 
         lightMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
@@ -88,7 +88,7 @@ namespace Engine
             {
                 if (ImGui::MenuItem("New", "Ctrl+N"))
                 {
-                    m_Scene = std::make_shared<Scene>(m_Parent->GetEventDispatcher());
+                    m_Scene = Ptr<Scene>::Create(m_Parent->GetEventDispatcher());
                     m_SceneRenderer.SetContext(m_Scene);
                 }
 
@@ -98,7 +98,7 @@ namespace Engine
 
                     if (file.empty() == false)
                     {
-                        m_Scene = std::make_shared<Scene>(m_Parent->GetEventDispatcher());
+                        m_Scene = Ptr<Scene>::Create(m_Parent->GetEventDispatcher());
                         m_SceneRenderer.SetContext(m_Scene);
 
                         SceneSerializer::Deserialize(m_Scene, file[0]);

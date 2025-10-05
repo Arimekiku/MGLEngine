@@ -27,7 +27,7 @@ namespace Engine
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void Renderer::RenderMesh(const Ref<Mesh>& mesh, const Ref<Shader>& shader, const glm::mat4& trsMatrix)
+    void Renderer::RenderMesh(const Ptr<Mesh>& mesh, const Ptr<Shader>& shader, const glm::mat4& trsMatrix)
     {
         shader->Bind();
         shader->BindUniformMat4("u_camMatrix", m_ProjViewMat);

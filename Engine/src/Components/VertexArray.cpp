@@ -46,7 +46,7 @@ namespace Engine
         glBindVertexArray(0);
     }
 
-    void VertexArray::SetVertexBuffer(const Ref<VertexBuffer>& buffer)
+    void VertexArray::SetVertexBuffer(const Ptr<VertexBuffer>& buffer)
     {
         LOG_ASSERT(buffer->GetLayout().GetElements().size(), "Layout wasn't set properly!")
 
@@ -69,7 +69,7 @@ namespace Engine
         m_VertexBuffer = buffer;
     }
 
-    void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& buffer)
+    void VertexArray::SetIndexBuffer(const Ptr<IndexBuffer>& buffer)
     {
         glBindVertexArray(m_RendererId);
 

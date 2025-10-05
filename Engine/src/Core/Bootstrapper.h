@@ -26,7 +26,7 @@ namespace Engine
 		void OnKeyPressedEvent(const KeyPressedEvent& e);
 
 		static Bootstrapper* s_Instance;
-		Ref<Window> m_Window;
+		Ptr<Window> m_Window = nullptr;
 		LayerMap m_LayerStack;
 		bool m_Running = true, m_Minimized = false;
 		float m_LastFrameTime = 0;

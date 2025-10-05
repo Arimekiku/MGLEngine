@@ -17,13 +17,13 @@ namespace Engine
 
 		s_Instance = this;
 
-		m_Window = std::make_shared<Window>();
+		m_Window = Ptr<Window>::Create();
 		m_LayerStack = LayerMap();
 
-		const auto guiLayer = std::make_shared<GuiLayer>(m_Window);
+		const auto guiLayer = new GuiLayer(m_Window);
 		m_LayerStack.Push(guiLayer);
 
-		const auto editorLayer = std::make_shared<EditorLayer>(m_Window);
+		const auto editorLayer = new EditorLayer(m_Window);
 		m_LayerStack.Push(editorLayer);
 
 		auto& dispatcher = m_Window->GetEventDispatcher();

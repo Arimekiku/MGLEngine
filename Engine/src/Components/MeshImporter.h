@@ -7,10 +7,10 @@ namespace Engine
     class MeshImporter
     {
     public:
-        static const Ref<Mesh>& CreateMesh(const std::string& path);
+        static const Ptr<Mesh>& CreateMesh(const std::string& path);
         
-        static const Ref<Mesh>& CreatePlane();
-        static const Ref<Mesh>& CreateCube();
-        static const Ref<Mesh>& CreateSphere();
+        static const Ptr<Mesh>& CreatePlane();
+        static const Ptr<Mesh>& CreateCube();
+        static const Ptr<Mesh>& CreateSphere();
     };    
 }

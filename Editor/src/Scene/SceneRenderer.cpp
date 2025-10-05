@@ -95,7 +95,7 @@ namespace Engine
 
 	SceneRenderer::SceneRenderer()
 	{
-		m_ShadowMapShader = std::make_shared<Shader>(
+		m_ShadowMapShader = Ptr<Shader>::Create(
 				RESOURCES_PATH "Shaders/shadowMap.vert",
 				RESOURCES_PATH "Shaders/shadowMap.frag");
 	}
@@ -215,10 +215,9 @@ namespace Engine
 		ImGui::Begin("Scene");
 
 		const auto& sceneEntities = m_Context->m_Entities.view<NameComponent>();
-
 		for (const auto& entityId : sceneEntities)
 		{
-			auto entity = Entity(entityId, m_Context.get());
+			auto entity = Entity(entityId, m_Context.GetRaw());
 			auto entityName = sceneEntities.get<NameComponent>(entity);
 
 			ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0 | ImGuiTreeNodeFlags_OpenOnArrow
@@ -227,9 +226,7 @@ namespace Engine
 			const bool isOpened = ImGui::TreeNodeEx((void*)entityId, flags, "%s", entityName.Name.c_str());
 
 			if (ImGui::IsItemClicked(0))
-			{
-				m_SelectedEntity = Entity(entity, m_Context.get());
-			}
+				m_SelectedEntity = Entity(entity, m_Context.GetRaw());
 
 			bool deleteRequested = false;
 			if (ImGui::BeginPopupContextItem())
@@ -331,7 +328,7 @@ namespace Engine
 				NameComponent& nameComponent = m_SelectedEntity.GetComponent<NameComponent>();
 
 				char buf[256] = {};
-				strcpy(buf, nameComponent.Name.c_str());
+				strcpy_s(buf, nameComponent.Name.c_str());
 
 				if (ImGui::InputText("Name", buf, sizeof(buf)))
 					nameComponent.Name = buf;
@@ -448,7 +445,7 @@ namespace Engine
 		}
 	}
 
-	void SceneRenderer::SetContext(Ref<Scene> context)
+	void SceneRenderer::SetContext(Ptr<Scene> context)
 	{
 		m_Context = std::move(context);
 		m_SelectedEntity = Entity();

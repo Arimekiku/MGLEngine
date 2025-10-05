@@ -39,20 +39,20 @@ namespace Engine
 
 	struct MeshComponent
 	{
-		Ref<Mesh> SharedMesh = nullptr;
+		Ptr<Mesh> SharedMesh = nullptr;
 
 		MeshComponent() = default;
 		MeshComponent(const MeshComponent&) = default;
-		MeshComponent(const Ref<Mesh>& mesh) : SharedMesh(mesh) { }
+		MeshComponent(const Ptr<Mesh>& mesh) : SharedMesh(mesh) { }
 	};
 
 	struct MaterialComponent
 	{
-		Ref<Material> Shared;
+		Ptr<Material> Shared = nullptr;
 
 		MaterialComponent() = default;
 		MaterialComponent(const MaterialComponent&) = default;
-		MaterialComponent(const Ref<Material>& material) : Shared(material) { }
+		MaterialComponent(const Ptr<Material>& material) : Shared(material) { }
 	};
 
 	struct DirectLightComponent

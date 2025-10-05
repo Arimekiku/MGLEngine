@@ -21,14 +21,14 @@ namespace Engine
 		void DrawInspectorPanel();
 		void DrawGuizmos();
 
-		void SetContext(Ref<Scene> context);
+		void SetContext(Ptr<Scene> context);
 
 	private:
 		Framebuffer m_DepthMap = Framebuffer(1024, 1024, FramebufferType::DepthBuffer);
 
-		Ref<RenderCamera> m_ViewportCamera = std::make_shared<RenderCamera>();
-		Ref<Scene> m_Context = nullptr;
-		Ref<Shader> m_ShadowMapShader;
+		Ptr<RenderCamera> m_ViewportCamera = Ptr<RenderCamera>::Create();
+		Ptr<Scene> m_Context = nullptr;
+		Ptr<Shader> m_ShadowMapShader = nullptr;
 
 		Entity m_SelectedEntity = Entity();
 

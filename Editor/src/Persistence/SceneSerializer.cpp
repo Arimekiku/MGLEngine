@@ -173,7 +173,7 @@ namespace Engine
 		out << YAML::EndMap;
 	}
 
-	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::string& filepath)
+	void SceneSerializer::Serialize(const Ptr<Scene>& scene, const std::string& filepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -182,7 +182,7 @@ namespace Engine
 
 		for (const auto entityId : scene->m_Entities.view<entt::entity>())
 		{
-			const auto entity = Entity(entityId, scene.get());
+			const auto entity = Entity(entityId, scene.GetRaw());
 			if (!entity)
 				return;
 
@@ -196,7 +196,7 @@ namespace Engine
 		fout << out.c_str();
 	}
 
-	void SceneSerializer::Deserialize(const Ref<Scene>& scene, const std::string& filepath)
+	void SceneSerializer::Deserialize(const Ptr<Scene>& scene, const std::string& filepath)
 	{
 		YAML::Node data;
 		try
@@ -211,7 +211,7 @@ namespace Engine
 
 		if (!data["Scene"])
 		{
-			LOG_ERROR("Failed to get scene object from {0}\n", filepath);
+			LOG_ERROR("Failed to get scene object from {0}", filepath);
 			return;
 		}
 
@@ -287,12 +287,12 @@ namespace Engine
 					auto fragPath = materialComponent["FragPath"].as<std::string>();
 					auto matName = materialComponent["Name"].as<std::string>();
 
-					Ref<Material> sharedMat = MaterialImporter::AddMaterial(matName, vertPath, fragPath);
+					Ptr<Material> sharedMat = MaterialImporter::AddMaterial(matName, vertPath, fragPath);
 					auto& material = deserializedEntity.AddComponent<MaterialComponent>(sharedMat);
 				}
 			}
 		}
 
-		LOG_TRACE("Scene {0} successfully loaded!\n", sceneName);
+		LOG_TRACE("Scene {0} successfully loaded!", sceneName);
 	}
 }

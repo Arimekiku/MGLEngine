@@ -14,16 +14,16 @@ namespace Engine
         void Bind() const;
         void Unbind() const;
 
-        void SetVertexBuffer(const Ref<VertexBuffer>& buffer);
-        void SetIndexBuffer(const Ref<IndexBuffer>& buffer);
+        void SetVertexBuffer(const Ptr<VertexBuffer>& buffer);
+        void SetIndexBuffer(const Ptr<IndexBuffer>& buffer);
 
-        const Ref<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
-        const Ref<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
+        const Ptr<VertexBuffer>& GetVertexBuffer() const { return m_VertexBuffer; }
+        const Ptr<IndexBuffer>& GetIndexBuffer() const { return m_IndexBuffer; }
 
     private:
         uint32_t m_RendererId = 0;
 
-        Ref<VertexBuffer> m_VertexBuffer;
-        Ref<IndexBuffer> m_IndexBuffer;
+        Ptr<VertexBuffer> m_VertexBuffer = nullptr;
+        Ptr<IndexBuffer> m_IndexBuffer = nullptr;
     };
 }

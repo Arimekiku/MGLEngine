@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Core.h"
-#include "Layer.h"
-
+#include <any>
 #include <typeindex>
+
+#include "Layer.h"
+#include "Core/Logger/Log.h"
 
 namespace Engine
 {
@@ -17,13 +18,13 @@ namespace Engine
         ~LayerMap() = default;
 
 		template<typename TLayer> requires DerivedFromLayer<TLayer>
-        void Push(const Ref<TLayer>& layer)
+        void Push(TLayer* layer)
         {
             m_Layers.try_emplace(typeid(TLayer), layer);
         }
 
         template<typename TLayer> requires DerivedFromLayer<TLayer>
-        void Pop(const Ref<TLayer>& layer)
+        void Pop(const TLayer* layer)
         {
             if (m_Layers.contains(typeid(TLayer)) == false)
             {
@@ -35,7 +36,7 @@ namespace Engine
         }
 
         template<typename TLayer>
-        Ref<TLayer> Get()
+        TLayer* Get()
         {
             if (m_Layers.contains(typeid(TLayer)) == false)
             {
@@ -43,14 +44,14 @@ namespace Engine
                 return nullptr;
             }
 
-            return std::dynamic_pointer_cast<TLayer>(m_Layers[typeid(TLayer)]);
+            return dynamic_cast<TLayer*>(m_Layers[typeid(TLayer)]);
         }
 
-        std::unordered_map<std::type_index, Ref<Layer>>::iterator begin() { return m_Layers.begin(); }
-        std::unordered_map<std::type_index, Ref<Layer>>::iterator end() { return m_Layers.end(); }
+        std::unordered_map<std::type_index, Layer*>::iterator begin() { return m_Layers.begin(); }
+        std::unordered_map<std::type_index, Layer*>::iterator end() { return m_Layers.end(); }
 
     private:
-        std::unordered_map<std::type_index, Ref<Layer>> m_Layers;
+        std::unordered_map<std::type_index, Layer*> m_Layers;
     };
 }
 

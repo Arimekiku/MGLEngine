@@ -10,7 +10,7 @@
 
 namespace Engine
 {
-    GuiLayer::GuiLayer(const Ref<Window>& window)
+    GuiLayer::GuiLayer(const Ptr<Window>& window)
     {
         ImGui::CreateContext();
 

@@ -1,7 +1,5 @@
 #include "Mesh.h"
 
-#include <memory>
-
 namespace Engine
 {
     Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
@@ -12,7 +10,7 @@ namespace Engine
 
     void Mesh::SetVertices(const float* vertices, size_t size)
     {
-        const auto& vertexBuffer = std::make_shared<VertexBuffer>(vertices, size);
+        const auto& vertexBuffer = Ptr<VertexBuffer>::Create(vertices, size);
 
         const RenderBufferLayout layout = {
             {ShaderDataType::Float3, "a_Position"},
@@ -26,7 +24,7 @@ namespace Engine
 
     void Mesh::SetIndices(const uint32_t* indices, uint32_t count)
     {
-        const auto& indexBuffer = std::make_shared<IndexBuffer>(indices, count);
+        const auto& indexBuffer = Ptr<IndexBuffer>::Create(indices, count);
         m_VertexArray->SetIndexBuffer(indexBuffer);
     }
 

@@ -8,15 +8,15 @@ namespace Engine
     class EditorLayer final : public Layer
     {
     public:
-        EditorLayer(const Ref<Window>& window);
+        EditorLayer(const Ptr<Window>& window);
 
         void OnEveryUpdate(Time deltaTime) override;
         void OnGuiUpdate() override;
 
     private:
-		Ref<Window> m_Parent = nullptr;
+		Ptr<Window> m_Parent = nullptr;
 
-        Ref<Scene> m_Scene = nullptr;
+        Ptr<Scene> m_Scene = nullptr;
         bool m_IsScenePanel = true, m_IsViewportPanel = true, m_IsInspectorPanel = true, m_FirstClick = true;
         Time m_LastTime = Time(0);
 

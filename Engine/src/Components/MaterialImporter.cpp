@@ -5,20 +5,18 @@
 
 namespace Engine
 {
-    static std::unordered_map<std::string, Ref<Material>> m_Materials;
+    static std::unordered_map<std::string, Ptr<Material>> m_Materials;
 
-    const Ref<Material>& MaterialImporter::GetMaterial(const std::string& name)
+    const Ptr<Material>& MaterialImporter::GetMaterial(const std::string& name)
     {
         if (m_Materials[name])
-        {
             return m_Materials[name];
-        }
 
         LOG_ERROR("Material {0} do not exists!", name);
         throw std::exception();
     }
 
-    const Ref<Material>& MaterialImporter::AddMaterial(const std::string& name, const std::string& vertPath, const std::string& fragPath)
+    const Ptr<Material>& MaterialImporter::AddMaterial(const std::string& name, const std::string& vertPath, const std::string& fragPath)
     {
         if (m_Materials[name])
         {
@@ -31,7 +29,7 @@ namespace Engine
         std::stringstream fragResult;
         fragResult << RESOURCES_PATH << fragPath;
 
-        m_Materials[name] = std::make_shared<Material>(vertPath, fragPath);
+        m_Materials[name] = Ptr<Material>::Create(vertPath, fragPath);
         m_Materials[name]->SetName(name);
         return m_Materials[name];
     }
