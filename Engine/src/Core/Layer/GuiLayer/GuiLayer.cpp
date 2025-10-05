@@ -1,9 +1,12 @@
 #include "GuiLayer.h"
-#include "Core/Bootstrapper.h"
 
-#include <backends/imgui_impl_opengl3.cpp> 
+#include <filesystem>
+#include <fstream>
 #include <backends/imgui_impl_glfw.cpp>
+#include <backends/imgui_impl_opengl3.cpp>
 #include <ImGuizmo.h>
+
+#include "Core/Bootstrapper.h"
 
 namespace Engine
 {
@@ -26,10 +29,14 @@ namespace Engine
         ImGui_ImplGlfw_InitForOpenGL(window->GetNativeWindow(), true);
         ImGui_ImplOpenGL3_Init("#version 450");
         m_Parent = window;
+
+        LoadLayout();
     }
 
 	GuiLayer::~GuiLayer()
 	{
+        SaveLayout();
+
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();
@@ -57,5 +64,24 @@ namespace Engine
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(window);
         }
+    }
+
+    void GuiLayer::LoadLayout()
+    {
+        if (std::filesystem::exists(RESOURCES_PATH "imgui.ini") == false)
+            return;
+
+        std::ifstream file(RESOURCES_PATH "imgui.ini");
+        const std::string data((std::istreambuf_iterator(file)), std::istreambuf_iterator<char>());
+        ImGui::LoadIniSettingsFromMemory(data.c_str(), data.size());
+    }
+
+    void GuiLayer::SaveLayout()
+    {
+        size_t size = 0;
+        const char* data = ImGui::SaveIniSettingsToMemory(&size);
+
+        std::ofstream file(RESOURCES_PATH "imgui.ini");
+        file.write(data, size);
     }
 }

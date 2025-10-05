@@ -9,7 +9,7 @@ namespace Engine
 
 	Window::Window(const WindowProperties& properties)
 	{
-		m_Data.Properties = properties;
+		m_Data = properties;
 
 		LOG_INFO("Creating window {0}, ({1}, {2})", properties.Name, properties.Width, properties.Height);
 
@@ -28,7 +28,7 @@ namespace Engine
 		const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 		LOG_ASSERT(status, "GLAD initialize failed")
 
-		glViewport(0, 0, m_Data.Properties.Width, m_Data.Properties.Height);
+		glViewport(0, 0, m_Data.Width, m_Data.Height);
 
 		glfwSetErrorCallback([](int error, const char* description)
 		{
@@ -107,9 +107,9 @@ namespace Engine
 
 	void Window::SetVSync(const bool isEnabled)
 	{
-		m_Data.Properties.VSync = isEnabled;
+		m_Data.VSync = isEnabled;
 
-		if (m_Data.Properties.VSync == true)
+		if (m_Data.VSync == true)
 		{
 			glfwSwapInterval(1);
 			return;
@@ -120,7 +120,7 @@ namespace Engine
 
 	void Window::OnWindowSizeCallback(GLFWwindow* window, const int width, const int height) const
 	{
-		auto& [properties] = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+		auto& properties = *static_cast<WindowProperties*>(glfwGetWindowUserPointer(window));
 		properties.Width = width;
 		properties.Height = height;
 

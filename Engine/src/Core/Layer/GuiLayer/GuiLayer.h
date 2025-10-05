@@ -11,12 +11,13 @@ namespace Engine
         GuiLayer(const Ref<Window>& window);
         ~GuiLayer() override;
 
-        void Initialize(const Ref<Window>& window);
-
     	void Begin() const;
     	void End() const;
 
     private:
+        void LoadLayout();
+		void SaveLayout();
+
         Ref<Window> m_Parent = nullptr;
 
         float m_Time = 1 / 60.f;
