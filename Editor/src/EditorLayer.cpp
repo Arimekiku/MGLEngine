@@ -147,7 +147,10 @@ namespace Editor
         ImGui::End();
 
         if (m_IsViewportPanel)
+        {
             m_SceneRenderer.DrawViewport();
+            m_SceneRenderer.DrawSelection();
+        }
 
         if (m_IsScenePanel)
             m_SceneRenderer.DrawScenePanel();

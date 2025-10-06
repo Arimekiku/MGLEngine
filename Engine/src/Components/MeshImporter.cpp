@@ -46,7 +46,7 @@ namespace Engine
 
             const auto position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 
-            Vertex vertex{ position, normal, texCoord };
+            Vertex vertex { position, normal, texCoord };
             vertices.push_back(vertex);
         }
 

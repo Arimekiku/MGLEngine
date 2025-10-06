@@ -137,7 +137,6 @@ namespace Editor
 		Entity cameraEntity = m_Context->GetActiveCameraEntity();
 
 		cameraBuffer.Bind();
-
 		Renderer::Clear(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
 
 		if (!cameraEntity)
@@ -153,6 +152,8 @@ namespace Editor
 		skybox->GetTransform()->Position = camera.Position;
 		Renderer::RenderMesh(skybox->GetMesh(), skybox->GetMaterial(), skybox->GetTransform()->GetTrsMatrix());
 
+		cameraBuffer.ClearAttachment(INTEGER, -1);
+
 		//TODO: batching
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
 		for (const auto& meshEntity : meshRenderers)
@@ -160,30 +161,72 @@ namespace Editor
 			const auto& modelMat = meshRenderers.get<MaterialComponent>(meshEntity).Shared;
 			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 
-			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat, transformComponent.GetTrsMatrix());
+			Renderer::RenderMeshEntity(meshComponent.SharedMesh, modelMat, transformComponent.GetTrsMatrix(), (int)meshEntity);
 		}
 
 		cameraBuffer.Unbind();
 	}
 
+	void SceneRenderer::DrawSelection()
+	{
+		const auto& target = m_ViewportCamera->GetFramebuffer();
+		target.Bind();
+
+		auto [mx, my] = ImGui::GetMousePos();
+		mx -= m_ViewportBounds[0].x;
+		my -= m_ViewportBounds[0].y;
+
+		const auto viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+		my = viewportSize.y - my;
+
+		const auto mousePos = glm::ivec2((int)mx, (int)my);
+		if (mousePos.x < 0 || mousePos.y < 0 || mousePos.x >= (int)viewportSize.x || mousePos.y >= (int)viewportSize.y)
+		{
+			target.Unbind();
+			return;
+		}
+
+		//TODO: improve
+		int pixel = target.GetPixel(1, mousePos.x, mousePos.y);
+		m_HoveredEntity = pixel == -1 ? Entity() : Entity((entt::entity)pixel, m_Context.GetRaw());
+
+		target.Unbind();
+	}
+
 	void SceneRenderer::DrawViewport()
 	{
-		if (ImGui::Begin("Viewport"))
+		ImGui::Begin("Viewport");
+
+		const auto viewportSize = ImGui::GetContentRegionAvail();
+		const auto castSize = glm::ivec2(viewportSize.x, viewportSize.y);
+
+		if (castSize.x != 0 && castSize.y != 0)
 		{
-			const ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-			const auto castSize = glm::ivec2(viewportSize.x, viewportSize.y);
+			if (m_ViewportCamera->GetSize() != castSize)
+				m_ViewportCamera->Resize(castSize.x, castSize.y);
 
-			if (castSize.x != 0 && castSize.y != 0)
-			{
-				if (m_ViewportCamera->GetSize() != castSize)
-					m_ViewportCamera->Resize(castSize.x, castSize.y);
-
-				const uint32_t texture = m_ViewportCamera->GetFramebuffer().GetAttachment(FramebufferAttachmentFormat::RGBA8);
-				ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
-			}
-
-			DrawGuizmos();
+			const uint32_t texture = m_ViewportCamera->GetFramebuffer().GetAttachment(RGBA8);
+			ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 		}
+
+		const auto minBounds = ImGui::GetWindowContentRegionMin();
+		const auto maxBounds = ImGui::GetWindowContentRegionMax();
+		const auto viewportOffset = ImGui::GetWindowPos();
+
+		m_ViewportBounds[0] = { minBounds.x + viewportOffset.x, minBounds.y + viewportOffset.y };
+		m_ViewportBounds[1] = { maxBounds.x + viewportOffset.x, maxBounds.y + viewportOffset.y };
+
+		DrawGuizmos();
+
+		if (ImGui::IsWindowHovered())
+		{
+			const auto guizmosUsed = ImGuizmo::IsUsing() || ImGuizmo::IsOver();
+
+			if (Input::Mouse::ButtonPressed(0) && guizmosUsed == false)
+				m_SelectedEntity = m_HoveredEntity;
+		}
+
+		
 
         ImGui::End();
 	}
@@ -394,9 +437,7 @@ namespace Editor
 		ImGuizmo::SetOrthographic(false);
 		ImGuizmo::SetDrawlist();
 
-		auto pos = ImGui::GetWindowPos();
-		auto size = ImGui::GetWindowSize();
-		ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
+		ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
 		const auto camera = cameraEntity.GetComponent<CameraComponent>();
 		glm::mat4 cameraView = glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up());

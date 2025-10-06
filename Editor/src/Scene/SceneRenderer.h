@@ -16,6 +16,7 @@ namespace Editor
 		void DrawDepthBuffer() const;
 		void DrawTextureBuffer() const;
 
+		void DrawSelection();
 		void DrawViewport();
 		void DrawScenePanel();
 		void DrawInspectorPanel();
@@ -28,7 +29,10 @@ namespace Editor
 		Ptr<Scene> m_Context = nullptr;
 		Ptr<Shader> m_ShadowMapShader = nullptr;
 
+		Entity m_HoveredEntity = Entity();
 		Entity m_SelectedEntity = Entity();
+
+		glm::vec2 m_ViewportBounds[2];
 
 		ImGuizmo::OPERATION m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
 	};

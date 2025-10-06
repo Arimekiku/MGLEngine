@@ -1,6 +1,7 @@
 #version 460 core
 
-out vec4 color;
+layout (location = 0) out vec4 color;
+layout (location = 1) out int index;
 
 in vec3 v_Position;
 in vec2 v_TexCoord;
@@ -13,6 +14,7 @@ layout (binding = 1) uniform sampler2D u_DepthMap;
 
 uniform vec3 u_LightPos;
 uniform vec3 u_LightColor;
+uniform int u_ID;
 
 uniform vec3 u_Albedo;
 
@@ -57,5 +59,7 @@ void main()
 
     // Combine lighting
     vec3 lighting = (1.0 - shadow) * diffuse * albedo;
+
     color = vec4(lighting, 1.0);
+    index = u_ID;
 }

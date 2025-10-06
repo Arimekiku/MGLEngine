@@ -19,6 +19,8 @@ namespace Engine
         static void RenderMesh(const Ptr<Mesh>& mesh, const Ptr<Shader>& shader, const glm::mat4& trsMatrix);
         static void RenderMesh(const Ptr<Mesh>& mesh, const Ptr<Material>& material, const glm::mat4& trsMatrix);
 
+        static void RenderMeshEntity(const Ptr<Mesh>& mesh, const Ptr<Material>& material, const glm::mat4& trsMatrix, int entityId);
+
         static void SetViewport(int16_t x, int16_t y, int16_t width, int16_t height);
 
     private:

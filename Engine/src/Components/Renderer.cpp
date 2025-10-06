@@ -50,6 +50,21 @@ namespace Engine
         material->Unbind();
     }
 
+    void Renderer::RenderMeshEntity(const Ptr<Mesh>& mesh, const Ptr<Material>& material, const glm::mat4& trsMatrix, int entityId)
+    {
+        material->BindMat4Uniform("u_camMatrix", m_ProjViewMat);
+        material->BindMat4Uniform("u_trsMatrix", trsMatrix);
+        material->BindIntUniform("u_ID", entityId);
+        material->Bind();
+
+        const auto& vertexArray = mesh->GetVertexArray();
+        vertexArray->Bind();
+        glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
+        vertexArray->Unbind();
+
+        material->Unbind();
+    }
+
     void Renderer::SetViewport(const int16_t x, const int16_t y, const int16_t width, const int16_t height)
     {
         glViewport(x, y, width, height);

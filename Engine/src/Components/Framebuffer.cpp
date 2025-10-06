@@ -48,6 +48,8 @@ namespace Engine
 
         if (m_Attachments.empty() == false)
         {
+            int offset = 0;
+
             m_AttachmentIds.resize(m_Attachments.size());
             glGenTextures(m_AttachmentIds.size(), m_AttachmentIds.data());
             for (size_t i = 0; i < m_Attachments.size(); i++)
@@ -63,7 +65,7 @@ namespace Engine
 	                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, attachmentId, 0);
+                        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + offset, GL_TEXTURE_2D, attachmentId, 0);
 	                    break;
 	                }
 	                case DEPTH24_STENCIL8:
@@ -72,7 +74,17 @@ namespace Engine
 	                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, attachmentId, 0);
-	                    break;
+
+                        offset--;
+	                	break;
+	                }
+					case INTEGER:
+	                {
+                        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, m_Width, m_Height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, nullptr);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + offset, GL_TEXTURE_2D, attachmentId, 0);
+                        break;
 	                }
 	                default:
 	                {
@@ -80,6 +92,8 @@ namespace Engine
 	                    break;
 	                }
                 }
+
+                offset++;
             }
         }
 
@@ -104,6 +118,13 @@ namespace Engine
         m_Attachments = std::vector(std::move(attachments));
 
         Create();
+    }
+
+    void Framebuffer::ClearAttachment(const FramebufferAttachmentFormat format, const int clearValue) const
+    {
+        const auto attachment = GetAttachment(format);
+
+        glClearTexImage(attachment, 0, GL_RED_INTEGER, GL_INT, &clearValue);
     }
 
     uint32_t Framebuffer::GetAttachment(const FramebufferAttachmentFormat format) const
@@ -140,6 +161,17 @@ namespace Engine
     void Framebuffer::Unbind() const
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    int Framebuffer::GetPixel(uint32_t index, int x, int y) const
+    {
+        LOG_ASSERT(index < m_Attachments.size(), "Framebuffer. Invalid attachment index!");
+
+        int pixel;
+        glReadBuffer(GL_COLOR_ATTACHMENT0 + index);
+        glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel);
+
+        return pixel;
     }
 
     void Framebuffer::Resize(const int width, const int height)

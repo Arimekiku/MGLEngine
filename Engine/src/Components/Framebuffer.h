@@ -8,6 +8,7 @@ namespace Engine
     enum FramebufferAttachmentFormat
     {
         RGBA8,
+        INTEGER,
         DEPTH24_STENCIL8,
 	};
 
@@ -27,6 +28,7 @@ namespace Engine
         ~Framebuffer();
 
         void ConfigureAttachments(std::vector<FramebufferAttachment> attachments);
+        void ClearAttachment(FramebufferAttachmentFormat format, int clearValue) const;
         uint32_t GetAttachment(FramebufferAttachmentFormat format) const;
 
         void Bind() const;
@@ -34,6 +36,7 @@ namespace Engine
 
         int GetWidth() const { return m_Width; }
         int GetHeight() const { return m_Height; }
+        int GetPixel(uint32_t index, int x, int y) const;
 
         void Resize(int width, int height);
 

@@ -17,6 +17,7 @@ namespace Engine
     struct MaterialProperties
     {
         std::unordered_map<std::string, int> TextureUniforms;
+        std::unordered_map<std::string, int> IntUniforms;
         std::unordered_map<std::string, float> FloatUniforms;
         std::unordered_map<std::string, glm::vec3> Vec3Uniforms;
         std::unordered_map<std::string, glm::mat4> Mat4Uniforms;
@@ -36,6 +37,7 @@ namespace Engine
         void BindFloatUniform(const std::string& name, float value);
         void BindVec3Uniform(const std::string& name, glm::vec3 value);
         void BindMat4Uniform(const std::string& name, glm::mat4 value);
+		void BindIntUniform(const std::string& name, int value);
         void BindTextureSlot(const std::string& name, int slot);
         void Unbind() const;
 

@@ -42,6 +42,9 @@ namespace Engine
         for (auto& texture : m_Textures)
             texture->Bind();
 
+        for (auto& [name, value] : m_Uniforms.IntUniforms)
+			m_Shader->BindUniformInt1(name, value);
+
         for (auto& [name, value] : m_Uniforms.FloatUniforms)
             m_Shader->BindUniformFloat1(name, value);
 
@@ -75,6 +78,11 @@ namespace Engine
     void Material::BindMat4Uniform(const std::string& name, glm::mat4 value)
     {
         m_Uniforms.Mat4Uniforms[name] = value;
+    }
+
+    void Material::BindIntUniform(const std::string& name, int value)
+    {
+		m_Uniforms.IntUniforms[name] = value;
     }
 
     void Material::BindTextureSlot(const std::string& name, int slot)

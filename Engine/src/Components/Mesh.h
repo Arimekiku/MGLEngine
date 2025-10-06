@@ -11,8 +11,8 @@ namespace Engine
         Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
         ~Mesh();
 
-        void SetVertices(const float* vertices, size_t size);
-        void SetIndices(const uint32_t* indices, uint32_t count);
+        void SetVertices(const float* vertices, size_t size) const;
+        void SetIndices(const uint32_t* indices, uint32_t count) const;
 
         void SetPath(const std::string& path) { m_Path = path; }
         const std::string& GetPath() { return m_Path; }

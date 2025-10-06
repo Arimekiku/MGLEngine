@@ -128,6 +128,8 @@ namespace Engine
 	    glm::vec3 Position;
 	    glm::vec3 Normal;
 	    glm::vec2 TexCoord;
+
+        int ID = -1;
     };
 
     class VertexBuffer
