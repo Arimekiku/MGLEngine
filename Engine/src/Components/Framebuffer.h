@@ -1,27 +1,36 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 
 namespace Engine 
 {
-    enum class FramebufferType
+    enum FramebufferAttachmentFormat
     {
-        Viewport,
-        DepthBuffer
+        RGBA8,
+        DEPTH24_STENCIL8,
+	};
+
+    struct FramebufferAttachment
+    {
+        FramebufferAttachment() = default;
+		FramebufferAttachment(const FramebufferAttachmentFormat format) : Format(format) { }
+
+		FramebufferAttachmentFormat Format;
     };
 
     class Framebuffer 
     {
     public:
-        Framebuffer() { Resize(m_Width, m_Height); }
-        Framebuffer(int width, int height, FramebufferType type);
+        Framebuffer();
+        Framebuffer(int width, int height);
         ~Framebuffer();
+
+        void ConfigureAttachments(std::vector<FramebufferAttachment> attachments);
+        uint32_t GetAttachment(FramebufferAttachmentFormat format) const;
 
         void Bind() const;
         void Unbind() const;
-
-        uint32_t GetColorAttachment() const { return m_ColorAttachment; }
-		uint32_t GetDepthAttachment() const { return m_DepthAttachment; }
 
         int GetWidth() const { return m_Width; }
         int GetHeight() const { return m_Height; }
@@ -29,14 +38,13 @@ namespace Engine
         void Resize(int width, int height);
 
     private:
-        void CreateAsViewport();
-        void CreateAsDepthBuffer();
+        void Create();
         void Clear();
 
         int m_Width = 800, m_Height = 600;
         uint32_t m_RendererId = 0;
-        uint32_t m_ColorAttachment;
-		uint32_t m_DepthAttachment;
-        FramebufferType m_Type = FramebufferType::Viewport;
+
+		std::vector<FramebufferAttachment> m_Attachments;
+        std::vector<uint32_t> m_AttachmentIds;
     };
 }

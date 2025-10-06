@@ -24,8 +24,6 @@ namespace Editor
 		void SetContext(Ptr<Scene> context);
 
 	private:
-		Framebuffer m_DepthMap = Framebuffer(1024, 1024, FramebufferType::DepthBuffer);
-
 		Ptr<RenderCamera> m_ViewportCamera = Ptr<RenderCamera>::Create();
 		Ptr<Scene> m_Context = nullptr;
 		Ptr<Shader> m_ShadowMapShader = nullptr;

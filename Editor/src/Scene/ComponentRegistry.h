@@ -59,11 +59,14 @@ namespace Editor
 
 	struct DirectLightComponent
 	{
-		Framebuffer DepthBuffer = Framebuffer(1024, 1024, FramebufferType::DepthBuffer);
+		Framebuffer DepthBuffer = Framebuffer(2048, 2048);
 		glm::vec3 Color = glm::vec3(1, 1, 1);
 
-		DirectLightComponent() = default;
-		DirectLightComponent(const DirectLightComponent&) = default;
+		DirectLightComponent()
+		{
+			auto depthAttachment = FramebufferAttachment(FramebufferAttachmentFormat::DEPTH24_STENCIL8);
+			DepthBuffer.ConfigureAttachments({ depthAttachment });
+		}
 
 		glm::mat4 GetProjection() const
 		{

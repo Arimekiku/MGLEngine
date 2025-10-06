@@ -89,7 +89,7 @@ namespace Editor
 			ImGui::CloseCurrentPopup();
 		}
 	}
-
+		
 	SceneRenderer::SceneRenderer()
 	{
 		m_ShadowMapShader = Ptr<Shader>::Create(
@@ -176,12 +176,9 @@ namespace Editor
 			if (castSize.x != 0 && castSize.y != 0)
 			{
 				if (m_ViewportCamera->GetSize() != castSize)
-				{
 					m_ViewportCamera->Resize(castSize.x, castSize.y);
-					m_DepthMap.Resize(castSize.x, castSize.y);
-				}
 
-				const uint32_t texture = m_ViewportCamera->GetFramebuffer().GetColorAttachment();
+				const uint32_t texture = m_ViewportCamera->GetFramebuffer().GetAttachment(FramebufferAttachmentFormat::RGBA8);
 				ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
 			}
 
@@ -350,7 +347,7 @@ namespace Editor
 			{
 				ImGui::ColorEdit3("Color", glm::value_ptr(component.Color));
 
-				const uint32_t texture = component.DepthBuffer.GetColorAttachment();
+				const uint32_t texture = component.DepthBuffer.GetAttachment(FramebufferAttachmentFormat::DEPTH24_STENCIL8);
 				ImGui::Image((ImTextureID)texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
 			});
 

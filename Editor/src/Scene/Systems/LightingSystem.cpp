@@ -35,7 +35,7 @@ namespace Editor
 			material->Bind();
 			//TODO: think about it
 			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, lightComponent.DepthBuffer.GetColorAttachment());
+			glBindTexture(GL_TEXTURE_2D, lightComponent.DepthBuffer.GetAttachment(DEPTH24_STENCIL8));
 
 			material->BindVec3Uniform("u_LightColor", lightComponent.Color);
 			material->BindVec3Uniform("u_LightPos", lightTransform.Position);

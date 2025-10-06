@@ -6,6 +6,10 @@ namespace Engine
 {
     RenderCamera::RenderCamera(const int width, const int height)
     {
+		auto colorAttachment = FramebufferAttachment(FramebufferAttachmentFormat::RGBA8);
+		auto depthAttachment = FramebufferAttachment(FramebufferAttachmentFormat::DEPTH24_STENCIL8);
+        m_Framebuffer.ConfigureAttachments({ colorAttachment, depthAttachment });
+
         Resize(width, height);
     }
 
