@@ -51,6 +51,7 @@ Engine was written fully in C++ as an educational project and has several featur
 * Mesh, Sprite, Shader importer
 * TRS Guizmos
 * Scene system
+* Mouse picking
 * Basic ECS
 * Directional and Point lights
 * Directional light shadow maps
