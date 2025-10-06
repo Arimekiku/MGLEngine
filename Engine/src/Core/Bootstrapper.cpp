@@ -21,7 +21,7 @@ namespace Engine
 		const auto guiLayer = new GuiLayer(m_Window);
 		m_LayerStack.Push(guiLayer);
 
-		const auto editorLayer = new EditorLayer(m_Window);
+		const auto editorLayer = new Editor::EditorLayer(m_Window);
 		m_LayerStack.Push(editorLayer);
 
 		auto& dispatcher = m_Window->GetEventDispatcher();

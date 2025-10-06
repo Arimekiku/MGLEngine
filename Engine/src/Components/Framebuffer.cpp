@@ -1,8 +1,8 @@
 #include "Framebuffer.h"
-#include "Renderer.h"
-#include "Core/Bootstrapper.h"
 
 #include <glad/glad.h>
+
+#include "Core/Logger/Log.h"
 
 namespace Engine 
 {

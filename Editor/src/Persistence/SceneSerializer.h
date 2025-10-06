@@ -2,7 +2,7 @@
 
 #include "Scene/Scene.h"
 
-namespace Engine
+namespace Editor
 {
 	class SceneSerializer
 	{

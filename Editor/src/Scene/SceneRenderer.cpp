@@ -1,14 +1,8 @@
 #include "SceneRenderer.h"
 
-#include <iostream>
-
-#include "ComponentRegistry.h"
-#include "Core/Math.h"
-
 #include <glm/gtc/type_ptr.hpp>
-#include <utility>
 
-namespace Engine
+namespace Editor
 {
 	static void DrawVector3Drag(const char* label, glm::vec3& vector, float panelWidth)
 	{
@@ -108,28 +102,33 @@ namespace Engine
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, TransformComponent>();
 		const auto& lights = m_Context->m_Entities.view<DirectLightComponent, TransformComponent>();
 
-		for (const auto& lightEntity : lights)
+		if (lights.size_hint() != 1)
 		{
-			const auto& [lightComponent, lightTransform] = lights.get<DirectLightComponent, TransformComponent>(lightEntity);
-
-			lightComponent.DepthBuffer.Bind();
-			glClear(GL_DEPTH_BUFFER_BIT);
-
-			const glm::mat4 view = glm::lookAt(lightTransform.Position, glm::vec3(0), glm::vec3(0, 1, 0));
-			m_ShadowMapShader->Bind();
-			m_ShadowMapShader->BindUniformMat4("u_lightViewProj", lightComponent.GetProjection() * view);
-
-			//TODO: batching
-			//Draw call for shadow map
-			for (const auto& meshEntity : meshRenderers)
-			{
-				const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
-
-				Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTrsMatrix());
-			}
-
-			lightComponent.DepthBuffer.Unbind();
+			LOG_ERROR("System can't update light! Entities number {0}", lights.size_hint());
+			return;
 		}
+
+		const auto& lightEntity = lights.begin();
+		const auto& [lightComponent, lightTransform] = lights.get<DirectLightComponent, TransformComponent>(*lightEntity);
+
+		lightComponent.DepthBuffer.Bind();
+
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		const glm::mat4 view = glm::lookAt(lightTransform.Position, glm::vec3(0), glm::vec3(0, 1, 0));
+		m_ShadowMapShader->Bind();
+		m_ShadowMapShader->BindUniformMat4("u_lightViewProj", lightComponent.GetProjection() * view);
+		m_ShadowMapShader->Unbind();
+
+		//TODO: batching
+		for (const auto& meshEntity : meshRenderers)
+		{
+			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+
+			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTrsMatrix());
+		}
+
+		lightComponent.DepthBuffer.Unbind();
 	}
 
 	void SceneRenderer::DrawTextureBuffer() const
@@ -139,8 +138,7 @@ namespace Engine
 
 		cameraBuffer.Bind();
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		Renderer::Clear(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
 
 		if (!cameraEntity)
 		{
@@ -151,44 +149,18 @@ namespace Engine
 		const auto camera = cameraEntity.GetComponent<CameraComponent>();
         Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
-		//Draw call for skybox
-		auto mesh = m_Context->GetSkyMesh();
-		auto transform = m_Context->GetSkyTransform();
-		transform->Position = camera.Position;
-		auto mat = m_Context->GetSkyMaterial();
-		const auto cubemap = m_Context->GetCubemap();
-		mat->Bind();
-		Renderer::RenderCubeMap(mesh->SharedMesh, mat->GetShader(), cubemap, transform->GetTrsMatrix());
+		const auto& skybox = m_Context->GetSkybox();
+		skybox->GetTransform()->Position = camera.Position;
+		Renderer::RenderMesh(skybox->GetMesh(), skybox->GetMaterial(), skybox->GetTransform()->GetTrsMatrix());
 
+		//TODO: batching
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
-		const auto& lights = m_Context->m_Entities.view<DirectLightComponent, TransformComponent>();
-
-		/*TODO: batching
-		Draw call for actual models*/
-		for (const auto& lightEntity : lights)
+		for (const auto& meshEntity : meshRenderers)
 		{
-			DirectLightComponent& lightComponent = lights.get<DirectLightComponent>(lightEntity);
-			TransformComponent& lightTransform = lights.get<TransformComponent>(lightEntity);
+			const auto& modelMat = meshRenderers.get<MaterialComponent>(meshEntity).Shared;
+			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
 
-			//TODO: batching
-			//Draw call for shadow map
-			for (const auto& meshEntity : meshRenderers)
-			{
-				const auto& modelMat = meshRenderers.get<MaterialComponent>(meshEntity).Shared;
-				modelMat->Bind();
-				modelMat->GetShader()->BindUniformFloat3("u_LightColor", lightComponent.Color);
-				modelMat->GetShader()->BindUniformFloat3("u_LightPos", lightTransform.Position);
-
-				const glm::mat4 view = glm::lookAt(lightTransform.Position, glm::vec3(0), glm::vec3(0, 1, 0));
-				modelMat->GetShader()->BindUniformMat4("u_lightViewProj", lightComponent.GetProjection() * view);
-				//TODO: think about it
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, lightComponent.DepthBuffer.GetColorAttachment());
-
-				const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
-				Renderer::RenderMesh(meshComponent.SharedMesh, modelMat->GetShader(), transformComponent.GetTrsMatrix());
-				modelMat->Unbind();
-			}
+			Renderer::RenderMesh(meshComponent.SharedMesh, modelMat, transformComponent.GetTrsMatrix());
 		}
 
 		cameraBuffer.Unbind();
@@ -213,8 +185,7 @@ namespace Engine
 				ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 0), ImVec2(1, -1));
 			}
 
-			if (m_SelectedEntity)
-				DrawGuizmos();
+			DrawGuizmos();
 		}
 
         ImGui::End();

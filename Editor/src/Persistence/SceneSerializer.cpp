@@ -56,7 +56,7 @@ namespace YAML
 	};
 }
 
-namespace Engine
+namespace Editor
 {
 	static YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& value)
 	{
@@ -258,7 +258,7 @@ namespace Engine
 				{
 					auto& mesh = deserializedEntity.AddComponent<MeshComponent>();
 
-					mesh.SharedMesh = MeshImporter::CreateMesh(meshComponent["Path"].as<std::string>().c_str());
+					mesh.SharedMesh = MeshImporter::CreateMesh(meshComponent["Path"].as<std::string>());
 				}
 
 				auto directLightComponent = entity["DirectLightComponent"];

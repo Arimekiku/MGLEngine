@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-namespace Engine 
+namespace Editor 
 {
 	Entity::Entity(const entt::entity handle, Scene* parent) 
 	{

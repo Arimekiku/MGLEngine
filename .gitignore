@@ -1,5 +1,6 @@
 # Visual Studio
 **.DotSettings
+**.DotSettings.user
 .cache/
 .vs/
 .vscode/

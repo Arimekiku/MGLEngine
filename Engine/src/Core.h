@@ -10,11 +10,16 @@ namespace Engine
     {
     public:
         Ptr() = default;
+
         Ptr(std::nullptr_t) : m_Ptr(nullptr) {}
-        Ptr(const std::shared_ptr<T>& ptr) : m_Ptr(ptr) {}
-		Ptr(T* ptr) : m_Ptr(ptr) {}
-        Ptr(const Ptr& other) = default;
-        Ptr(Ptr&& other) noexcept = default;
+    	Ptr(T* ptr) : m_Ptr(ptr) {}
+    	Ptr(const std::shared_ptr<T>& ptr) : m_Ptr(ptr) {}
+
+        Ptr(const Ptr& other) : m_Ptr(other.m_Ptr) {}
+
+        template<typename U>
+    	Ptr(const Ptr<U>& other) : m_Ptr(std::static_pointer_cast<T>(other.Get())) {}
+
         ~Ptr() = default;
 
         std::shared_ptr<T>& Get() { return m_Ptr; }
@@ -36,6 +41,24 @@ namespace Engine
         explicit operator bool() const { return static_cast<bool>(m_Ptr); }
 
     private:
-        std::shared_ptr<T> m_Ptr;
+        std::shared_ptr<T> m_Ptr = nullptr;
+    };
+
+    struct PtrHash
+	{
+        template<typename T>
+        std::size_t operator()(const Ptr<T>& p) const noexcept
+    	{
+            return std::hash<T*>()(p.GetRaw());
+        }
+    };
+
+    struct PtrEqual
+	{
+        template<typename T>
+        bool operator()(const Ptr<T>& a, const Ptr<T>& b) const noexcept
+    	{
+            return a.GetRaw() == b.GetRaw();
+        }
     };
 }

@@ -2,11 +2,13 @@
 
 #include "Engine.h"
 
-#include <glm/gtx/quaternion.hpp>
 #include <glm/fwd.hpp>
+#include <glm/gtx/quaternion.hpp>
 
-namespace Engine 
+namespace Editor 
 {
+	using namespace Engine;
+
 	struct NameComponent
 	{
 		std::string Name;

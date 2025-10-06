@@ -1,10 +1,11 @@
 #include "EditorLayer.h"
-#include "Persistence/SceneSerializer.h"
 
 #include <imgui.h>
 #include <portable_file_dialogs.h> 
 
-namespace Engine
+#include "Persistence/SceneSerializer.h"
+
+namespace Editor
 {
     EditorLayer::EditorLayer(const Ptr<Window>& window)
     {
@@ -18,19 +19,18 @@ namespace Engine
         const auto& houseTexture = Ptr<Texture>::Create(RESOURCES_PATH "Images/house.png");
 
         MeshImporter::CreatePlane();
-        const auto cube = MeshImporter::CreateCube();
+        MeshImporter::CreateCube();
         MeshImporter::CreateSphere();
 
         //BIND ASSETS
         m_Scene = Ptr<Scene>::Create(m_Parent->GetEventDispatcher());
-        m_Scene->SetSkyMesh(cube);
         m_SceneRenderer.SetContext(m_Scene);
 
         lightMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
 
         defaultMaterial->AddTexture(houseTexture);
         defaultMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
-        defaultMaterial->BindVec3Uniform("u_LightPos", {0, 5, 5});
+        defaultMaterial->BindVec3Uniform("u_LightPos", {1, 5, -5});
 		defaultMaterial->BindMat4Uniform("u_lightViewProj", glm::mat4(1.0f));
 
         SceneSerializer::Deserialize(m_Scene, RESOURCES_PATH "Persistence/Scene.scene");

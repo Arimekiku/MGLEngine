@@ -6,7 +6,10 @@
 
 #include <entt/entt.hpp>
 
-namespace Engine
+#include "Skybox.h"
+#include "Systems/System.h"
+
+namespace Editor
 {
 	class Entity;
 
@@ -18,15 +21,14 @@ namespace Engine
 		~Scene() = default;
 
 		void OnEveryUpdate(Time deltaTime);
+		void OnGuiUpdate() const;
 
-		Entity Instantiate(const std::string& name = std::string());
+		Entity Instantiate(const std::string& name);
 		void Destroy(Entity entity);
 
-		void SetSkyMesh(const Ptr<Mesh>& mesh) { m_Mesh = Ptr<MeshComponent>::Create(mesh); }
-		Ptr<MeshComponent> GetSkyMesh() { return m_Mesh; }
-		Ptr<TransformComponent> GetSkyTransform() { return m_Transform; }
-		Ptr<Material> GetSkyMaterial() { return m_Mat; }
-		Ptr<Cubemap> GetCubemap() { return m_Cubemap; }
+		std::vector<Ptr<System>>& GetSystems() { return m_Systems; }
+
+		Ptr<Skybox>& GetSkybox() { return m_Skybox; }
 
 		Entity GetActiveCameraEntity();
 
@@ -34,10 +36,9 @@ namespace Engine
 		void OnKeyPressedEvent(const KeyPressedEvent& e);
 		void UpdateCamera(CameraComponent& mainCamera, Time deltaTime);
 
-		Ptr<MeshComponent> m_Mesh;
-		Ptr<Material> m_Mat;
-		Ptr<TransformComponent> m_Transform = Ptr<TransformComponent>::Create();
-		Ptr<Cubemap> m_Cubemap;
+		Ptr<Skybox> m_Skybox = Ptr<Skybox>::Create();
+
+		std::vector<Ptr<System>> m_Systems;
 
 		entt::registry m_Entities;
 		bool m_CameraEditorMode = true;

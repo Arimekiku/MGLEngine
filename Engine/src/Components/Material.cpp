@@ -35,6 +35,8 @@ namespace Engine
 
     void Material::Bind() const
     {
+    	glCullFace(m_Uniforms.Mode == Back ? GL_BACK : GL_FRONT);
+
         m_Shader->Bind();
 
         for (auto& texture : m_Textures)
@@ -45,14 +47,19 @@ namespace Engine
 
         for (auto& [name, value] : m_Uniforms.Vec3Uniforms)
             m_Shader->BindUniformFloat3(name, value);
+
+        for (auto& [name, value] : m_Uniforms.Mat4Uniforms)
+			m_Shader->BindUniformMat4(name, value);
     }
 
-    void Material::Unbind()
+    void Material::Unbind() const
     {
         for (const auto& texture : m_Textures)
             texture->Unbind();
 
         m_Shader->Unbind();
+
+        glCullFace(m_Uniforms.Mode != Back ? GL_BACK : GL_FRONT);
     }
 
     void Material::BindFloatUniform(const std::string& name, float value)

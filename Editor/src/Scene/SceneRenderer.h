@@ -6,7 +6,7 @@
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
 
-namespace Engine
+namespace Editor
 {
 	class SceneRenderer
 	{

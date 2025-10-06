@@ -4,7 +4,7 @@
 
 #include <entt/entt.hpp>
 
-namespace Engine
+namespace Editor
 {
 	class Entity 
 	{

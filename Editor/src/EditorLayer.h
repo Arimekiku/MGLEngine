@@ -3,7 +3,7 @@
 #include "Scene/Scene.h"
 #include "Scene/SceneRenderer.h"
 
-namespace Engine
+namespace Editor
 {
     class EditorLayer final : public Layer
     {

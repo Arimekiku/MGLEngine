@@ -2,8 +2,6 @@
 
 #include "VertexArray.h"
 
-#include <glm/glm.hpp>
-
 namespace Engine
 {
 	class Mesh

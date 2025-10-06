@@ -36,22 +36,18 @@ namespace Engine
         shader->Unbind();
     }
 
-    void Renderer::RenderCubeMap(const Ptr<Mesh>& mesh, const Ptr<Shader>& shader, const Ptr<Cubemap>& cubemap, const glm::mat4& trsMatrix)
+    void Renderer::RenderMesh(const Ptr<Mesh>& mesh, const Ptr<Material>& material, const glm::mat4& trsMatrix)
     {
-        glCullFace(GL_FRONT);
-        shader->Bind();
-        shader->BindUniformMat4("u_camMatrix", m_ProjViewMat * trsMatrix);
-
-        cubemap->Bind();
-        shader->BindUniformInt1("u_Skybox", 0);
+        material->BindMat4Uniform("u_camMatrix", m_ProjViewMat);
+        material->BindMat4Uniform("u_trsMatrix", trsMatrix);
+        material->Bind();
 
         const auto& vertexArray = mesh->GetVertexArray();
         vertexArray->Bind();
         glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetIndexCount(), GL_UNSIGNED_INT, nullptr);
         vertexArray->Unbind();
 
-        shader->Unbind();
-        glCullFace(GL_BACK);
+        material->Unbind();
     }
 
     void Renderer::SetViewport(const int16_t x, const int16_t y, const int16_t width, const int16_t height)

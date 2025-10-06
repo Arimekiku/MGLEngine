@@ -1,17 +1,27 @@
 #pragma once
 
+#include "Core.h"
 #include "Shader.h"
 #include "Texture.h"
-#include "Core.h"
+
+#include <glad/glad.h>
 
 namespace Engine
 {
+    enum CullMode
+    {
+		Front = GL_FRONT,
+        Back = GL_BACK
+    };
+
     struct MaterialProperties
     {
         std::unordered_map<std::string, int> TextureUniforms;
         std::unordered_map<std::string, float> FloatUniforms;
         std::unordered_map<std::string, glm::vec3> Vec3Uniforms;
         std::unordered_map<std::string, glm::mat4> Mat4Uniforms;
+
+		CullMode Mode = Back;
     };
 
     class Material
@@ -27,8 +37,9 @@ namespace Engine
         void BindVec3Uniform(const std::string& name, glm::vec3 value);
         void BindMat4Uniform(const std::string& name, glm::mat4 value);
         void BindTextureSlot(const std::string& name, int slot);
+        void Unbind() const;
 
-        void Unbind();
+		void SetCullMode(const CullMode mode) { m_Uniforms.Mode = mode; }
 
         void SetName(const std::string& name) { m_Name = name; }
         std::string& GetName() { return m_Name; }
