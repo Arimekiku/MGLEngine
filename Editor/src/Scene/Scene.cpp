@@ -49,6 +49,16 @@ namespace Editor
 		m_Entities.destroy(entity);
 	}
 
+	Entity Scene::GetSelection()
+	{
+		return Entity(m_Selection, this);
+	}
+
+	void Scene::SetSelection(Entity entity)
+	{
+		m_Selection = entity;
+	}
+
 	Entity Scene::GetActiveCameraEntity()
 	{
 		const auto view = m_Entities.view<CameraComponent>();

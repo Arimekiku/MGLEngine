@@ -2,6 +2,7 @@
 
 #include "Scene/Scene.h"
 #include "Scene/SceneRenderer.h"
+#include "Scene/Panels/SceneRenderingPanel.h"
 
 namespace Editor
 {
@@ -15,11 +16,12 @@ namespace Editor
 
     private:
 		Ptr<Window> m_Parent = nullptr;
-
         Ptr<Scene> m_Scene = nullptr;
-        bool m_IsScenePanel = true, m_IsViewportPanel = true, m_IsInspectorPanel = true, m_FirstClick = true;
+
+        bool m_FirstClick = true;
         Time m_LastTime = Time(0);
 
+        std::vector<Ptr<ScenePanel>> m_SceneRenderPanels;
         SceneRenderer m_SceneRenderer = SceneRenderer();
 
 #ifdef DEBUG

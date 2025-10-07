@@ -11,6 +11,13 @@ namespace Editor
     {
 		m_Parent = window;
 
+        //SETUP SCENE RENDERING
+        const auto viewportPanel = Ptr<SceneViewportPanel>::Create("Viewport");
+        const auto hierarchyPanel = Ptr<SceneHierarchyPanel>::Create("Hierarchy");
+        const auto contentBrowserPanel = Ptr<SceneContentBrowserPanel>::Create("ContentBrowser");
+
+        m_SceneRenderPanels = { viewportPanel, hierarchyPanel, contentBrowserPanel};
+
         //IMPORT ASSETS
 		const auto& lightMaterial = MaterialImporter::AddMaterial("Light", "Shaders/areaLight.vert", "Shaders/areaLight.frag");
         const auto& defaultMaterial = MaterialImporter::AddMaterial("Default", "Shaders/default.vert", "Shaders/default.frag");
@@ -37,6 +44,8 @@ namespace Editor
         //BIND ASSETS
         m_Scene = Ptr<Scene>::Create(m_Parent->GetEventDispatcher());
         m_SceneRenderer.SetContext(m_Scene);
+        for (auto& panels : m_SceneRenderPanels)
+            panels->SetContext(m_Scene);
 
         lightMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
 
@@ -46,6 +55,8 @@ namespace Editor
 		defaultMaterial->BindMat4Uniform("u_lightViewProj", glm::mat4(1.0f));
 
         skyboxMaterial->AddTexture(cubemapTexture);
+        skyboxMaterial->BindVec3Uniform("u_Albedo", glm::vec3(1));
+        skyboxMaterial->BindIntUniform("u_Mode", 1);
         skyboxMaterial->SetCullMode(Front);
 
         SceneSerializer::Deserialize(m_Scene, RESOURCES_PATH "Persistence/Scene.scene");
@@ -140,9 +151,8 @@ namespace Editor
 
             if (ImGui::BeginMenu("Window"))
             {
-                ImGui::MenuItem("Viewport", "", &m_IsViewportPanel);
-                ImGui::MenuItem("Scene", "", &m_IsScenePanel);
-                ImGui::MenuItem("Inspector", "", &m_IsInspectorPanel);
+                for (const auto& renderPanel : m_SceneRenderPanels)
+                    renderPanel->DrawAsMenuItem();
 
 #ifdef DEBUG
                 ImGui::MenuItem("ImGuiDemo (Debug only)", "", &m_IsImGuiDemoPanel);
@@ -161,17 +171,8 @@ namespace Editor
 
         ImGui::End();
 
-        if (m_IsViewportPanel)
-        {
-            m_SceneRenderer.DrawViewport();
-            m_SceneRenderer.DrawSelection();
-        }
-
-        if (m_IsScenePanel)
-            m_SceneRenderer.DrawScenePanel();
-
-        if (m_IsInspectorPanel)
-            m_SceneRenderer.DrawInspectorPanel();
+        for (const auto& sceneRenderPanel : m_SceneRenderPanels)
+            sceneRenderPanel->DrawPanel();
 
 #ifdef DEBUG
         if (m_IsImGuiDemoPanel)

@@ -114,7 +114,9 @@ namespace Editor
 		Ptr<Mesh> Mesh = nullptr;
 		Ptr<Material> Material = nullptr;
 
+		glm::vec3 Color = glm::vec3(1);
 		glm::vec3 Position = glm::vec3(0);
+		int Mode = 1;
 
 		glm::mat4 GetProj() const
 		{

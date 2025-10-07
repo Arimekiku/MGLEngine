@@ -4,92 +4,6 @@
 
 namespace Editor
 {
-	static void DrawVector3Drag(const char* label, glm::vec3& vector, float panelWidth)
-	{
-		ImGui::PushID(label);
-
-		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, panelWidth);
-		ImGui::Text("%s", label);
-		ImGui::NextColumn();
-
-		ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-
-		ImGui::AlignTextToFramePadding();
-		ImGui::Text("X");
-		ImGui::SameLine();
-		ImGui::DragFloat("##X", &vector.x, 0.1f);
-		ImGui::PopItemWidth();
-
-		ImGui::SameLine();
-		ImGui::Text("Y");
-		ImGui::SameLine();
-		ImGui::DragFloat("##Y", &vector.y, 0.1f);
-		ImGui::PopItemWidth();
-
-		ImGui::SameLine();
-		ImGui::Text("Z");
-		ImGui::SameLine();
-		ImGui::DragFloat("##Z", &vector.z, 0.1f);
-		ImGui::PopItemWidth();
-
-		ImGui::Columns(1);
-
-		ImGui::PopID();
-	}
-
-	template<typename T, typename Func>
-	static void DrawComponent(const char* label, Entity entity, Func func)
-	{
-		if (entity.HasComponent<T>() == false)
-			return;
-
-		auto flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_DefaultOpen
-				   | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_AllowItemOverlap;
-
-		bool isOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), flags, "%s", label);
-
-		ImGui::SameLine(ImGui::GetWindowWidth() - 25.0f);
-		if (ImGui::Button("::", ImVec2(25, 20)))
-			ImGui::OpenPopup("parameters");
-
-		bool removeRequested = false;
-		if (ImGui::BeginPopup("parameters")) 
-		{
-			if (ImGui::MenuItem("Remove Component"))
-				removeRequested = true;
-
-			ImGui::EndPopup();
-		}
-				
-		if (isOpened)
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(5, 5));
-
-			T& component = entity.GetComponent<T>();
-			func(component);
-
-			ImGui::TreePop();
-			ImGui::PopStyleVar();
-		}
-
-		if (removeRequested)
-			entity.RemoveComponent<T>();
-	}
-
-	template<typename T>
-	static void DrawAddComponent(const char* label, Entity entity)
-	{
-		if (entity.HasComponent<T>() == true)
-			return;
-
-		if (ImGui::MenuItem(label))
-		{
-			entity.AddComponent<T>();
-			ImGui::CloseCurrentPopup();
-		}
-	}
-		
 	SceneRenderer::SceneRenderer()
 	{
 		m_ShadowMapShader = Ptr<Shader>::Create(
@@ -99,7 +13,7 @@ namespace Editor
 
 	void SceneRenderer::DrawDepthBuffer() const
 	{
-		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, TransformComponent>();
+		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
 		const auto& lights = m_Context->m_Entities.view<DirectLightComponent, TransformComponent>();
 
 		if (lights.size_hint() != 1)
@@ -116,16 +30,15 @@ namespace Editor
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		const glm::mat4 view = glm::lookAt(lightTransform.Position, glm::vec3(0), glm::vec3(0, 1, 0));
-		m_ShadowMapShader->Bind();
-		m_ShadowMapShader->BindUniformMat4("u_lightViewProj", lightComponent.GetProjection() * view);
-		m_ShadowMapShader->Unbind();
 
 		//TODO: batching
 		for (const auto& meshEntity : meshRenderers)
 		{
-			const auto& [meshComponent, transformComponent] = meshRenderers.get<MeshComponent, TransformComponent>(meshEntity);
+			const auto& [meshComponent, materialComponent, transformComponent] = meshRenderers.get<MeshComponent, MaterialComponent, TransformComponent>(meshEntity);
 
-			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTrsMatrix());
+			materialComponent.Shared->BindMat4Uniform("u_lightViewProj", lightComponent.GetProjection() * view);
+
+			Renderer::RenderMesh(meshComponent.SharedMesh, materialComponent.Shared, transformComponent.GetTrsMatrix());
 		}
 
 		lightComponent.DepthBuffer->Unbind();
@@ -133,7 +46,8 @@ namespace Editor
 
 	void SceneRenderer::DrawTextureBuffer() const
 	{
-		const auto& cameraBuffer = m_ViewportCamera->GetFramebuffer();
+		const auto& renderCamera = m_Context->GetRenderCamera();
+		const auto& cameraBuffer = renderCamera->GetFramebuffer();
 		Entity cameraEntity = m_Context->GetActiveCameraEntity();
 
 		cameraBuffer->Bind();
@@ -146,9 +60,11 @@ namespace Editor
 		}
 
 		const auto camera = cameraEntity.GetComponent<CameraComponent>();
-        Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
+        Renderer::UpdateCameraMatrix(renderCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
 		//TODO: batching
+		cameraBuffer->ClearAttachment(INTEGER, -1);
+
 		const auto& skyboxes = m_Context->m_Entities.view<SkyboxComponent>();
 		for (const auto& skybox : skyboxes)
 		{
@@ -170,323 +86,8 @@ namespace Editor
 		cameraBuffer->Unbind();
 	}
 
-	void SceneRenderer::DrawSelection()
-	{
-		const auto& target = m_ViewportCamera->GetFramebuffer();
-		target->Bind();
-
-		auto [mx, my] = ImGui::GetMousePos();
-		mx -= m_ViewportBounds[0].x;
-		my -= m_ViewportBounds[0].y;
-
-		const auto viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
-		my = viewportSize.y - my;
-
-		const auto mousePos = glm::ivec2((int)mx, (int)my);
-		if (mousePos.x < 0 || mousePos.y < 0 || mousePos.x >= (int)viewportSize.x || mousePos.y >= (int)viewportSize.y)
-		{
-			target->Unbind();
-			return;
-		}
-
-		//TODO: improve
-		int pixel = target->GetPixel(1, mousePos.x, mousePos.y);
-		m_HoveredEntity = pixel == -1 ? Entity() : Entity((entt::entity)pixel, m_Context.GetRaw());
-
-		target->Unbind();
-	}
-
-	void SceneRenderer::DrawViewport()
-	{
-		ImGui::Begin("Viewport");
-
-		const auto viewportSize = ImGui::GetContentRegionAvail();
-		const auto castSize = glm::ivec2(viewportSize.x, viewportSize.y);
-
-		if (castSize.x != 0 && castSize.y != 0)
-		{
-			if (m_ViewportCamera->GetSize() != castSize)
-				m_ViewportCamera->Resize(castSize.x, castSize.y);
-
-			const uint32_t texture = m_ViewportCamera->GetFramebuffer()->GetAttachment(RGBA8);
-			ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
-		}
-
-		const auto minBounds = ImGui::GetWindowContentRegionMin();
-		const auto maxBounds = ImGui::GetWindowContentRegionMax();
-		const auto viewportOffset = ImGui::GetWindowPos();
-
-		m_ViewportBounds[0] = { minBounds.x + viewportOffset.x, minBounds.y + viewportOffset.y };
-		m_ViewportBounds[1] = { maxBounds.x + viewportOffset.x, maxBounds.y + viewportOffset.y };
-
-		DrawGuizmos();
-
-		if (ImGui::IsWindowHovered())
-		{
-			const auto guizmosUsed = ImGuizmo::IsUsing() || ImGuizmo::IsOver();
-
-			if (Input::Mouse::ButtonPressed(0) && guizmosUsed == false)
-				m_SelectedEntity = m_HoveredEntity;
-		}
-
-        ImGui::End();
-	}
-
-	void SceneRenderer::DrawScenePanel()
-	{
-		ImGui::Begin("Scene");
-
-		const auto& sceneEntities = m_Context->m_Entities.view<NameComponent>();
-		for (const auto& entityId : sceneEntities)
-		{
-			auto entity = Entity(entityId, m_Context.GetRaw());
-			auto entityName = sceneEntities.get<NameComponent>(entity);
-
-			ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0 | ImGuiTreeNodeFlags_OpenOnArrow
-									 | ImGuiTreeNodeFlags_SpanAvailWidth;
-
-			const bool isOpened = ImGui::TreeNodeEx((void*)entityId, flags, "%s", entityName.Name.c_str());
-
-			if (ImGui::IsItemClicked(0))
-				m_SelectedEntity = Entity(entity, m_Context.GetRaw());
-
-			bool deleteRequested = false;
-			if (ImGui::BeginPopupContextItem())
-			{
-				if (ImGui::MenuItem("Destroy"))
-					deleteRequested = true;
-
-				ImGui::EndPopup();
-			}
-
-			if (isOpened)
-			{
-				//TODO: childens
-				
-				ImGui::TreePop();
-			}
-
-			if (deleteRequested)
-			{
-				if (m_SelectedEntity == entity)
-					m_SelectedEntity = Entity();
-
-				m_Context->Destroy(entity);
-			}
-		}
-
-		if (ImGui::BeginPopupContextWindow(nullptr, 1 | ImGuiPopupFlags_NoOpenOverItems))
-		{
-			if (ImGui::MenuItem("Create Blank"))
-			{
-				m_Context->Instantiate("Blank");
-				ImGui::CloseCurrentPopup();
-			} 
-
-			if (ImGui::BeginMenu("Primitives"))
-            {
-				if (ImGui::MenuItem("Create Plane"))
-				{
-					Entity entity = m_Context->Instantiate("Plane");
-					entity.AddComponent<TransformComponent>();
-
-					auto& material = MaterialImporter::GetMaterial("Default");
-					entity.AddComponent<MaterialComponent>(material);
-					
-					auto& mesh = MeshImporter::CreatePlane();
-					entity.AddComponent<MeshComponent>(mesh);
-
-					m_SelectedEntity = entity;
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItem("Create Cube"))
-				{
-					Entity entity = m_Context->Instantiate("Cube");
-					entity.AddComponent<TransformComponent>();
-
-					auto& material = MaterialImporter::GetMaterial("Default");
-					entity.AddComponent<MaterialComponent>(material);
-					
-					auto& mesh = MeshImporter::CreateCube();
-					entity.AddComponent<MeshComponent>(mesh);
-
-					m_SelectedEntity = entity;
-					ImGui::CloseCurrentPopup();
-				}
-
-				if (ImGui::MenuItem("Create Sphere"))
-				{
-					Entity entity = m_Context->Instantiate("Sphere");
-					entity.AddComponent<TransformComponent>();
-
-					auto& material = MaterialImporter::GetMaterial("Default");
-					entity.AddComponent<MaterialComponent>(material);
-					
-					auto& mesh = MeshImporter::CreateSphere();
-					entity.AddComponent<MeshComponent>(mesh);
-
-					m_SelectedEntity = entity;
-					ImGui::CloseCurrentPopup();
-				}
-
-                ImGui::EndMenu();
-            }
-
-			ImGui::EndPopup();
-		}
-
-		ImGui::End();
-	}
-
-	void SceneRenderer::DrawInspectorPanel()
-	{
-		ImGui::Begin("Inspector");
-
-		if (m_SelectedEntity)
-		{
-			if (m_SelectedEntity.HasComponent<NameComponent>())
-			{
-				NameComponent& nameComponent = m_SelectedEntity.GetComponent<NameComponent>();
-
-				char buf[256] = {};
-				strcpy_s(buf, nameComponent.Name.c_str());
-
-				if (ImGui::InputText("Name", buf, sizeof(buf)))
-					nameComponent.Name = buf;
-			}
-
-			DrawComponent<TransformComponent>("Transform", m_SelectedEntity, [](TransformComponent& component)
-			{
-				ImGui::AlignTextToFramePadding();
-				DrawVector3Drag("Position", component.Position, 100.0f);
-
-				ImGui::AlignTextToFramePadding();
-				DrawVector3Drag("Rotation", component.Rotation, 100.0f);
-
-				ImGui::AlignTextToFramePadding();
-				DrawVector3Drag("Scale", component.Scale, 100.0f);
-			});
-
-			DrawComponent<MaterialComponent>("Material", m_SelectedEntity, [](MaterialComponent& component)
-			{
-				auto& material = component.Shared;
-			});
-
-			DrawComponent<MeshComponent>("Mesh", m_SelectedEntity, [](MeshComponent& component)
-			{
-				ImGui::AlignTextToFramePadding();
-				ImGui::Text("%p\n", (void *) &component.SharedMesh);
-			});
-
-			DrawComponent<CameraComponent>("Camera", m_SelectedEntity, [](CameraComponent& component)
-			{
-				ImGui::AlignTextToFramePadding();
-				DrawVector3Drag("Position", component.Position, 100.0f);
-
-				ImGui::Checkbox("Enabled", &component.Enabled);
-			});
-
-			DrawComponent<DirectLightComponent>("Direct Light", m_SelectedEntity, [](DirectLightComponent& component)
-			{
-				ImGui::ColorEdit3("Color", glm::value_ptr(component.Color));
-
-				const uint32_t texture = component.DepthBuffer->GetAttachment(DEPTH24_STENCIL8);
-				ImGui::Image((ImTextureID)texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
-			});
-
-			DrawComponent<SkyboxComponent>("Skybox", m_SelectedEntity, [](SkyboxComponent& component)
-			{
-				static glm::vec3 color;
-				const char* modes[] = { "Plain", "Image" };
-				int currentMode = 0;
-
-				if (ImGui::Combo("Mode", &currentMode, modes, IM_ARRAYSIZE(modes)))
-				{
-					component.Material->BindIntUniform("u_Mode", currentMode);
-				}
-
-				ImGui::Separator();
-
-				if (ImGui::ColorEdit3("Color", &color.x))
-				{
-					component.Material->BindVec3Uniform("u_Albedo", color);
-				}
-			});
-
-			if (ImGui::Button("Add Component"))
-				ImGui::OpenPopup("addcomponent");
-
-			if (ImGui::BeginPopup("addcomponent"))
-			{
-				bool entityHasCamera = m_SelectedEntity.HasComponent<CameraComponent>();
-				bool entityHasTransform = m_SelectedEntity.HasComponent<TransformComponent>();
-
-				if (entityHasCamera == false)
-				{
-					if (m_SelectedEntity.HasComponent<CameraComponent>() == false)
-						DrawAddComponent<TransformComponent>("Transform", m_SelectedEntity);
-
-					if (m_SelectedEntity.HasComponent<TransformComponent>() == false)
-						DrawAddComponent<CameraComponent>("Camera", m_SelectedEntity);
-				}
-
-				ImGui::EndPopup();
-			}
-		}
-
-		ImGui::End();
-	}
-
-	void SceneRenderer::DrawGuizmos() 
-	{
-		Entity cameraEntity = m_Context->GetActiveCameraEntity();
-
-		if (!m_SelectedEntity || !cameraEntity || m_SelectedEntity.HasComponent<TransformComponent>() == false)
-			return;
-
-		if (Input::Key::Pressed(Input::Key::F1))
-			m_GuizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
-
-		if (Input::Key::Pressed(Input::Key::F2))
-			m_GuizmoOperation = ImGuizmo::OPERATION::ROTATE;
-
-		if (Input::Key::Pressed(Input::Key::F3))
-			m_GuizmoOperation = ImGuizmo::OPERATION::SCALE;
-
-		ImGuizmo::SetOrthographic(false);
-		ImGuizmo::SetDrawlist();
-
-		ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
-
-		const auto camera = cameraEntity.GetComponent<CameraComponent>();
-		glm::mat4 cameraView = glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up());
-		glm::mat4 cameraProj = m_ViewportCamera->GetProjMat();
-
-		auto& entityTransform = m_SelectedEntity.GetComponent<TransformComponent>();
-		glm::mat4 entityTrs = entityTransform.GetTrsMatrix();
-
-		ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProj), m_GuizmoOperation, ImGuizmo::LOCAL, glm::value_ptr(entityTrs));
-
-		if (ImGuizmo::IsUsing()) 
-		{
-			glm::vec3 position, rotation, scale;
-
-			if (Math::Decompose(entityTrs, position, rotation, scale) == false) 
-				return;
-
-			entityTransform.Position = position;
-
-			const glm::vec3 deltaRot = rotation - glm::radians(entityTransform.Rotation);
-			entityTransform.Rotation += glm::degrees(deltaRot);
-
-			entityTransform.Scale = scale;
-		}
-	}
-
 	void SceneRenderer::SetContext(Ptr<Scene> context)
 	{
 		m_Context = std::move(context);
-		m_SelectedEntity = Entity();
 	}
 }
