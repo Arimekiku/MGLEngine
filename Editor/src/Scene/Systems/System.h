@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Time.h"
-#include "entt/entity/registry.hpp"
+#include <entt/entity/registry.hpp>
 
 namespace Editor
 {

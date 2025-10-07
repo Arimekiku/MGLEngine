@@ -3,39 +3,38 @@
 #include <cstdint>
 #include <vector>
 
+#include "Core.h"
+#include "Texture.h"
+
 namespace Engine 
 {
-    enum FramebufferAttachmentFormat
+    struct FramebufferLayout
     {
-        RGBA8,
-        INTEGER,
-        DEPTH24_STENCIL8,
-	};
+		FramebufferLayout() = default;
+        FramebufferLayout(int width, int height) : Width(width), Height(height) { }
+		FramebufferLayout(const std::initializer_list<Ptr<Texture>>& buffers) : Attachments(buffers) { }
 
-    struct FramebufferAttachment
-    {
-        FramebufferAttachment() = default;
-		FramebufferAttachment(const FramebufferAttachmentFormat format) : Format(format) { }
+        int Width = 800, Height = 600;
+        std::vector<Ptr<Texture>> Attachments;
 
-		FramebufferAttachmentFormat Format;
+		std::string Name = "Framebuffer";
     };
 
     class Framebuffer 
     {
     public:
-        Framebuffer();
-        Framebuffer(int width, int height);
+        Framebuffer(const FramebufferLayout& layout);
         ~Framebuffer();
 
-        void ConfigureAttachments(std::vector<FramebufferAttachment> attachments);
-        void ClearAttachment(FramebufferAttachmentFormat format, int clearValue) const;
-        uint32_t GetAttachment(FramebufferAttachmentFormat format) const;
+        void ConfigureAttachments(std::vector<Ptr<Texture>> attachments);
+        void ClearAttachment(ImageFormat format, int clearValue) const;
+        uint32_t GetAttachment(ImageFormat format) const;
 
         void Bind() const;
         void Unbind() const;
 
-        int GetWidth() const { return m_Width; }
-        int GetHeight() const { return m_Height; }
+        int GetWidth() const { return m_Layout.Width; }
+        int GetHeight() const { return m_Layout.Height; }
         int GetPixel(uint32_t index, int x, int y) const;
 
         void Resize(int width, int height);
@@ -44,10 +43,8 @@ namespace Engine
         void Create();
         void Clear();
 
-        int m_Width = 800, m_Height = 600;
-        uint32_t m_RendererId = 0;
+        FramebufferLayout m_Layout;
 
-		std::vector<FramebufferAttachment> m_Attachments;
-        std::vector<uint32_t> m_AttachmentIds;
+        uint32_t m_RendererId = 0;
     };
 }

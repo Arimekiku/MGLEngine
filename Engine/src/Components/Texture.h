@@ -5,24 +5,52 @@
 
 namespace Engine
 {
+    enum ImageTarget
+    {
+	    TEXTURE_2D,
+		CUBEMAP
+    };
+
+    enum ImageFormat
+    {
+        INTEGER,
+        VECTOR2,
+        RGB,
+        RGBA8,
+        DEPTH24_STENCIL8,
+    };
+
+    struct ImageLayout
+    {
+        ImageLayout() = default;
+		ImageLayout(int x, int y) : Width(x), Height(y) { }
+		ImageLayout(int x, int y, int channels) : Width(x), Height(y), Channels(channels) {}
+
+		ImageTarget Target = TEXTURE_2D;
+		ImageFormat Format = RGBA8;
+
+		int Width = 800, Height = 600;
+        int Channels = 4;
+
+        std::string Name = std::string();
+    };
+
     class Image
     {
     public:
-        Image(const std::string& fileName);
+        Image() = delete;
+        Image(const std::string& filePath);
+        Image(const ImageLayout& layout);
         ~Image();
 
-        int GetWidth() const { return m_Width; }
-        int GetHeight() const { return m_Height; }
-        int GetChannels() const { return m_Channels; }
+		ImageLayout& GetLayout() { return m_Layout; }
+        const ImageLayout& GetLayout() const { return m_Layout; }
 
-        unsigned char* GetBuffer() const { return m_Buffer; }
+        unsigned char* GetPixels() const;
+        void WritePixels(unsigned char* buffer);
 
     private:
-        std::string m_FilePath;
-
-        int m_Width;
-        int m_Height;
-        int m_Channels;
+        ImageLayout m_Layout;
 
         unsigned char* m_Buffer;
     };
@@ -30,28 +58,23 @@ namespace Engine
     class Texture
     {
     public:
-        Texture() = default;
-        Texture(const std::string& path);
-        virtual ~Texture();
+        Texture(const Image& image);
+        Texture(const std::string& left, const std::string& right,
+            const std::string& bottom, const std::string& top,
+            const std::string& back, const std::string& front);
+    	~Texture();
 
-        virtual void Bind(uint8_t slot = 0) const;
-        virtual void Unbind() const;
+    	void Bind(uint8_t slot = 0) const;
+    	void Unbind() const;
+
+		const ImageLayout& GetLayout() const { return m_Layout; }
+		ImageLayout GetLayout() { return m_Layout; }
 
         uint32_t GetRendererId() const { return m_RendererId; }
 
-    protected:
+    private:
+        ImageLayout m_Layout;
+
         uint32_t m_RendererId = 0;
-    };
-
-    class Cubemap final : public Texture
-    {
-    public:
-        Cubemap(const std::string& left, const std::string& right,
-            const std::string& bottom, const std::string& top,
-            const std::string& back, const std::string& front);
-        ~Cubemap() override;
-
-        void Bind(uint8_t slot = 0) const override;
-        void Unbind() const override;
     };
 }

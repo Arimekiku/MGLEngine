@@ -9,7 +9,7 @@ namespace Editor
 		m_Transform = Ptr<TransformComponent>::Create();
 		m_Transform->Scale = glm::vec3(100.0f);
 
-		m_Cubemap = Ptr<Cubemap>::Create(
+		m_Cubemap = Ptr<Texture>::Create(
 			RESOURCES_PATH "Images/Cubemap/nx.png",
 			RESOURCES_PATH "Images/Cubemap/px.png",
 			RESOURCES_PATH "Images/Cubemap/ny.png",

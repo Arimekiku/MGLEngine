@@ -14,7 +14,7 @@ namespace Engine
         Back = GL_BACK
     };
 
-    struct MaterialProperties
+    struct MaterialLayout
     {
         std::unordered_map<std::string, int> TextureUniforms;
         std::unordered_map<std::string, int> IntUniforms;
@@ -31,7 +31,7 @@ namespace Engine
         Material(const std::string& vertPath, const std::string& fragPath);
         Material(const Ptr<Shader>& shader);
 
-        const MaterialProperties& GetProperties() { return m_Uniforms; }
+        const MaterialLayout& GetProperties() { return m_Uniforms; }
 
         void Bind() const;
         void BindFloatUniform(const std::string& name, float value);
@@ -57,7 +57,7 @@ namespace Engine
         std::string m_VertPath, m_FragPath, m_Name;
         Ptr<Shader> m_Shader = nullptr;
 
-        MaterialProperties m_Uniforms;
+        MaterialLayout m_Uniforms;
 
         std::vector<Ptr<Texture>> m_Textures;
     };

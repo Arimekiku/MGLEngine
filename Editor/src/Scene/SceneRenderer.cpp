@@ -111,7 +111,7 @@ namespace Editor
 		const auto& lightEntity = lights.begin();
 		const auto& [lightComponent, lightTransform] = lights.get<DirectLightComponent, TransformComponent>(*lightEntity);
 
-		lightComponent.DepthBuffer.Bind();
+		lightComponent.DepthBuffer->Bind();
 
 		glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -128,20 +128,20 @@ namespace Editor
 			Renderer::RenderMesh(meshComponent.SharedMesh, m_ShadowMapShader, transformComponent.GetTrsMatrix());
 		}
 
-		lightComponent.DepthBuffer.Unbind();
+		lightComponent.DepthBuffer->Unbind();
 	}
 
 	void SceneRenderer::DrawTextureBuffer() const
 	{
-		const Framebuffer& cameraBuffer = m_ViewportCamera->GetFramebuffer();
+		const auto& cameraBuffer = m_ViewportCamera->GetFramebuffer();
 		Entity cameraEntity = m_Context->GetActiveCameraEntity();
 
-		cameraBuffer.Bind();
+		cameraBuffer->Bind();
 		Renderer::Clear(glm::vec4(0.2f, 0.3f, 0.3f, 1.0f));
 
 		if (!cameraEntity)
 		{
-			cameraBuffer.Unbind();
+			cameraBuffer->Unbind();
 			return;
 		}
 
@@ -152,7 +152,7 @@ namespace Editor
 		skybox->GetTransform()->Position = camera.Position;
 		Renderer::RenderMesh(skybox->GetMesh(), skybox->GetMaterial(), skybox->GetTransform()->GetTrsMatrix());
 
-		cameraBuffer.ClearAttachment(INTEGER, -1);
+		cameraBuffer->ClearAttachment(INTEGER, -1);
 
 		//TODO: batching
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
@@ -164,13 +164,13 @@ namespace Editor
 			Renderer::RenderMeshEntity(meshComponent.SharedMesh, modelMat, transformComponent.GetTrsMatrix(), (int)meshEntity);
 		}
 
-		cameraBuffer.Unbind();
+		cameraBuffer->Unbind();
 	}
 
 	void SceneRenderer::DrawSelection()
 	{
 		const auto& target = m_ViewportCamera->GetFramebuffer();
-		target.Bind();
+		target->Bind();
 
 		auto [mx, my] = ImGui::GetMousePos();
 		mx -= m_ViewportBounds[0].x;
@@ -182,15 +182,15 @@ namespace Editor
 		const auto mousePos = glm::ivec2((int)mx, (int)my);
 		if (mousePos.x < 0 || mousePos.y < 0 || mousePos.x >= (int)viewportSize.x || mousePos.y >= (int)viewportSize.y)
 		{
-			target.Unbind();
+			target->Unbind();
 			return;
 		}
 
 		//TODO: improve
-		int pixel = target.GetPixel(1, mousePos.x, mousePos.y);
+		int pixel = target->GetPixel(1, mousePos.x, mousePos.y);
 		m_HoveredEntity = pixel == -1 ? Entity() : Entity((entt::entity)pixel, m_Context.GetRaw());
 
-		target.Unbind();
+		target->Unbind();
 	}
 
 	void SceneRenderer::DrawViewport()
@@ -205,7 +205,7 @@ namespace Editor
 			if (m_ViewportCamera->GetSize() != castSize)
 				m_ViewportCamera->Resize(castSize.x, castSize.y);
 
-			const uint32_t texture = m_ViewportCamera->GetFramebuffer().GetAttachment(RGBA8);
+			const uint32_t texture = m_ViewportCamera->GetFramebuffer()->GetAttachment(RGBA8);
 			ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 		}
 
@@ -225,8 +225,6 @@ namespace Editor
 			if (Input::Mouse::ButtonPressed(0) && guizmosUsed == false)
 				m_SelectedEntity = m_HoveredEntity;
 		}
-
-		
 
         ImGui::End();
 	}
@@ -390,7 +388,7 @@ namespace Editor
 			{
 				ImGui::ColorEdit3("Color", glm::value_ptr(component.Color));
 
-				const uint32_t texture = component.DepthBuffer.GetAttachment(FramebufferAttachmentFormat::DEPTH24_STENCIL8);
+				const uint32_t texture = component.DepthBuffer->GetAttachment(DEPTH24_STENCIL8);
 				ImGui::Image((ImTextureID)texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
 			});
 

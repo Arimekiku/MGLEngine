@@ -21,6 +21,6 @@ namespace Editor
 		Ptr<Mesh> m_Mesh;
 		Ptr<Material> m_Mat;
 		Ptr<TransformComponent> m_Transform;
-		Ptr<Cubemap> m_Cubemap;
+		Ptr<Texture> m_Cubemap;
 	};
 }

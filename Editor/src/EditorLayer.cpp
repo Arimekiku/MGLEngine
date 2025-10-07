@@ -15,8 +15,10 @@ namespace Editor
 		const auto& lightMaterial = MaterialImporter::AddMaterial("Light", "Shaders/areaLight.vert", "Shaders/areaLight.frag");
         const auto& defaultMaterial = MaterialImporter::AddMaterial("Default", "Shaders/default.vert", "Shaders/default.frag");
 
-        const auto& faceTexture = Ptr<Texture>::Create(RESOURCES_PATH "Images/face.png");
-        const auto& houseTexture = Ptr<Texture>::Create(RESOURCES_PATH "Images/house.png");
+        Image faceImage = Image(RESOURCES_PATH "Images/face.png");
+        const auto& faceTexture = Ptr<Texture>::Create(faceImage);
+        Image houseImage = Image(RESOURCES_PATH "Images/face.png");
+        const auto& houseTexture = Ptr<Texture>::Create(houseImage);
 
         MeshImporter::CreatePlane();
         MeshImporter::CreateCube();

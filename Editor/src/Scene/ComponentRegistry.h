@@ -59,13 +59,22 @@ namespace Editor
 
 	struct DirectLightComponent
 	{
-		Framebuffer DepthBuffer = Framebuffer(2048, 2048);
+		Ptr<Framebuffer> DepthBuffer = nullptr;
 		glm::vec3 Color = glm::vec3(1, 1, 1);
 
 		DirectLightComponent()
 		{
-			auto depthAttachment = FramebufferAttachment(FramebufferAttachmentFormat::DEPTH24_STENCIL8);
-			DepthBuffer.ConfigureAttachments({ depthAttachment });
+			auto depthLayout = ImageLayout(4096, 4096, 1);
+			depthLayout.Target = TEXTURE_2D;
+			depthLayout.Format = DEPTH24_STENCIL8;
+			depthLayout.Name = "LightDepth";
+			const auto depthAttachment = Ptr<Texture>::Create(depthLayout);
+
+			FramebufferLayout attachments = { depthAttachment };
+			attachments.Width = 4096;
+			attachments.Height = 4096;
+
+			DepthBuffer = Ptr<Framebuffer>::Create(attachments);
 		}
 
 		glm::mat4 GetProjection() const

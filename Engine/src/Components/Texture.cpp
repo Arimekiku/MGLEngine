@@ -8,21 +8,166 @@
 
 namespace Engine
 {
-    Texture::Texture(const std::string& path)
+    GLenum FromImageTargetToGLTarget(const ImageTarget target)
     {
-		const auto image = Image(path);
-		const auto size = glm::ivec2(image.GetWidth(), image.GetHeight());
+        switch (target)
+        {
+	        case TEXTURE_2D: return GL_TEXTURE_2D;
+	        case CUBEMAP: return GL_TEXTURE_CUBE_MAP;
+			default: break;
+        }
+
+        LOG_CRITICAL("Requested bad Image Target");
+    }
+
+    GLenum FromImageFormatToGLInternalFormat(const ImageFormat format)
+    {
+        switch (format)
+        {
+	        case INTEGER: return GL_R32I;
+	        //case VECTOR2: return GL_RG;
+	        case RGB: return GL_RGB;
+	        case RGBA8: return GL_RGBA8;
+	        case DEPTH24_STENCIL8: return GL_DEPTH24_STENCIL8;
+	        default: break;
+        }
+
+        LOG_CRITICAL("Requested bad Image Format");
+    }
+
+    GLenum FromImageFormatToGLFormat(const ImageFormat format)
+    {
+       switch (format)
+       {
+	       case INTEGER: return GL_RED_INTEGER;
+	       case VECTOR2: return GL_RG;
+	       case RGB: return GL_RGB;
+	       case RGBA8: return GL_RGBA;
+	       case DEPTH24_STENCIL8: return GL_DEPTH_STENCIL;
+	       default: break;
+       }
+
+       LOG_CRITICAL("Requested bad Image Format");
+	}
+
+    GLenum FromImageFormatToGLPixelType(const ImageFormat format)
+    {
+        switch (format)
+        {
+        case INTEGER: return GL_UNSIGNED_BYTE;
+        case VECTOR2: return GL_UNSIGNED_BYTE;
+        case RGB: return GL_UNSIGNED_BYTE;
+        case RGBA8: return GL_UNSIGNED_BYTE;
+        case DEPTH24_STENCIL8: return GL_UNSIGNED_INT_24_8;
+        default: break;
+        }
+
+        LOG_CRITICAL("Requested bad Image Format");
+    }
+
+    Image::Image(const std::string& filePath)
+    {
+        m_Buffer = stbi_load(filePath.c_str(), &m_Layout.Width, &m_Layout.Height, &m_Layout.Channels, 0);
+
+        m_Layout.Name = filePath;
+		m_Layout.Target = TEXTURE_2D;
+
+        switch (m_Layout.Channels)
+        {
+			case 1: m_Layout.Format = INTEGER; break;
+			case 2: m_Layout.Format = VECTOR2; break;
+			case 3: m_Layout.Format = RGB; break;
+			case 4: m_Layout.Format = RGBA8; break;
+	        default: LOG_ASSERT(false, "Can't load image format properly");
+        }
+
+        LOG_ASSERT((m_Buffer != nullptr), "Can't load texture from path");
+    }
+
+    Image::Image(const ImageLayout& layout)
+    {
+        m_Layout = layout;
+        m_Buffer = nullptr;
+    }
+
+    Image::~Image()
+    {
+		if (m_Buffer == nullptr)
+            return;
+
+		stbi_image_free(m_Buffer);
+    }
+
+    void Image::WritePixels(unsigned char* buffer)
+    {
+        if (m_Buffer != nullptr)
+            LOG_WARN("Attempting to write pixels into existing buffer!");
+
+        m_Buffer = buffer;
+    }
+
+    unsigned char* Image::GetPixels() const
+    {
+        return m_Buffer;
+    }
+
+    Texture::Texture(const Image& image)
+    {
+        const auto& layout = image.GetLayout();
+
+        const auto target = FromImageTargetToGLTarget(layout.Target);
+        const auto internalFormat = FromImageFormatToGLInternalFormat(layout.Format);
+        const auto format = FromImageFormatToGLFormat(layout.Format);
+        const auto pixelType = FromImageFormatToGLPixelType(layout.Format);
 
         glGenTextures(1, &m_RendererId);
-        glBindTexture(GL_TEXTURE_2D, m_RendererId);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.GetBuffer());
+        glBindTexture(target, m_RendererId);
+        glTexImage2D(target, 0, internalFormat, layout.Width, layout.Height, 0, format, pixelType, image.GetPixels());
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glBindTexture(target, 0);
+
+        m_Layout = layout;
+    }
+
+    Texture::Texture(const std::string& left, const std::string& right, const std::string& bottom,
+        const std::string& top, const std::string& back, const std::string& front)
+    {
+        const std::array<Image, 6> faces = { right, left, top, bottom, front, back };
+
+        glGenTextures(1, &m_RendererId);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererId);
+
+        for (GLuint i = 0; i < faces.size(); ++i)
+        {
+			const auto& layout = faces[i].GetLayout();
+
+			const auto format = FromImageFormatToGLFormat(layout.Format);
+            const auto internalFormat = FromImageFormatToGLInternalFormat(layout.Format);
+            const auto pixelType = FromImageFormatToGLPixelType(layout.Format);
+
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalFormat, layout.Width, layout.Height, 0, format, pixelType, faces[i].GetPixels());
+        }
+
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+        m_Layout = ImageLayout();
+		m_Layout.Target = CUBEMAP;
+		m_Layout.Width = faces[0].GetLayout().Width;
+		m_Layout.Height = faces[0].GetLayout().Height;
+		m_Layout.Channels = faces[0].GetLayout().Channels;
+		m_Layout.Format = faces[0].GetLayout().Format;
     }
 
     Texture::~Texture()
@@ -32,61 +177,16 @@ namespace Engine
 
     void Texture::Bind(const uint8_t slot) const
     {
+        const auto target = FromImageTargetToGLTarget(m_Layout.Target);
+
         glActiveTexture(GL_TEXTURE0 + slot);
-        glBindTexture(GL_TEXTURE_2D, m_RendererId);
+        glBindTexture(target, m_RendererId);
     }
 
     void Texture::Unbind() const
     {
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
+        const auto target = FromImageTargetToGLTarget(m_Layout.Target);
 
-    Cubemap::Cubemap(const std::string& left, const std::string& right, const std::string& bottom,
-                     const std::string& top, const std::string& back, const std::string& front)
-    {
-        const std::array<Image, 6> faces = { right, left, top, bottom, front, back };
-
-        glGenTextures(1, &m_RendererId);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererId);
-
-        for (GLuint i = 0; i < faces.size(); ++i)
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, faces[i].GetWidth(), faces[i].GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, faces[i].GetBuffer());
-
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    }
-
-    Cubemap::~Cubemap()
-    {
-		glDeleteTextures(1, &m_RendererId);
-    }
-
-    void Cubemap::Bind(const uint8_t slot) const
-    {
-        glActiveTexture(GL_TEXTURE0 + slot);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererId);
-    }
-
-    void Cubemap::Unbind() const
-    {
-        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    }
-
-    Image::Image(const std::string& fileName)
-    {
-        m_FilePath = fileName;
-
-        m_Buffer = stbi_load(fileName.c_str(), &m_Width, &m_Height, &m_Channels, 0);
-        LOG_ASSERT((m_Buffer != nullptr), "Can't load texture from path");
-    }
-
-    Image::~Image()
-    {
-		stbi_image_free(m_Buffer);
+        glBindTexture(target, 0);
     }
 }
