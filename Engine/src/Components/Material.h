@@ -36,9 +36,8 @@ namespace Engine
         void Bind() const;
         void BindFloatUniform(const std::string& name, float value);
         void BindVec3Uniform(const std::string& name, glm::vec3 value);
-        void BindMat4Uniform(const std::string& name, glm::mat4 value);
+        void BindMat4Uniform(const std::string& name, const glm::mat4& value);
 		void BindIntUniform(const std::string& name, int value);
-        void BindTextureSlot(const std::string& name, int slot);
         void Unbind() const;
 
 		void SetCullMode(const CullMode mode) { m_Uniforms.Mode = mode; }

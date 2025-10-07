@@ -39,8 +39,8 @@ namespace Engine
 
         m_Shader->Bind();
 
-        for (auto& texture : m_Textures)
-            texture->Bind();
+        for (size_t i = 0; i < m_Textures.size(); i++)
+            m_Textures[i]->Bind((uint8_t)i);
 
         for (auto& [name, value] : m_Uniforms.IntUniforms)
 			m_Shader->BindUniformInt1(name, value);
@@ -75,7 +75,7 @@ namespace Engine
         m_Uniforms.Vec3Uniforms[name] = value;
     }
 
-    void Material::BindMat4Uniform(const std::string& name, glm::mat4 value)
+    void Material::BindMat4Uniform(const std::string& name, const glm::mat4& value)
     {
         m_Uniforms.Mat4Uniforms[name] = value;
     }
@@ -83,10 +83,5 @@ namespace Engine
     void Material::BindIntUniform(const std::string& name, int value)
     {
 		m_Uniforms.IntUniforms[name] = value;
-    }
-
-    void Material::BindTextureSlot(const std::string& name, int slot)
-    {
-        m_Uniforms.TextureUniforms[name] = slot;
     }
 }

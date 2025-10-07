@@ -14,11 +14,21 @@ namespace Editor
         //IMPORT ASSETS
 		const auto& lightMaterial = MaterialImporter::AddMaterial("Light", "Shaders/areaLight.vert", "Shaders/areaLight.frag");
         const auto& defaultMaterial = MaterialImporter::AddMaterial("Default", "Shaders/default.vert", "Shaders/default.frag");
+        const auto& skyboxMaterial = MaterialImporter::AddMaterial("Skybox", "Shaders/skybox.vert", "Shaders/skybox.frag");
 
         Image faceImage = Image(RESOURCES_PATH "Images/face.png");
         const auto& faceTexture = Ptr<Texture>::Create(faceImage);
-        Image houseImage = Image(RESOURCES_PATH "Images/face.png");
+        Image houseImage = Image(RESOURCES_PATH "Images/house.png");
         const auto& houseTexture = Ptr<Texture>::Create(houseImage);
+
+        const auto& cubemapTexture = Ptr<Texture>::Create(
+            RESOURCES_PATH "Images/Cubemap/nx.png",
+            RESOURCES_PATH "Images/Cubemap/px.png",
+            RESOURCES_PATH "Images/Cubemap/ny.png",
+            RESOURCES_PATH "Images/Cubemap/py.png",
+            RESOURCES_PATH "Images/Cubemap/nz.png",
+            RESOURCES_PATH "Images/Cubemap/pz.png"
+        );
 
         MeshImporter::CreatePlane();
         MeshImporter::CreateCube();
@@ -34,6 +44,9 @@ namespace Editor
         defaultMaterial->BindVec3Uniform("u_LightColor", {1, 1, 1});
         defaultMaterial->BindVec3Uniform("u_LightPos", {1, 5, -5});
 		defaultMaterial->BindMat4Uniform("u_lightViewProj", glm::mat4(1.0f));
+
+        skyboxMaterial->AddTexture(cubemapTexture);
+        skyboxMaterial->SetCullMode(Front);
 
         SceneSerializer::Deserialize(m_Scene, RESOURCES_PATH "Persistence/Scene.scene");
         Renderer::Initialize();

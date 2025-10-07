@@ -1,12 +1,11 @@
 #pragma once
 
+#include "ComponentRegistry.h"
 #include "Core/Time.h"
 #include "Events/Event.h"
-#include "ComponentRegistry.h"
 
 #include <entt/entt.hpp>
 
-#include "Skybox.h"
 #include "Systems/System.h"
 
 namespace Editor
@@ -28,15 +27,11 @@ namespace Editor
 
 		std::vector<Ptr<System>>& GetSystems() { return m_Systems; }
 
-		Ptr<Skybox>& GetSkybox() { return m_Skybox; }
-
 		Entity GetActiveCameraEntity();
 
 	private:
 		void OnKeyPressedEvent(const KeyPressedEvent& e);
 		void UpdateCamera(CameraComponent& mainCamera, Time deltaTime);
-
-		Ptr<Skybox> m_Skybox = Ptr<Skybox>::Create();
 
 		std::vector<Ptr<System>> m_Systems;
 

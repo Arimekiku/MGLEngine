@@ -29,6 +29,11 @@ namespace Editor
 		m_Systems.emplace_back(lightSystem);
 
 		dispatcher.Subscribe<KeyPressedEvent>(BIND_FUNC(OnKeyPressedEvent));
+
+		auto entity = Instantiate("Skybox");
+		auto& component = entity.AddComponent<SkyboxComponent>();
+		component.Mesh = MeshImporter::CreateCube();
+		component.Material = MaterialImporter::GetMaterial("Skybox");
 	}
 
 	Entity Scene::Instantiate(const std::string& name)

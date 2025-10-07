@@ -108,4 +108,20 @@ namespace Editor
 		CameraComponent(const CameraComponent&) = default;
 		CameraComponent(const bool enabled) : Enabled(enabled) { }
 	};
+
+	struct SkyboxComponent
+	{
+		Ptr<Mesh> Mesh = nullptr;
+		Ptr<Material> Material = nullptr;
+
+		glm::vec3 Position = glm::vec3(0);
+
+		glm::mat4 GetProj() const
+		{
+			const glm::mat4 translation = glm::translate(glm::mat4(1.0f), Position);
+			const glm::mat4 scaling = glm::scale(glm::mat4(1.0f), glm::vec3(100));
+
+			return translation * scaling;
+		}
+	};
 }

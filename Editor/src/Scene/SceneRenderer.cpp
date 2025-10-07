@@ -148,13 +148,16 @@ namespace Editor
 		const auto camera = cameraEntity.GetComponent<CameraComponent>();
         Renderer::UpdateCameraMatrix(m_ViewportCamera->GetProjMat() * glm::lookAt(camera.Position, camera.Position + camera.Orientation, Vector3::Up()));
 
-		const auto& skybox = m_Context->GetSkybox();
-		skybox->GetTransform()->Position = camera.Position;
-		Renderer::RenderMesh(skybox->GetMesh(), skybox->GetMaterial(), skybox->GetTransform()->GetTrsMatrix());
-
-		cameraBuffer->ClearAttachment(INTEGER, -1);
-
 		//TODO: batching
+		const auto& skyboxes = m_Context->m_Entities.view<SkyboxComponent>();
+		for (const auto& skybox : skyboxes)
+		{
+			auto& skyboxComponent = skyboxes.get<SkyboxComponent>(skybox);
+			skyboxComponent.Position = camera.Position;
+
+			Renderer::RenderMeshEntity(skyboxComponent.Mesh, skyboxComponent.Material, skyboxComponent.GetProj(), (int)skybox);
+		} 
+
 		const auto& meshRenderers = m_Context->m_Entities.view<MeshComponent, MaterialComponent, TransformComponent>();
 		for (const auto& meshEntity : meshRenderers)
 		{
@@ -390,6 +393,25 @@ namespace Editor
 
 				const uint32_t texture = component.DepthBuffer->GetAttachment(DEPTH24_STENCIL8);
 				ImGui::Image((ImTextureID)texture, ImVec2(256, 256), ImVec2(0, 0), ImVec2(1, -1));
+			});
+
+			DrawComponent<SkyboxComponent>("Skybox", m_SelectedEntity, [](SkyboxComponent& component)
+			{
+				static glm::vec3 color;
+				const char* modes[] = { "Plain", "Image" };
+				int currentMode = 0;
+
+				if (ImGui::Combo("Mode", &currentMode, modes, IM_ARRAYSIZE(modes)))
+				{
+					component.Material->BindIntUniform("u_Mode", currentMode);
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::ColorEdit3("Color", &color.x))
+				{
+					component.Material->BindVec3Uniform("u_Albedo", color);
+				}
 			});
 
 			if (ImGui::Button("Add Component"))
