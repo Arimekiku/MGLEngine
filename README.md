@@ -52,6 +52,7 @@ Engine was written fully in C++ as an educational project and has several featur
 * TRS Guizmos
 * Scene system
 * Mouse picking
+* Very basic content browser
 * Basic ECS
 * Directional and Point lights
 * Directional light shadow maps
