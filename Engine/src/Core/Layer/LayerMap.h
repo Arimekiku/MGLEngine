@@ -15,7 +15,7 @@ namespace Engine
     {
     public:
         LayerMap() = default;
-        ~LayerMap() = default;
+        ~LayerMap() { m_Layers.clear(); }
 
 		template<typename TLayer> requires DerivedFromLayer<TLayer>
         void Push(TLayer* layer)

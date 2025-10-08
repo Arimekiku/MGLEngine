@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <ImGuizmo.h>
@@ -23,11 +24,14 @@ namespace Editor
 
 		void SetContext(const Ptr<Scene>& context) { m_Context = context; }
 
+		bool IsActive() const { return m_IsActive; }
+
 	protected:
 		Ptr<Scene> m_Context;
 
 		std::string m_PanelName;
 
+	private:
 		bool m_IsActive = true;
 	};
 
@@ -56,17 +60,27 @@ namespace Editor
 		SceneHierarchyPanel(const std::string& name) : ScenePanel(name) { }
 
 		void DrawPanel() override;
+	};
 
-	private:
-		void DrawHierarchy();
-		void DrawInspector();
+	class SceneInspectorPanel final : public ScenePanel
+	{
+	public:
+		SceneInspectorPanel(const std::string& name) : ScenePanel(name) {}
+
+		void DrawPanel() override;
 	};
 
 	class SceneContentBrowserPanel final : public ScenePanel
 	{
 	public:
-		SceneContentBrowserPanel(const std::string& name) : ScenePanel(name) { }
+		SceneContentBrowserPanel(const std::string& name);
 
 		void DrawPanel() override;
+
+	private:
+		std::filesystem::path m_AssetFolder = RESOURCES_PATH;
+		std::filesystem::path m_CurrentFolder = RESOURCES_PATH;
+
+		Ptr<Texture> m_TestTexture = nullptr;
 	};
 }

@@ -17,10 +17,7 @@ namespace Editor
 		const auto& lights = m_Context->m_Entities.view<DirectLightComponent, TransformComponent>();
 
 		if (lights.size_hint() != 1)
-		{
-			LOG_ERROR("System can't update light! Entities number {0}", lights.size_hint());
 			return;
-		}
 
 		const auto& lightEntity = lights.begin();
 		const auto& [lightComponent, lightTransform] = lights.get<DirectLightComponent, TransformComponent>(*lightEntity);

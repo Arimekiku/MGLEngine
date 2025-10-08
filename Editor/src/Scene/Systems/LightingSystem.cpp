@@ -11,9 +11,12 @@ namespace Editor
 		const auto& meshRenderers = m_Registry.view<MeshComponent, MaterialComponent, TransformComponent>();
 		const auto& lights = m_Registry.view<DirectLightComponent, TransformComponent>();
 
-		if (lights.size_hint() != 1)
+		if (lights.size_hint() == 0)
+			return;
+
+		if (lights.size_hint() > 1)
 		{
-			LOG_ERROR("System can't update light! Entities number {0}", lights.size_hint());
+			LOG_ERROR("System can't update light since there's more in scene than can be! Entities number {0}", lights.size_hint());
 			return;
 		}
 

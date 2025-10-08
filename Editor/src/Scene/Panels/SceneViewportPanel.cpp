@@ -2,15 +2,12 @@
 
 #include <glm/gtc/type_ptr.inl>
 
+#include "Persistence/SceneSerializer.h"
+
 namespace Editor
 {
 	void SceneViewportPanel::DrawPanel()
 	{
-		if (m_IsActive == false)
-			return;
-
-		ImGui::Begin("Viewport");
-
 		DrawViewport();
 
 		const auto minBounds = ImGui::GetWindowContentRegionMin();
@@ -31,8 +28,6 @@ namespace Editor
 		}
 
 		DrawSelection();
-
-		ImGui::End();
 	}
 
 	void SceneViewportPanel::DrawViewport()
@@ -41,13 +36,26 @@ namespace Editor
 		const auto viewportSize = ImGui::GetContentRegionAvail();
 		const auto castSize = glm::ivec2(viewportSize.x, viewportSize.y);
 
-		if (castSize.x != 0 && castSize.y != 0)
+		if (castSize.x > 0 && castSize.y > 0)
 		{
 			if (renderCamera->GetSize() != castSize)
 				renderCamera->Resize(castSize.x, castSize.y);
 
 			const uint32_t texture = renderCamera->GetFramebuffer()->GetAttachment(RGBA8);
 			ImGui::Image((ImTextureID)texture, ImVec2(viewportSize.x, viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		}
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ContentBrowser");
+			if (payload != nullptr)
+			{
+				const auto path = (const char*)payload->Data;
+
+				SceneSerializer::Deserialize(m_Context, path);
+			}
+
+			ImGui::EndDragDropTarget();
 		}
 	}
 

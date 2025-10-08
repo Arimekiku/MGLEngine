@@ -13,10 +13,11 @@ namespace Editor
 
         //SETUP SCENE RENDERING
         const auto viewportPanel = Ptr<SceneViewportPanel>::Create("Viewport");
-        const auto hierarchyPanel = Ptr<SceneHierarchyPanel>::Create("Hierarchy");
-        const auto contentBrowserPanel = Ptr<SceneContentBrowserPanel>::Create("ContentBrowser");
+        const auto hierarchyPanel = Ptr<SceneHierarchyPanel>::Create("Scene");
+        const auto inspectorPanel = Ptr<SceneInspectorPanel>::Create("Inspector");
+        const auto contentBrowserPanel = Ptr<SceneContentBrowserPanel>::Create("Content Browser");
 
-        m_SceneRenderPanels = { viewportPanel, hierarchyPanel, contentBrowserPanel};
+        m_SceneRenderPanels = { viewportPanel, hierarchyPanel, inspectorPanel, contentBrowserPanel};
 
         //IMPORT ASSETS
 		const auto& lightMaterial = MaterialImporter::AddMaterial("Light", "Shaders/areaLight.vert", "Shaders/areaLight.frag");
@@ -59,7 +60,6 @@ namespace Editor
         skyboxMaterial->BindIntUniform("u_Mode", 1);
         skyboxMaterial->SetCullMode(Front);
 
-        SceneSerializer::Deserialize(m_Scene, RESOURCES_PATH "Persistence/Scene.scene");
         Renderer::Initialize();
     }
 
@@ -171,8 +171,15 @@ namespace Editor
 
         ImGui::End();
 
-        for (const auto& sceneRenderPanel : m_SceneRenderPanels)
-            sceneRenderPanel->DrawPanel();
+        for (const auto& scenePanel : m_SceneRenderPanels)
+        {
+            if (scenePanel->IsActive() == false)
+                continue;
+
+            scenePanel->Begin();
+            scenePanel->DrawPanel();
+            scenePanel->End();
+        }
 
 #ifdef DEBUG
         if (m_IsImGuiDemoPanel)
