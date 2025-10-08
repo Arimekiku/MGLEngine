@@ -44,15 +44,16 @@ Compile time dependencies for Ubuntu roughly specified in the [workflow](./.gith
 
 ## Brief
 
+This is improved version on my engine in which I implemented features I couldn't do a year ago. 
+It has revamped textures, framebuffers and event systems, working skyboxes and very crude implementation of content browser. 
+
 Engine was written fully in C++ as an educational project and has several features:
 
-* Simple windowing
+* Windowing
 * VBO, VAO, EBO
-* Mesh, Sprite, Shader importer
-* TRS Guizmos
+* Mesh, Sprite, Framebuffer, Shader importer
 * Scene system
-* Mouse picking
+* Guizmos and Mouse picking
 * Very basic content browser
 * Basic ECS
-* Directional and Point lights
 * Directional light shadow maps
