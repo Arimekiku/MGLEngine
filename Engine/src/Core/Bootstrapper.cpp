@@ -16,13 +16,13 @@ namespace Engine
 		s_Instance = this;
 
 		m_Window = Ptr<Window>::Create();
-		m_LayerStack = LayerMap();
+		m_Layers = std::vector<Layer*>();
 
-		const auto guiLayer = new GuiLayer(m_Window);
-		m_LayerStack.Push(guiLayer);
+		m_GuiLayer = new GuiLayer(m_Window);
+		m_Layers.push_back(m_GuiLayer);
 
 		const auto editorLayer = new Editor::EditorLayer(m_Window);
-		m_LayerStack.Push(editorLayer);
+		m_Layers.push_back(editorLayer);
 
 		auto& dispatcher = m_Window->GetEventDispatcher();
 		dispatcher.Subscribe<WindowCloseEvent>(BIND_FUNC(OnWindowCloseEvent));
@@ -47,15 +47,14 @@ namespace Engine
 
 			const auto deltaTime = Time(m_LastFrameTime - startFrameTime);
 
-			const auto& guiLayer = m_LayerStack.Get<GuiLayer>();
-			guiLayer->Begin();
+			m_GuiLayer->Begin();
 
-			for (const auto& layer : m_LayerStack | std::views::values)
+			for (const auto& layer : m_Layers)
 				layer->OnGuiUpdate();
 			
-			guiLayer->End();
+			m_GuiLayer->End();
 
-			for (const auto& layer : m_LayerStack | std::views::values)
+			for (const auto& layer : m_Layers)
 				layer->OnEveryUpdate(deltaTime);
 
 			m_Window->OnEveryUpdate();

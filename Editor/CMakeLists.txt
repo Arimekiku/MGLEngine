@@ -8,8 +8,10 @@ file(GLOB_RECURSE HEADER_FILES "${SOURCE_DIR}/**.h")
 # define source
 file(GLOB_RECURSE SOURCE_FILES "${SOURCE_DIR}/**.cpp")
 
-add_library(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
+# TODO: remove circular deps with engine
+add_library(${PROJECT_NAME} STATIC ${HEADER_FILES} ${SOURCE_FILES})
 
+# linking
 target_link_libraries(${PROJECT_NAME} Libraries)
 
 target_compile_definitions(${PROJECT_NAME}

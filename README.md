@@ -1,16 +1,17 @@
 # RenderingEngine
 
-My C++ render engine. Was implemented in order to learn Graphics Programming, OpenGL and GLSL language, as well as GPUs working cycle
+My C++ render engine. Was implemented to learn Graphics Programming, OpenGL and GLSL language, as well as GPUs working cycle
 
 # Build
 
 Engine was tested on Fedora & Nix Linux and Windows
+Requires CMake 3.24 or newer and a C++20 compiler
 
 ## Windows
 
 You can use CLion or Visual Studio with Ninja for building
 
-- Clone the repository: `git clone --recursive https://github.com/Arimekiku/RenderingEngine`
+- Clone the repository: `git clone https://github.com/Arimekiku/RenderingEngine`
 - Make sure you use Ninja generator
 - Hit `F5 (Build button)` and wait
 
@@ -21,17 +22,14 @@ To compile on x86_64-linux platform one can use nix or cmake.
 ### Nix
 
 ```shell
-nix build "git+file://$(pwd)?submodules=1"
+nix build
 ```
-
-Argument "git+file://$(pwd)?submodules=1" is used due to the fact that this project uses git submodules.
 
 ### Cmake
 
 ```shell
-mkdir build && cd build
-cmake configure ..
-make
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --parallel
 ```
 
 Compile time dependencies for Ubuntu roughly specified in the [workflow](./.github/workflows/build-check-x86_64-linux.yaml).

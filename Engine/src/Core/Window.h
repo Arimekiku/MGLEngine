@@ -10,7 +10,7 @@ namespace Engine
 	struct WindowProperties
 	{
 		const char* Name = "Renderer";
-		int Width = 1280, Height = 1024;
+		int Width = 800, Height = 600;
 		bool VSync = true;
 
 		WindowProperties() = default;

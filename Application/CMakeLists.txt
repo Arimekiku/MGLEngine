@@ -1,5 +1,6 @@
 add_executable(MGLEngine main.cpp)
 
+# linking
 target_link_libraries(MGLEngine Editor)
 target_link_libraries(MGLEngine Engine)
 

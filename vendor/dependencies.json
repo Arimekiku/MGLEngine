@@ -1,0 +1,34 @@
+{
+  "glfw": {
+    "url": "https://codeload.github.com/glfw/glfw/tar.gz/b35641f4a3c62aa86a0b3c983d163bc0fe36026d",
+    "sha256": "a183c1e033328e253b64e95bbec038b45c3d371afb0065f5ae9355de149d466d"
+  },
+  "imgui": {
+    "url": "https://codeload.github.com/ocornut/imgui/tar.gz/005ce0a74874919da9d64ae28697c2a347159a16",
+    "sha256": "5cfe7c3d81c0d81a4cf9852545ad618288495e98317551b465f069057ca17288"
+  },
+  "imguizmo": {
+    "url": "https://codeload.github.com/CedricGuillemet/ImGuizmo/tar.gz/6d588209f99b1324a608783d1f52faa518886c29",
+    "sha256": "5ab9d4d47a3b241c7e740fb060386183332f3e34b8238980c393d292d52ceb8a"
+  },
+  "assimp": {
+    "url": "https://codeload.github.com/assimp/assimp/tar.gz/f6c62605c76001ac37f1d86da9922ef61e65501d",
+    "sha256": "9dad2277489d0ef6fea6e463ac198900d70878e4fe8e67001f43c68e5efa55f7"
+  },
+  "entt": {
+    "url": "https://codeload.github.com/skypjack/entt/tar.gz/0a3c2cc4006157241665c6ccefc8b9676c1c752e",
+    "sha256": "747044cf26c18c7956cc6f51592561d62e72ccc230422156650594e1d0b21a82"
+  },
+  "glm": {
+    "url": "https://codeload.github.com/g-truc/glm/tar.gz/33b4a621a697a305bc3a7610d290677b96beb181",
+    "sha256": "fa761b941987933884b0d21d5b86930789061f026ba163d47cebbc5b00be277b"
+  },
+  "spdlog": {
+    "url": "https://codeload.github.com/gabime/spdlog/tar.gz/refs/tags/v1.15.2",
+    "sha256": "7a80896357f3e8e920e85e92633b14ba0f229c506e6f978578bdc35ba09e9a5d"
+  },
+  "yaml-cpp": {
+    "url": "https://codeload.github.com/jbeder/yaml-cpp/tar.gz/da82fd982c260e7f335ce5acbceff24b270544d1",
+    "sha256": "ae4ca5d9d7df1fc4d6bba0c2b4d042baca04022cf45f2e959e6e334fe56bd674"
+  }
+}

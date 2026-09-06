@@ -25,6 +25,13 @@
           pkgs = import nixpkgs {
             inherit system;
           };
+          dependencyManifest = builtins.fromJSON (builtins.readFile ./vendor/dependencies.json);
+          dependencySources = pkgs.lib.mapAttrs (name: pin:
+            pkgs.runCommand "mgl-${name}-source" { nativeBuildInputs = [ pkgs.gnutar pkgs.gzip ]; } ''
+              mkdir -p "$out"
+              tar -xzf ${pkgs.fetchurl { inherit (pin) url sha256; }} --strip-components=1 -C "$out"
+            ''
+          ) dependencyManifest;
           ld-library-path =
             with pkgs;
             lib.makeLibraryPath [
@@ -59,6 +66,11 @@
 
             src = ./.;
 
+            cmakeFlags = [ "-DFETCHCONTENT_FULLY_DISCONNECTED=ON" ]
+              ++ pkgs.lib.mapAttrsToList (name: source:
+                "-DFETCHCONTENT_SOURCE_DIR_${pkgs.lib.toUpper name}=${source}"
+              ) dependencySources;
+
             nativeBuildInputs = with pkgs; [
               cmake
               wayland-scanner
@@ -83,8 +95,8 @@
               runHook preInstall
 
               mkdir -p $out/bin
-              cp RenderingEngine $out/bin
-              cp -r Resources $out/bin
+              cp Application/MGLEngine $out/bin
+              cp -r ../Resources $out/bin
 
               runHook postInstall
             '';

@@ -5,6 +5,7 @@
 #include "Events/Event.h"
 #include "Events/EventDispatcher.h"
 #include "Layer/LayerMap.h"
+#include "Layer/GuiLayer/GuiLayer.h"
 
 namespace Engine
 {
@@ -27,7 +28,10 @@ namespace Engine
 
 		static Bootstrapper* s_Instance;
 		Ptr<Window> m_Window = nullptr;
-		LayerMap m_LayerStack;
+
+		GuiLayer* m_GuiLayer = nullptr;
+		std::vector<Layer*> m_Layers;
+
 		bool m_Running = true, m_Minimized = false;
 		float m_LastFrameTime = 0;
 	};
